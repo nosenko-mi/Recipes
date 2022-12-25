@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import com.ltl.recipes.R
 import com.ltl.recipes.databinding.MainFragmentBinding
@@ -83,10 +84,11 @@ class MainFragment : Fragment(), RecipeClickListener {
     }
 
     override fun onClick(recipe: Recipe) {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.container, RecipeDetailFragment())
-            .addToBackStack(null)
-            .commit()
+//        parentFragmentManager.beginTransaction()
+//            .replace(R.id.container, RecipeDetailFragment())
+//            .addToBackStack(null)
+//            .commit()
+        view?.let { Navigation.findNavController(it).navigate(R.id.mainFragmentToRecipeDetailFragment) }
     }
 
 }
