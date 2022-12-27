@@ -10,7 +10,7 @@ class RecipeViewHolder(
     : RecyclerView.ViewHolder(recipeCardBinding.root)
 {
         fun bind(recipe: Recipe){
-            recipeCardBinding.recipeImg.setImageResource(recipe.cover)
+            recipeCardBinding.recipeImg.setImageResource(recipe.coverImg)
             recipeCardBinding.recipeTitle.text = recipe.title
 
             recipeCardBinding.cardView.setOnClickListener{

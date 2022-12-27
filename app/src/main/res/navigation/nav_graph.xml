@@ -13,6 +13,9 @@
         <action
             android:id="@+id/mainFragmentToRecipeDetailFragment"
             app:destination="@id/recipeDetailFragment"/>
+        <action
+            android:id="@+id/mainFragmentToNewRecipeFragment"
+            app:destination="@id/newRecipeFragment" />
     </fragment>
     <fragment
         android:id="@+id/recipeDetailFragment"
@@ -21,6 +24,17 @@
         tools:layout="@layout/fragment_recipe_detail" >
         <action
             android:id="@+id/recipeDetailFragmentToMainFragment"
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
+    <fragment
+        android:id="@+id/newRecipeFragment"
+        android:name="com.ltl.recipes.ui.NewRecipeFragment"
+        android:label="fragment_new_recipe"
+        tools:layout="@layout/fragment_new_recipe" >
+        <action
+            android:id="@+id/action_newRecipeFragment_to_mainFragment"
             app:destination="@id/mainFragment"
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="true"/>

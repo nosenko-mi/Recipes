@@ -12,6 +12,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import com.ltl.recipes.R
 import com.ltl.recipes.databinding.MainFragmentBinding
+import com.ltl.recipes.ingredient.Ingredient
 import com.ltl.recipes.recipe.Recipe
 import com.ltl.recipes.recipe.RecipeAdapter
 import com.ltl.recipes.recipe.RecipeClickListener
@@ -77,41 +78,9 @@ class MainFragment : Fragment(), RecipeClickListener {
             }
         }
         binding.fab.setOnClickListener{
-            Toast.makeText(context, "Fab", Toast.LENGTH_SHORT).show()
+            goToNewRecipeFragment()
         }
 
-        testJson()
-    }
-
-    private fun testJson() {
-        val recipe = JSONObject()
-        val ingredients = JSONArray()
-        try {
-            recipe.put("id", "3")
-            recipe.put("title", "First")
-            recipe.put("description", "Some description")
-            recipe.put("portionsNum", "2")
-
-//            ingredients.put("ingredient1", "amount1")
-//            ingredients.put("ingredient2", "amount2")
-//            ingredients.put("ingredient3", "amount3")
-
-            ingredients.put(0, JSONObject("{\"in1\":\"amount1\"}"))
-            ingredients.put(1, JSONObject("{\"in2\":\"amount2\"}"))
-            ingredients.put(2, JSONObject("{\"in3\":\"amount3\"}"))
-            recipe.put("Ingredients", ingredients)
-
-            val timeStamp: String = java.lang.String.valueOf(
-                TimeUnit.MILLISECONDS.toSeconds(
-                    System.currentTimeMillis()
-                )
-            )
-            recipe.put("createdAd", timeStamp)
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-
-        Log.d(TAG, recipe.toString())
     }
 
     private fun goToFavFragment() {
@@ -122,12 +91,18 @@ class MainFragment : Fragment(), RecipeClickListener {
         TODO("Not yet implemented")
     }
 
+    private fun goToNewRecipeFragment() {
+        view?.let { Navigation.findNavController(it).navigate(R.id.mainFragmentToNewRecipeFragment) }
+    }
+
     private fun populateRecipes() {
         val r1 = Recipe(
             R.drawable.noodles_test,
             "First"
         )
         recipeList.add(r1)
+
+        Log.d(TAG, r1.toJson().toString())
 
         val r2 = Recipe(
             R.drawable.noodles_test,
