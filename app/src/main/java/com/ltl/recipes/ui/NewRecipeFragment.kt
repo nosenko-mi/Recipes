@@ -9,6 +9,7 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,8 +23,11 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageMetadata
 import com.ltl.recipes.R
 import com.ltl.recipes.databinding.FragmentNewRecipeBinding
+import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -32,6 +36,9 @@ class NewRecipeFragment : Fragment() {
 
     private lateinit var binding: FragmentNewRecipeBinding
     private lateinit var recipeImg: ImageView
+
+    private val firebaseStorage = FirebaseStorage.getInstance()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -121,6 +128,7 @@ class NewRecipeFragment : Fragment() {
             // BitMap is data structure of image file which store the image in memory
             val photo = result.data!!.extras!!["data"] as Bitmap?
 
+
             // Create time stamped name and MediaStore entry.
             val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
                 .format(System.currentTimeMillis())
@@ -130,6 +138,29 @@ class NewRecipeFragment : Fragment() {
 
 //          TODO:  save image to storage
 
+            val baos = ByteArrayOutputStream()
+            photo?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            val data: ByteArray = baos.toByteArray()
+
+            val storageRef = firebaseStorage.reference
+            val testsRef = storageRef.child("tests/")
+            val currentImgRef = storageRef.child("tests/name.jpg")
+
+            // Create file metadata including the content type
+
+            // Create file metadata including the content type
+            val metadata = StorageMetadata.Builder()
+                .setContentType("image/jpg")
+                .build()
+
+            currentImgRef.putBytes(data, metadata)
+                .addOnSuccessListener {
+                    Log.d(TAG, it.metadata.toString())
+
+                }
+                .addOnFailureListener{
+                    Log.e(TAG, it.message.toString())
+                }
         }
         else {
             Toast.makeText(context, "Error while taking photo", Toast.LENGTH_SHORT).show()
