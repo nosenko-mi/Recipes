@@ -24,6 +24,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.ltl.recipes.R
 import com.ltl.recipes.databinding.FragmentNewRecipeBinding
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class NewRecipeFragment : Fragment() {
@@ -42,11 +44,14 @@ class NewRecipeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         recipeImg = binding.recipeImgImageView
-
         recipeImg.setOnClickListener{
             showBottomSheetDialog()
+        }
+
+        binding.addRecipeButton.setOnClickListener{
+            Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
+
         }
     }
 
@@ -70,7 +75,6 @@ class NewRecipeFragment : Fragment() {
         }
 
         bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
-
         bottomSheetDialog.show()
 
     }
@@ -101,7 +105,6 @@ class NewRecipeFragment : Fragment() {
                 Toast.makeText(context,
                     "Permissions not granted by the user.",
                     Toast.LENGTH_SHORT).show()
-//                finish()
             }
         }
     }
@@ -117,8 +120,16 @@ class NewRecipeFragment : Fragment() {
         if (result.resultCode == Activity.RESULT_OK) {
             // BitMap is data structure of image file which store the image in memory
             val photo = result.data!!.extras!!["data"] as Bitmap?
+
+            // Create time stamped name and MediaStore entry.
+            val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
+                .format(System.currentTimeMillis())
+
             // Set the image in imageview for display
             recipeImg.setImageBitmap(photo)
+
+//          TODO:  save image to storage
+
         }
         else {
             Toast.makeText(context, "Error while taking photo", Toast.LENGTH_SHORT).show()
@@ -133,6 +144,10 @@ class NewRecipeFragment : Fragment() {
         } catch (e: ActivityNotFoundException) {
             // display error state to the user
         }
+    }
+
+    private fun savePicture(){
+
     }
 
     companion object {
