@@ -27,6 +27,8 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.ltl.recipes.R
 import com.ltl.recipes.databinding.FragmentNewRecipeBinding
+import com.ltl.recipes.utils.PhotoConverter
+import com.ltl.recipes.utils.StorageHandler
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
@@ -128,7 +130,6 @@ class NewRecipeFragment : Fragment() {
             // BitMap is data structure of image file which store the image in memory
             val photo = result.data!!.extras!!["data"] as Bitmap?
 
-
             // Create time stamped name and MediaStore entry.
             val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
                 .format(System.currentTimeMillis())
@@ -136,31 +137,14 @@ class NewRecipeFragment : Fragment() {
             // Set the image in imageview for display
             recipeImg.setImageBitmap(photo)
 
-//          TODO:  save image to storage
+            // upload the image
+            val data = photo?.let { PhotoConverter().bitmapToByteArray(it) }
+            val storageHandler = StorageHandler("tests", name)
 
-            val baos = ByteArrayOutputStream()
-            photo?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-            val data: ByteArray = baos.toByteArray()
+            if (data != null){
+                storageHandler.putPhoto(data);
+            }
 
-            val storageRef = firebaseStorage.reference
-            val testsRef = storageRef.child("tests/")
-            val currentImgRef = storageRef.child("tests/name.jpg")
-
-            // Create file metadata including the content type
-
-            // Create file metadata including the content type
-            val metadata = StorageMetadata.Builder()
-                .setContentType("image/jpg")
-                .build()
-
-            currentImgRef.putBytes(data, metadata)
-                .addOnSuccessListener {
-                    Log.d(TAG, it.metadata.toString())
-
-                }
-                .addOnFailureListener{
-                    Log.e(TAG, it.message.toString())
-                }
         }
         else {
             Toast.makeText(context, "Error while taking photo", Toast.LENGTH_SHORT).show()
