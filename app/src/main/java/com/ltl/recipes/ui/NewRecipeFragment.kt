@@ -21,6 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.storage.FirebaseStorage
@@ -58,9 +59,16 @@ class NewRecipeFragment : Fragment() {
             showBottomSheetDialog()
         }
 
+//        Glide snippet
+//        TODO: create standard img
+        val storageReference = FirebaseStorage.getInstance().getReference("tests/name.jpg")
+        Glide.with(requireContext())
+            .load(storageReference)
+            .dontAnimate()
+            .into(recipeImg)
+
         binding.addRecipeButton.setOnClickListener{
             Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
-
         }
     }
 
