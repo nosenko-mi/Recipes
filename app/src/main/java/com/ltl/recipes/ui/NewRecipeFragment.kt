@@ -6,6 +6,8 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -20,17 +22,18 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker.PERMISSION_DENIED
+import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageMetadata
 import com.ltl.recipes.R
 import com.ltl.recipes.databinding.FragmentNewRecipeBinding
 import com.ltl.recipes.utils.PhotoConverter
 import com.ltl.recipes.utils.StorageHandler
-import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -42,6 +45,47 @@ class NewRecipeFragment : Fragment() {
 
     private val firebaseStorage = FirebaseStorage.getInstance()
 
+    private val requestPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                chooseImageGallery();
+            } else {
+                Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    private var galleryLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            // do your operation from here....
+            if (data != null && data.data != null) {
+                val selectedImageUri: Uri? = data.data
+                val selectedImageBitmap: Bitmap
+                try {
+                    selectedImageUri?.let {
+                        if(Build.VERSION.SDK_INT < 28) {
+                            val bitmap = MediaStore.Images.Media.getBitmap(
+                                requireContext().contentResolver,
+                                selectedImageUri
+                            )
+                            recipeImg.setImageBitmap(bitmap)
+                        } else {
+                            val source = ImageDecoder.createSource(requireContext().contentResolver, selectedImageUri)
+                            val bitmap = ImageDecoder.decodeBitmap(source)
+                            recipeImg.setImageBitmap(bitmap)
+                        }
+                    }
+                } catch (e: IOException) {
+                    Log.e(TAG, e.message.toString())
+                    e.printStackTrace()
+                }
+//                recipeImg.setImageBitmap(selectedImageBitmap)
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -86,7 +130,42 @@ class NewRecipeFragment : Fragment() {
             }
             gallery.setOnClickListener{
 //                gallery intent
-                Toast.makeText(context, "gallery", Toast.LENGTH_SHORT).show()
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    if (checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)== PERMISSION_DENIED){
+                        val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+                        requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    } else{
+                        chooseImageGallery();
+                    }
+                }else{
+                    chooseImageGallery();
+                }
+
+//                when {
+//                    ContextCompat.checkSelfPermission(
+//                        requireContext(),
+//                        Manifest.permission.READ_EXTERNAL_STORAGE
+//                    ) == PackageManager.PERMISSION_GRANTED -> {
+//                        // You can use the API that requires the permission.
+//                    }
+//                    shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE) -> {
+//                    // In an educational UI, explain to the user why your app requires this
+//                    // permission for a specific feature to behave as expected, and what
+//                    // features are disabled if it's declined. In this UI, include a
+//                    // "cancel" or "no thanks" button that lets the user continue
+//                    // using your app without granting the permission.
+//                    showInContextUI()
+//
+//                }
+//                    else -> {
+//                        // You can directly ask for the permission.
+//                        // The registered ActivityResultCallback gets the result of this request.
+//                        requestPermissionLauncher.launch(
+//                            Manifest.permission.READ_EXTERNAL_STORAGE)
+//                    }
+//                }
+
                 bottomSheetDialog.dismiss()
             }
         }
@@ -94,6 +173,12 @@ class NewRecipeFragment : Fragment() {
         bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
         bottomSheetDialog.show()
 
+    }
+
+    private fun chooseImageGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        galleryLauncher.launch(intent)
     }
 
     private fun takePhotoSequence(){
