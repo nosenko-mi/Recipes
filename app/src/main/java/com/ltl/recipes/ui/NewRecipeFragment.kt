@@ -25,29 +25,42 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker.PERMISSION_DENIED
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.navArgs
+import androidx.navigation.navGraphViewModels
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.storage.FirebaseStorage
 import com.ltl.recipes.R
 import com.ltl.recipes.databinding.FragmentNewRecipeBinding
+import com.ltl.recipes.ingredient.Ingredient
+import com.ltl.recipes.ingredient.IngredientRecycleViewAdapter
+import com.ltl.recipes.ingredient.IngredientViewModel
 import com.ltl.recipes.utils.PhotoConverter
 import com.ltl.recipes.utils.StorageHandler
 import java.io.IOException
+import java.lang.reflect.InvocationTargetException
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 class NewRecipeFragment : Fragment() {
 
+    val args: NewRecipeFragmentArgs by navArgs()
+
+    private lateinit var ingredientRecycleViewAdapter: IngredientRecycleViewAdapter
+
     private lateinit var binding: FragmentNewRecipeBinding
     private lateinit var recipeImg: ImageView
 
-    private val firebaseStorage = FirebaseStorage.getInstance()
+    private val viewModel: IngredientViewModel by navGraphViewModels(R.id.nav_graph)
 
     private val requestPermissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
+    ) { isGranted: Boolean ->
             if (isGranted) {
                 chooseImageGallery();
             } else {
@@ -87,12 +100,39 @@ class NewRecipeFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+    override fun onCreateView(inflater: LayoutInflater,
+                              container: ViewGroup?,
+                              savedInstanceState: Bundle?
     ): View {
+//        get ingredient from AddIngredientFragment via Bundle
+//        val tmp = arguments
+//        Log.d(TAG, tmp.toString())
+
         binding = FragmentNewRecipeBinding.inflate(inflater, container, false)
         val view = binding.root
+
+        try {
+            if (args.ingredientExtra != null){
+                Log.d(TAG, "args: ${args.ingredientExtra.toString()}")
+                viewModel.addIngredient(args.ingredientExtra!!)
+                Log.d(TAG, "viewModel: ${viewModel.getIngredients().value.toString()}")
+            }
+        } catch (e: InvocationTargetException){
+            Log.e(TAG, "ERROR args: ${e.printStackTrace()}")
+        }
+
+        binding.ingredientRecycleView.setHasFixedSize(true)
+        val l = object: LinearLayoutManager(context) { override fun canScrollVertically() = false }
+        val layoutManager = LinearLayoutManager(context)
+        binding.ingredientRecycleView.layoutManager = layoutManager
+        binding.ingredientRecycleView.itemAnimator = DefaultItemAnimator()
+
+        viewModel.getIngredients().observe(viewLifecycleOwner){
+            Log.d(TAG, "observer: ${it.size}")
+            ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(it, ::deleteIngredient)
+            binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
+        }
+
         return view
     }
 
@@ -103,6 +143,12 @@ class NewRecipeFragment : Fragment() {
             showBottomSheetDialog()
         }
 
+//        if (args.ingredientExtra != null){
+//            Log.d(TAG, args.ingredientExtra.toString())
+//        } else {
+//            Log.d(TAG, "ingredient has not been added yet")
+//        }
+
 //        Glide snippet
 //        TODO: create standard img
         val storageReference = FirebaseStorage.getInstance().getReference("tests/name.jpg")
@@ -111,9 +157,18 @@ class NewRecipeFragment : Fragment() {
             .dontAnimate()
             .into(recipeImg)
 
+        binding.addIngredientButton.setOnClickListener{
+//            Toast.makeText(context, "Add ingredient", Toast.LENGTH_SHORT).show()
+            goToAddIngredient()
+        }
+
         binding.addRecipeButton.setOnClickListener{
             Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun goToAddIngredient() {
+        view?.let { Navigation.findNavController(it).navigate(R.id.newRecipeFragmentToAddIngredientFragment) }
     }
 
     private fun showBottomSheetDialog() {
@@ -142,30 +197,7 @@ class NewRecipeFragment : Fragment() {
                     chooseImageGallery();
                 }
 
-//                when {
-//                    ContextCompat.checkSelfPermission(
-//                        requireContext(),
-//                        Manifest.permission.READ_EXTERNAL_STORAGE
-//                    ) == PackageManager.PERMISSION_GRANTED -> {
-//                        // You can use the API that requires the permission.
-//                    }
-//                    shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE) -> {
-//                    // In an educational UI, explain to the user why your app requires this
-//                    // permission for a specific feature to behave as expected, and what
-//                    // features are disabled if it's declined. In this UI, include a
-//                    // "cancel" or "no thanks" button that lets the user continue
-//                    // using your app without granting the permission.
-//                    showInContextUI()
-//
-//                }
-//                    else -> {
-//                        // You can directly ask for the permission.
-//                        // The registered ActivityResultCallback gets the result of this request.
-//                        requestPermissionLauncher.launch(
-//                            Manifest.permission.READ_EXTERNAL_STORAGE)
-//                    }
-//                }
-
+//                https://developer.android.com/training/permissions/requesting#kotlin
                 bottomSheetDialog.dismiss()
             }
         }
@@ -258,8 +290,11 @@ class NewRecipeFragment : Fragment() {
 
     }
 
+    private fun deleteIngredient(ingredient: Ingredient){
+        viewModel.removeIngredient(ingredient)
+    }
+
     companion object {
-        private const val REQUEST_IMAGE_CAPTURE = 1
         private const val TAG = "CameraXApp"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
