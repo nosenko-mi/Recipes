@@ -13,7 +13,7 @@ class Recipe (
     var description: String = "abstract",
     var isPublic: Boolean = false,
     var servingsNum: Int = 1,
-    var ingredients: List<Ingredient> = listOf(Ingredient("i1", 1), Ingredient("i2", 2)),
+    var ingredients: List<Ingredient> = listOf(Ingredient("i1", 1f), Ingredient("i2", 2f)),
     var steps: List<String> = listOf("step1", "step2", "step3"),
     var tags: List<String> = emptyList(),
     val id: Int? = recipeList.size
