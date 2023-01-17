@@ -34,9 +34,32 @@
         android:label="fragment_new_recipe"
         tools:layout="@layout/fragment_new_recipe" >
         <action
-            android:id="@+id/action_newRecipeFragment_to_mainFragment"
+            android:id="@+id/newRecipeFragmentToMainFragment"
             app:destination="@id/mainFragment"
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/newRecipeFragmentToAddIngredientFragment"
+            app:destination="@id/addIngredientFragment"
+            app:popUpTo="@id/addIngredientFragment"
+            app:popUpToInclusive="true"/>
+        <argument
+            android:name="ingredientExtra"
+            app:argType="com.ltl.recipes.ingredient.Ingredient"
+            app:nullable="true"
+            android:defaultValue="@null"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/addIngredientFragment"
+        android:name="com.ltl.recipes.ui.AddIngredientFragment"
+        android:label="AddIngredientFragment" >
+        <action
+            android:id="@+id/addIngredientFragmentToNewRecipeFragment"
+            app:destination="@id/newRecipeFragment"
+            app:popUpTo="@id/newRecipeFragment"
+            app:popUpToInclusive="true"
+            >
+        </action>
     </fragment>
 </navigation>
