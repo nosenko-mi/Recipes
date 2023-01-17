@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="def_margin_horizontal">20dp</dimen>
+    <dimen name="def_margin_vertical">20dp</dimen>
+    <dimen name="def_margin_dense">10dp</dimen>
+    <dimen name="def_margin_spread">40dp</dimen>
+
+
+    <dimen name="text_heading">25sp</dimen>
+    <dimen name="text_caption">20sp</dimen>
+    <dimen name="text_default">18sp</dimen>
+
+
+</resources>
