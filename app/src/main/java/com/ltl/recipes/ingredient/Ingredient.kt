@@ -1,15 +1,15 @@
 package com.ltl.recipes.ingredient
 
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.ltl.recipes.utils.Writable
 import org.json.JSONObject
 
 class Ingredient(
     var title: String = "abstract",
-    var amount: Int = 1
+    var qty: Float = 1f,
+    var qtyType: QuantityType = QuantityType.NONE
 )
-    : Writable
+    : Writable, java.io.Serializable
 {
     override fun toJson(): JSONObject {
         val gson = Gson()
@@ -20,4 +20,14 @@ class Ingredient(
 
         return JSONObject(jsonIngredient)
     }
+
+    fun isValid(): Boolean {
+        return title != "abstract"
+    }
+
+    override fun toString(): String {
+        return "Ingredient(title='$title', qty=$qty, qtyType=${qtyType})"
+    }
+
+
 }
