@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="#D5D5D5"
+    app:cardCornerRadius="15dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="@dimen/def_margin_horizontal"
+        >
+
+        <TextView
+            android:id="@+id/ingredientNameText"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_default"
+            android:text="ingredient"/>
+
+        <TextView
+            android:id="@+id/ingredientQuantityText"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_default"
+            android:text="quantity"/>
+
+
+        <TextView
+            android:id="@+id/ingredientQuantityTypeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_default"
+            android:text="type"/>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/ingredientDeleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_delete_24"/>
+
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
