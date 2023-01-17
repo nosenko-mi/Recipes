@@ -90,6 +90,20 @@
                 android:fontFamily="monospace"
                 android:text="Ingredients" />
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/ingredientRecycleView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:isScrollContainer="false"/>
+
+            </RelativeLayout>
+
+
+
             <Button
                 android:id="@+id/addIngredientButton"
                 android:layout_width="match_parent"
