@@ -13,6 +13,11 @@
     </string>
 
 
+    <string name="qty_type_gram">gram</string>
+    <string name="qty_type_mill">mill</string>
+    <string name="qty_type_oz">oz</string>
+    <string name="qty_type_spoon">spoon</string>
+
     <string-array name="serving_size">
         <item>1</item>
         <item>2</item>
@@ -24,5 +29,12 @@
         <item>8</item>
         <item>9</item>
         <item>10</item>
+    </string-array>
+
+    <string-array name="quantity_types">
+        <item>gram</item>
+        <item>mill</item>
+        <item>spoon</item>
+        <item>oz</item>
     </string-array>
 </resources>
