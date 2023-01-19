@@ -8,7 +8,8 @@ import com.ltl.recipes.databinding.IngredientListItemBinding
 
 class IngredientRecycleViewAdapter (
     private val dataSet: MutableList<Ingredient>,
-    private var onDeleteCallback: ((Ingredient) -> Unit)
+    private var onDeleteCallback: ((Ingredient) -> Unit),
+    private var onEditCallback: ((Ingredient) -> Unit)
     )
     :
     RecyclerView.Adapter<IngredientRecycleViewAdapter.ViewHolder>() {
@@ -22,8 +23,8 @@ class IngredientRecycleViewAdapter (
             ingredientQuantityTypeText.text = ingredient.qtyType.toString()
 
             root.setOnClickListener{
-//                TODO go to EditIngredient
-                Log.d("Ingredient", "INGREDIENT: item clicked")
+                Log.d("Ingredient", "INGREDIENT: edit $ingredient")
+                onEditCallback(ingredient)
             }
 
             ingredientDeleteButton.setOnClickListener{

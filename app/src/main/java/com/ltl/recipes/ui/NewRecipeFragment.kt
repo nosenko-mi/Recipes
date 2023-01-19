@@ -129,7 +129,9 @@ class NewRecipeFragment : Fragment() {
 
         viewModel.getIngredients().observe(viewLifecycleOwner){
             Log.d(TAG, "observer: ${it.size}")
-            ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(it, ::deleteIngredient)
+            ingredientRecycleViewAdapter =
+                IngredientRecycleViewAdapter(it, ::deleteIngredient, ::editIngredient)
+
             binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
         }
 
@@ -165,10 +167,6 @@ class NewRecipeFragment : Fragment() {
         binding.addRecipeButton.setOnClickListener{
             Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    private fun goToAddIngredient() {
-        view?.let { Navigation.findNavController(it).navigate(R.id.newRecipeFragmentToAddIngredientFragment) }
     }
 
     private fun showBottomSheetDialog() {
@@ -292,6 +290,20 @@ class NewRecipeFragment : Fragment() {
 
     private fun deleteIngredient(ingredient: Ingredient){
         viewModel.removeIngredient(ingredient)
+    }
+
+    private fun editIngredient(ingredient: Ingredient){
+        goToaEditIngredient(ingredient)
+    }
+
+    private fun goToAddIngredient() {
+        view?.let { Navigation.findNavController(it).navigate(R.id.newRecipeFragmentToAddIngredientFragment) }
+    }
+
+
+    private fun goToaEditIngredient(ingredient: Ingredient) {
+        val action = NewRecipeFragmentDirections.newRecipeFragmentToEditIngredientFragment(ingredient)
+        view?.let { Navigation.findNavController(it).navigate(action) }
     }
 
     companion object {

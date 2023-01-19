@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.ltl.recipes.utils.Writable
 import org.json.JSONObject
 
-class Ingredient(
+data class Ingredient(
     var title: String = "abstract",
     var qty: Float = 1f,
     var qtyType: QuantityType = QuantityType.NONE
@@ -24,10 +24,4 @@ class Ingredient(
     fun isValid(): Boolean {
         return title != "abstract"
     }
-
-    override fun toString(): String {
-        return "Ingredient(title='$title', qty=$qty, qtyType=${qtyType})"
-    }
-
-
 }
