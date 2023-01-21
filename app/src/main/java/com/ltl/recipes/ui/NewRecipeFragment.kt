@@ -26,7 +26,6 @@ import androidx.core.content.PermissionChecker.PERMISSION_DENIED
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,22 +38,23 @@ import com.ltl.recipes.databinding.FragmentNewRecipeBinding
 import com.ltl.recipes.ingredient.Ingredient
 import com.ltl.recipes.ingredient.IngredientRecycleViewAdapter
 import com.ltl.recipes.ingredient.IngredientViewModel
+import com.ltl.recipes.recipe.Recipe
 import com.ltl.recipes.utils.PhotoConverter
 import com.ltl.recipes.utils.StorageHandler
 import java.io.IOException
-import java.lang.reflect.InvocationTargetException
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 class NewRecipeFragment : Fragment() {
 
-    val args: NewRecipeFragmentArgs by navArgs()
+    private var isPublic = false
 
     private lateinit var ingredientRecycleViewAdapter: IngredientRecycleViewAdapter
 
     private lateinit var binding: FragmentNewRecipeBinding
     private lateinit var recipeImg: ImageView
+    private var imgName: String = "default"
 
     private val viewModel: IngredientViewModel by navGraphViewModels(R.id.nav_graph)
 
@@ -62,7 +62,7 @@ class NewRecipeFragment : Fragment() {
             ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
             if (isGranted) {
-                chooseImageGallery();
+                chooseImageGallery()
             } else {
                 Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show()
             }
@@ -104,25 +104,12 @@ class NewRecipeFragment : Fragment() {
                               container: ViewGroup?,
                               savedInstanceState: Bundle?
     ): View {
-//        get ingredient from AddIngredientFragment via Bundle
-//        val tmp = arguments
-//        Log.d(TAG, tmp.toString())
 
         binding = FragmentNewRecipeBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        try {
-            if (args.ingredientExtra != null){
-                Log.d(TAG, "args: ${args.ingredientExtra.toString()}")
-                viewModel.addIngredient(args.ingredientExtra!!)
-                Log.d(TAG, "viewModel: ${viewModel.getIngredients().value.toString()}")
-            }
-        } catch (e: InvocationTargetException){
-            Log.e(TAG, "ERROR args: ${e.printStackTrace()}")
-        }
-
         binding.ingredientRecycleView.setHasFixedSize(true)
-        val l = object: LinearLayoutManager(context) { override fun canScrollVertically() = false }
+//        val l = object: LinearLayoutManager(context) { override fun canScrollVertically() = false }
         val layoutManager = LinearLayoutManager(context)
         binding.ingredientRecycleView.layoutManager = layoutManager
         binding.ingredientRecycleView.itemAnimator = DefaultItemAnimator()
@@ -144,13 +131,6 @@ class NewRecipeFragment : Fragment() {
         recipeImg.setOnClickListener{
             showBottomSheetDialog()
         }
-
-//        if (args.ingredientExtra != null){
-//            Log.d(TAG, args.ingredientExtra.toString())
-//        } else {
-//            Log.d(TAG, "ingredient has not been added yet")
-//        }
-
 //        Glide snippet
 //        TODO: create standard img
         val storageReference = FirebaseStorage.getInstance().getReference("tests/name.jpg")
@@ -165,7 +145,19 @@ class NewRecipeFragment : Fragment() {
         }
 
         binding.addRecipeButton.setOnClickListener{
-            Toast.makeText(context, "Done", Toast.LENGTH_SHORT).show()
+            val isSuccessful = saveRecipeSequence()
+            if (isSuccessful) {
+                Log.d(TAG, "SAVE RECIPE: success")
+            } else {
+                Log.d(TAG, "SAVE RECIPE: error")
+            }
+        }
+
+        binding.sharingRadioGroup.setOnCheckedChangeListener{ group, checkedId ->
+            when (checkedId) {
+                binding.publicRadioButton.id -> { isPublic = true }
+                binding.privateRadioButton.id -> { isPublic = false }
+            }
         }
     }
 
@@ -189,12 +181,11 @@ class NewRecipeFragment : Fragment() {
                         val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                         requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
                     } else{
-                        chooseImageGallery();
+                        chooseImageGallery()
                     }
                 }else{
-                    chooseImageGallery();
+                    chooseImageGallery()
                 }
-
 //                https://developer.android.com/training/permissions/requesting#kotlin
                 bottomSheetDialog.dismiss()
             }
@@ -254,7 +245,7 @@ class NewRecipeFragment : Fragment() {
             val photo = result.data!!.extras!!["data"] as Bitmap?
 
             // Create time stamped name and MediaStore entry.
-            val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
+            imgName = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
                 .format(System.currentTimeMillis())
 
             // Set the image in imageview for display
@@ -262,10 +253,10 @@ class NewRecipeFragment : Fragment() {
 
             // upload the image
             val data = photo?.let { PhotoConverter().bitmapToByteArray(it) }
-            val storageHandler = StorageHandler("tests", name)
+            val storageHandler = StorageHandler("tests", imgName)
 
             if (data != null){
-                storageHandler.putPhoto(data);
+                storageHandler.putPhoto(data)
             }
 
         }
@@ -278,14 +269,45 @@ class NewRecipeFragment : Fragment() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         try {
             cameraLauncher.launch(takePictureIntent)
-
         } catch (e: ActivityNotFoundException) {
             // display error state to the user
         }
     }
 
-    private fun savePicture(){
+    private fun saveRecipeSequence(): Boolean {
+        val recipe = collectData()
+//        validate data
+        Log.d(TAG, "SAVE RECIPE: $recipe")
+        Log.d(TAG, "SAVE RECIPE: isValid: ${recipe.isValid()}")
+        if (!recipe.isValid()){
+//            show error
+            return false
+        }
+//        save recipe
 
+//        return result?
+        return true
+    }
+
+    private fun collectData(): Recipe {
+        val recipe = Recipe()
+//        TODO validate input fields
+        try {
+            recipe.imgRef = imgName
+            recipe.title = binding.recipeTitleEditText.text.toString()
+            recipe.description = binding.recipeDescriptionTextView.text.toString()
+            recipe.servingsNum = binding.servingSpinner.selectedItem.toString().toInt()
+            if (viewModel.getIngredients().value != null){
+                recipe.ingredients = viewModel.getIngredients().value!!.toList()
+            }
+            Log.d(TAG, "COLLECT DATA: ingredients: ${recipe.ingredients}")
+            recipe.steps = binding.stepsEditText.text.toString()
+            recipe.isPublic = isPublic
+        } catch (e: Exception){
+            Log.e(TAG, "COLLECT DATA: error $e")
+        }
+
+        return recipe
     }
 
     private fun deleteIngredient(ingredient: Ingredient){
@@ -300,14 +322,13 @@ class NewRecipeFragment : Fragment() {
         view?.let { Navigation.findNavController(it).navigate(R.id.newRecipeFragmentToAddIngredientFragment) }
     }
 
-
     private fun goToaEditIngredient(ingredient: Ingredient) {
         val action = NewRecipeFragmentDirections.newRecipeFragmentToEditIngredientFragment(ingredient)
         view?.let { Navigation.findNavController(it).navigate(action) }
     }
 
     companion object {
-        private const val TAG = "CameraXApp"
+        private const val TAG = "NewRecipeFragment"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS =
