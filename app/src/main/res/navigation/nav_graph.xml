@@ -35,14 +35,14 @@
         tools:layout="@layout/fragment_new_recipe" >
         <action
             android:id="@+id/newRecipeFragmentToMainFragment"
-            app:destination="@id/mainFragment"
             app:popUpTo="@id/mainFragment"
-            app:popUpToInclusive="true"/>
+            />
         <action
             android:id="@+id/newRecipeFragmentToAddIngredientFragment"
             app:destination="@id/addIngredientFragment"
             app:popUpTo="@id/addIngredientFragment"
-            app:popUpToInclusive="true"/>
+            app:popUpToInclusive="true"
+            />
         <argument
             android:name="ingredientExtra"
             app:argType="com.ltl.recipes.ingredient.Ingredient"
@@ -53,7 +53,8 @@
             android:id="@+id/newRecipeFragmentToEditIngredientFragment"
             app:destination="@id/editIngredientFragment"
             app:popUpTo="@id/editIngredientFragment"
-            app:popUpToInclusive="true" />
+            app:popUpToInclusive="true"
+            />
     </fragment>
     <fragment
         android:id="@+id/addIngredientFragment"
@@ -61,9 +62,7 @@
         android:label="AddIngredientFragment" >
         <action
             android:id="@+id/addIngredientFragmentToNewRecipeFragment"
-            app:destination="@id/newRecipeFragment"
             app:popUpTo="@id/newRecipeFragment"
-            app:popUpToInclusive="true"
             >
         </action>
     </fragment>
@@ -77,6 +76,7 @@
             />
         <action
             android:id="@+id/editIngredientFragmentToNewRecipeFragment"
-            app:destination="@id/newRecipeFragment" />
+            app:popUpTo="@id/newRecipeFragment"
+            />
     </fragment>
 </navigation>
