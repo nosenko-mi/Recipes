@@ -275,7 +275,7 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun saveRecipeSequence(): Boolean {
-        val recipe = collectData()
+        val recipe = collectRecipeData()
 //        validate data
         Log.d(TAG, "SAVE RECIPE: $recipe")
         Log.d(TAG, "SAVE RECIPE: isValid: ${recipe.isValid()}")
@@ -284,18 +284,22 @@ class NewRecipeFragment : Fragment() {
             return false
         }
 //        save recipe
-
+        saveRecipe(recipe)
 //        return result?
         return true
     }
 
-    private fun collectData(): Recipe {
+    private fun saveRecipe(recipe: Recipe) {
+        TODO("Not yet implemented")
+    }
+
+    private fun collectRecipeData(): Recipe {
         val recipe = Recipe()
 //        TODO validate input fields
         try {
             recipe.imgRef = imgName
             recipe.title = binding.recipeTitleEditText.text.toString()
-            recipe.description = binding.recipeDescriptionTextView.text.toString()
+            recipe.description = binding.recipeDescriptionEditText.text.toString()
             recipe.servingsNum = binding.servingSpinner.selectedItem.toString().toInt()
             if (viewModel.getIngredients().value != null){
                 recipe.ingredients = viewModel.getIngredients().value!!.toList()
