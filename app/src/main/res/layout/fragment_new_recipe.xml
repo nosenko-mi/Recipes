@@ -26,6 +26,8 @@
                 android:layout_height="256dp"
                 android:src="@mipmap/ic_launcher"
                 android:layout_marginBottom="40dp"
+                android:layout_marginTop="@dimen/def_margin_vertical"
+                android:layout_gravity="center_horizontal"
                 />
 
             <TextView
@@ -60,7 +62,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="40dp"
-                android:hint="Enter recipe description"/>
+                android:hint="Enter description"/>
+
 
             <TextView
                 android:id="@+id/servingTextView"
@@ -121,7 +124,15 @@
                 android:fontFamily="monospace"
                 android:text="Steps" />
 
+            <EditText
+                android:id="@+id/stepsEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="40dp"
+                android:hint="How to cook?"/>
+
             <Button
+                android:visibility="gone"
                 android:id="@+id/addStepButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
