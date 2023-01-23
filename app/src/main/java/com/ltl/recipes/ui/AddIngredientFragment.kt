@@ -10,15 +10,18 @@ import android.widget.Toast
 import androidx.compose.ui.text.toUpperCase
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
+import androidx.navigation.navGraphViewModels
 import com.ltl.recipes.R
 import com.ltl.recipes.databinding.FragmentAddIngredientBinding
 import com.ltl.recipes.ingredient.Ingredient
+import com.ltl.recipes.ingredient.IngredientViewModel
 import com.ltl.recipes.ingredient.QuantityType
 
 
 class AddIngredientFragment : Fragment() {
 
     private lateinit var binding: FragmentAddIngredientBinding
+    private val viewModel: IngredientViewModel by navGraphViewModels(R.id.nav_graph)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +58,8 @@ class AddIngredientFragment : Fragment() {
             Log.d(TAG, "INVALID ingredient")
         } else {
 //            TODO send ingredient back to AddNewRecipeFragment
-            goToAddRecipe(ingredient)
+            viewModel.addIngredient(ingredient)
+            goToAddRecipe()
         }
     }
 
@@ -76,8 +80,8 @@ class AddIngredientFragment : Fragment() {
         return Ingredient()
     }
 
-    private fun goToAddRecipe(ingredient: Ingredient) {
-        val action = AddIngredientFragmentDirections.addIngredientFragmentToNewRecipeFragment(ingredient)
+    private fun goToAddRecipe() {
+        val action = AddIngredientFragmentDirections.addIngredientFragmentToNewRecipeFragment()
         view?.let { Navigation.findNavController(it).navigate(action) }
     }
 
