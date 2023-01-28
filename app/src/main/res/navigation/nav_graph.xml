@@ -16,6 +16,10 @@
         <action
             android:id="@+id/mainFragmentToNewRecipeFragment"
             app:destination="@id/newRecipeFragment" />
+        <action
+            android:id="@+id/mainFragmentToLoginFragment"
+            app:destination="@id/loginFragment"
+            />
     </fragment>
     <fragment
         android:id="@+id/recipeDetailFragment"
@@ -80,6 +84,24 @@
         tools:layout="@layout/fragment_login" >
         <action
             android:id="@+id/loginFragmentToMainFragment"
-            app:destination="@id/mainFragment" />
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true"
+            />
+        <action
+            android:id="@+id/loginFragmentToRegistrationFragment"
+            app:destination="@id/registrationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registrationFragment"
+        android:name="com.ltl.recipes.ui.RegistrationFragment"
+        android:label="fragment_registration"
+        tools:layout="@layout/fragment_registration" >
+        <action
+            android:id="@+id/registrationFragmentToMainFragment"
+            app:destination="@id/mainFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true"
+            />
     </fragment>
 </navigation>
