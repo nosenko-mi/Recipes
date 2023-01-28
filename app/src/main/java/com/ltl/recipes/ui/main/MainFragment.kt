@@ -9,36 +9,46 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.ltl.recipes.R
+import com.ltl.recipes.data.user.UserModel
+import com.ltl.recipes.data.user.UserViewModel
 import com.ltl.recipes.databinding.MainFragmentBinding
-import com.ltl.recipes.ingredient.Ingredient
 import com.ltl.recipes.recipe.Recipe
 import com.ltl.recipes.recipe.RecipeAdapter
 import com.ltl.recipes.recipe.RecipeClickListener
 import com.ltl.recipes.recipe.recipeList
-import org.json.JSONArray
-import org.json.JSONException
-import org.json.JSONObject
-import java.util.concurrent.TimeUnit
 
 
 class MainFragment : Fragment(), RecipeClickListener {
 
-    private val TAG: String = "MainFragment"
     private lateinit var binding: MainFragmentBinding
+    private lateinit var viewModel: MainViewModel
+    private var firebaseAuth: FirebaseAuth = Firebase.auth
+    private lateinit var googleAuth: GoogleSignInClient
+    private lateinit var userModel: UserModel
+    private val userViewModel: UserViewModel by navGraphViewModels(R.id.nav_graph)
 
     companion object {
-        fun newInstance() = MainFragment()
+        private const val TAG: String = "MainFragment"
     }
-
-    private lateinit var viewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = MainFragmentBinding.inflate(inflater, container, false)
+
+        val user = getCurrentUser()
+
         val view = binding.root
         return view
     }
@@ -47,7 +57,6 @@ class MainFragment : Fragment(), RecipeClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         populateRecipes()
-
 
         val fragment = this
         binding.recyclerView.apply {
@@ -60,17 +69,18 @@ class MainFragment : Fragment(), RecipeClickListener {
         binding.bottomAppBar.setOnMenuItemClickListener{
             when(it.itemId){
                 R.id.homeMenuButton -> {
-                    Toast.makeText(context, "Home", Toast.LENGTH_SHORT).show()
                     goToHomeFragment()
                     true
                 }
                 R.id.searchMenuButton -> {
-                    Toast.makeText(context, "Search", Toast.LENGTH_SHORT).show()
-//                    TODO implement search feature
+                    true
+                }
+                R.id.accountMenuButton -> {
+                    tmpSignOut()
+                    goToAccountFragment()
                     true
                 }
                 R.id.favMenuButton -> {
-                    Toast.makeText(context, "Favorite", Toast.LENGTH_SHORT).show()
                     goToFavFragment()
                     true
                 }
@@ -80,18 +90,57 @@ class MainFragment : Fragment(), RecipeClickListener {
         binding.fab.setOnClickListener{
             goToNewRecipeFragment()
         }
+    }
 
+    private fun getCurrentUser(): FirebaseUser? {
+        Log.d(TAG, "UserViewModel: ${userViewModel.getCurrentUser().value}")
+        val firebaseUser = firebaseAuth.currentUser
+        Log.d(TAG, "FirebaseAuth: $firebaseUser")
+
+        firebaseAuth.addAuthStateListener {
+            Log.d(TAG, "Auth listener: ${it.currentUser?.email}")
+        }
+
+        val googleUser = GoogleSignIn.getLastSignedInAccount(requireContext())
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .build()
+        googleAuth = GoogleSignIn.getClient(requireActivity(), gso)
+
+//        if (accountFirebase != null) {
+//            currentUser = getCurrentUser(accountFirebase!!)
+//            Log.d(TAG, "accountFirebase : ok")
+//        }
+//        if (googleUser != null) {
+//            currentUser = getCurrentUser(googleUser!!)
+//            Log.d(TAG, "accountGoogle : ok")
+//        }
+
+        return firebaseUser
+    }
+
+    private fun tmpSignOut() {
+        firebaseAuth.signOut()
+//        TODO check googleAuth first
+        googleAuth.signOut()
     }
 
     private fun goToFavFragment() {
-        TODO("Not yet implemented")
+        Toast.makeText(context, "Favorite", Toast.LENGTH_SHORT).show()
     }
 
     private fun goToHomeFragment() {
-        TODO("Not yet implemented")
+        Toast.makeText(context, "Home", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun goToAccountFragment() {
+        Navigation.findNavController(binding.root).navigate(R.id.mainFragmentToLoginFragment)
+//        view?.let { Navigation.findNavController(it).navigate(R.id.mainFragmentToLoginFragment) }
+
     }
 
     private fun goToNewRecipeFragment() {
+        Log.d(TAG, "Action: to LoginFragment")
         view?.let { Navigation.findNavController(it).navigate(R.id.mainFragmentToNewRecipeFragment) }
     }
 
