@@ -34,11 +34,14 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.storage.FirebaseStorage
 import com.ltl.recipes.R
+import com.ltl.recipes.data.user.UserViewModel
 import com.ltl.recipes.databinding.FragmentNewRecipeBinding
 import com.ltl.recipes.ingredient.Ingredient
 import com.ltl.recipes.ingredient.IngredientRecycleViewAdapter
 import com.ltl.recipes.ingredient.IngredientViewModel
+import com.ltl.recipes.ingredient.QuantityType
 import com.ltl.recipes.recipe.Recipe
+import com.ltl.recipes.recipe.RecipeRepository
 import com.ltl.recipes.utils.PhotoConverter
 import com.ltl.recipes.utils.StorageHandler
 import java.io.IOException
@@ -56,7 +59,9 @@ class NewRecipeFragment : Fragment() {
     private lateinit var recipeImg: ImageView
     private var imgName: String = "default"
 
-    private val viewModel: IngredientViewModel by navGraphViewModels(R.id.nav_graph)
+    private val ingredientViewModel: IngredientViewModel by navGraphViewModels(R.id.nav_graph)
+    private val userViewModel: UserViewModel by navGraphViewModels(R.id.nav_graph)
+    private val recipeRepository = RecipeRepository()
 
     private val requestPermissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestPermission()
@@ -114,7 +119,7 @@ class NewRecipeFragment : Fragment() {
         binding.ingredientRecycleView.layoutManager = layoutManager
         binding.ingredientRecycleView.itemAnimator = DefaultItemAnimator()
 
-        viewModel.getIngredients().observe(viewLifecycleOwner){
+        ingredientViewModel.getIngredients().observe(viewLifecycleOwner){
             Log.d(TAG, "observer: ${it.size}")
             ingredientRecycleViewAdapter =
                 IngredientRecycleViewAdapter(it, ::deleteIngredient, ::editIngredient)
@@ -145,9 +150,10 @@ class NewRecipeFragment : Fragment() {
         }
 
         binding.addRecipeButton.setOnClickListener{
-            val isSuccessful = saveRecipeSequence()
+            val isSuccessful = addRecipeSequence()
             if (isSuccessful) {
                 Log.d(TAG, "SAVE RECIPE: success")
+                goToMainFragment()
             } else {
                 Log.d(TAG, "SAVE RECIPE: error")
             }
@@ -274,7 +280,7 @@ class NewRecipeFragment : Fragment() {
         }
     }
 
-    private fun saveRecipeSequence(): Boolean {
+    private fun addRecipeSequence(): Boolean {
         val recipe = collectRecipeData()
 //        validate data
         Log.d(TAG, "SAVE RECIPE: $recipe")
@@ -284,13 +290,13 @@ class NewRecipeFragment : Fragment() {
             return false
         }
 //        save recipe
-        saveRecipe(recipe)
+        addRecipe(recipe)
 //        return result?
         return true
     }
 
-    private fun saveRecipe(recipe: Recipe) {
-        TODO("Not yet implemented")
+    private fun addRecipe(recipe: Recipe) {
+        recipeRepository.addRecipe(recipe)
     }
 
     private fun collectRecipeData(): Recipe {
@@ -301,12 +307,14 @@ class NewRecipeFragment : Fragment() {
             recipe.title = binding.recipeTitleEditText.text.toString()
             recipe.description = binding.recipeDescriptionEditText.text.toString()
             recipe.servingsNum = binding.servingSpinner.selectedItem.toString().toInt()
-            if (viewModel.getIngredients().value != null){
-                recipe.ingredients = viewModel.getIngredients().value!!.toList()
+            if (ingredientViewModel.getIngredients().value != null){
+                recipe.ingredients = ingredientViewModel.getIngredients().value!!.toList()
             }
             Log.d(TAG, "COLLECT DATA: ingredients: ${recipe.ingredients}")
             recipe.steps = binding.stepsEditText.text.toString()
             recipe.isPublic = isPublic
+
+            recipe.author = userViewModel.getEmail()
         } catch (e: Exception){
             Log.e(TAG, "COLLECT DATA: error $e")
         }
@@ -315,15 +323,31 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun deleteIngredient(ingredient: Ingredient){
-        viewModel.removeIngredient(ingredient)
+        ingredientViewModel.removeIngredient(ingredient)
     }
 
     private fun editIngredient(ingredient: Ingredient){
         goToaEditIngredient(ingredient)
     }
 
+    private fun testRecipeRepository() {
+        val recipe = Recipe()
+        recipe.title = "test3"
+        val i1 = Ingredient("i1", 1.0f, QuantityType.GRAM)
+        val i2 = Ingredient("i2", 30f, QuantityType.MILL)
+        val i3 = Ingredient("i3", 2.0f, QuantityType.SPOON)
+        val iList = listOf(i1, i2, i3)
+
+        recipe.ingredients = iList
+        recipeRepository.addRecipe(recipe)
+    }
+
     private fun goToAddIngredient() {
         view?.let { Navigation.findNavController(it).navigate(R.id.newRecipeFragmentToAddIngredientFragment) }
+    }
+
+    private fun goToMainFragment() {
+        view?.let { Navigation.findNavController(it).navigate(R.id.newRecipeFragmentToMainFragment) }
     }
 
     private fun goToaEditIngredient(ingredient: Ingredient) {
