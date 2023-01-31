@@ -17,4 +17,8 @@ class UserViewModel: ViewModel() {
         return user
     }
 
+    fun getEmail(): String{
+        return user.value?.email.toString()
+    }
+
 }
