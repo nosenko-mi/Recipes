@@ -22,10 +22,9 @@ import com.ltl.recipes.R
 import com.ltl.recipes.data.user.UserModel
 import com.ltl.recipes.data.user.UserViewModel
 import com.ltl.recipes.databinding.MainFragmentBinding
-import com.ltl.recipes.recipe.Recipe
-import com.ltl.recipes.recipe.RecipeAdapter
-import com.ltl.recipes.recipe.RecipeClickListener
-import com.ltl.recipes.recipe.recipeList
+import com.ltl.recipes.ingredient.Ingredient
+import com.ltl.recipes.ingredient.QuantityType
+import com.ltl.recipes.recipe.*
 
 
 class MainFragment : Fragment(), RecipeClickListener {
@@ -37,6 +36,8 @@ class MainFragment : Fragment(), RecipeClickListener {
     private lateinit var userModel: UserModel
     private val userViewModel: UserViewModel by navGraphViewModels(R.id.nav_graph)
 
+    private val recipeRepository = RecipeRepository()
+    private lateinit var recipesGlobal: List<Recipe>
     companion object {
         private const val TAG: String = "MainFragment"
     }
@@ -56,12 +57,11 @@ class MainFragment : Fragment(), RecipeClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        populateRecipes()
-
+        val recipes = populateRecipes()
         val fragment = this
         binding.recyclerView.apply {
             layoutManager = GridLayoutManager(requireContext(), 3)
-            adapter = RecipeAdapter(recipeList, fragment)
+            adapter = RecipeAdapter(recipes, fragment)
         }
 
         binding.bottomAppBar.inflateMenu(R.menu.bottom_menu)
@@ -99,6 +99,7 @@ class MainFragment : Fragment(), RecipeClickListener {
 
         firebaseAuth.addAuthStateListener {
             Log.d(TAG, "Auth listener: ${it.currentUser?.email}")
+            populateRecipes()
         }
 
         val googleUser = GoogleSignIn.getLastSignedInAccount(requireContext())
@@ -144,34 +145,39 @@ class MainFragment : Fragment(), RecipeClickListener {
         view?.let { Navigation.findNavController(it).navigate(R.id.mainFragmentToNewRecipeFragment) }
     }
 
-    private fun populateRecipes() {
-        val r1 = Recipe(
-            R.drawable.noodles_test,
-            "First"
-        )
-        recipeList.add(r1)
-
-        Log.d(TAG, r1.toJson().toString())
-
-        val r2 = Recipe(
-            R.drawable.noodles_test,
-            "Second"
-        )
-
-        val r3 = Recipe(
-            R.drawable.noodles_test,
-            "Third"
-        )
-
-        val r4= Recipe(
-            R.drawable.ic_launcher_background,
-            "Fifth"
-        )
-
-        recipeList.add(r2)
-        recipeList.add(r3)
-        recipeList.add(r4)
-
+    private fun populateRecipes(): List<Recipe> {
+        val recipesAux = recipeRepository.getAllByEmail(userViewModel.getEmail())
+        val recipes = recipesAux.filterNotNull()
+        Log.d(TAG, "Populate Recipe: user -> ${userViewModel.getEmail()}")
+        Log.d(TAG, "Populate Recipes: recipesAux -> $recipesAux")
+        Log.d(TAG, "Populate Recipes: recipes -> $recipes")
+        return recipes
+//        val r1 = Recipe(
+//            R.drawable.noodles_test,
+//            "First"
+//        )
+//        recipeList.add(r1)
+//
+//        Log.d(TAG, r1.toJson().toString())
+//
+//        val r2 = Recipe(
+//            R.drawable.noodles_test,
+//            "Second"
+//        )
+//
+//        val r3 = Recipe(
+//            R.drawable.noodles_test,
+//            "Third"
+//        )
+//
+//        val r4= Recipe(
+//            R.drawable.ic_launcher_background,
+//            "Fifth"
+//        )
+//
+//        recipeList.add(r2)
+//        recipeList.add(r3)
+//        recipeList.add(r4)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
