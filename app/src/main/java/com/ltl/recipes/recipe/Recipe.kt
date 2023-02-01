@@ -21,13 +21,14 @@ data class Recipe (
     var isPublic: Boolean = false,
     var servingsNum: Int = 1,
     var ingredients: List<Ingredient> = emptyList(),
-    var steps: String = "How to cook: \nFirstly, ... \nSecondly, ,,,\nFinally, ...",
+    var steps: String = "",
     var tags: List<String> = emptyList(),
-    val id: Int? = recipeList.size
+    val id: Int? = recipeList.size,
 )
     : Writable, Validatable
 {
 
+//    W/Firestore: (24.4.2) [CustomClassMapper]: No setter/field for valid found on class Recipe
     override fun isValid(): Boolean {
         return title != "" && ingredients.isNotEmpty()
     }
