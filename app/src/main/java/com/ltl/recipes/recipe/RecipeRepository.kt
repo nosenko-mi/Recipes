@@ -3,6 +3,7 @@ package com.ltl.recipes.recipe
 import android.util.Log
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
 
 class RecipeRepository {
 
@@ -25,7 +26,7 @@ class RecipeRepository {
             }
     }
 
-    fun getAllByEmail(email: String): List<Recipe?>{
+    private fun getAllByEmailOld(email: String): List<Recipe?>{
         var recipes: List<Recipe?> = emptyList()
         db.collection(COLLECTION_TEST)
             .whereEqualTo("author", email)
@@ -42,6 +43,21 @@ class RecipeRepository {
                 Log.d(TAG, "Get Recipe: error ${e.printStackTrace()}")
             }
         return recipes
+    }
+
+    suspend fun getAllByEmail(email: String): List<Recipe> {
+        val recipes: List<Recipe?>
+        val documents = db.collection(COLLECTION_TEST).whereEqualTo("author", email)
+        return try {
+            val snapshot = documents.get().await()
+            Log.d(TAG, "GetAllByEmailAsync: documents ${snapshot.documents.size}")
+            recipes = snapshot.toObjects(Recipe::class.java)
+            recipes.filterNotNull()
+//            snapshot.toObjects(Recipe::class.java)
+        } catch (e: Exception) {
+            Log.e(TAG, "Get Recipe: error ${e.printStackTrace()}")
+            emptyList()
+        }
     }
 
     fun getAllLocal(){

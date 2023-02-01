@@ -7,10 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.navGraphViewModels
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -19,25 +19,23 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.ltl.recipes.R
-import com.ltl.recipes.data.user.UserModel
 import com.ltl.recipes.data.user.UserViewModel
 import com.ltl.recipes.databinding.MainFragmentBinding
-import com.ltl.recipes.ingredient.Ingredient
-import com.ltl.recipes.ingredient.QuantityType
-import com.ltl.recipes.recipe.*
+import com.ltl.recipes.recipe.Recipe
+import com.ltl.recipes.recipe.RecipeAdapter
+import com.ltl.recipes.recipe.RecipeClickListener
+import com.ltl.recipes.viewmodels.RecipeViewModel
 
 
 class MainFragment : Fragment(), RecipeClickListener {
 
     private lateinit var binding: MainFragmentBinding
-    private lateinit var viewModel: MainViewModel
     private var firebaseAuth: FirebaseAuth = Firebase.auth
     private lateinit var googleAuth: GoogleSignInClient
-    private lateinit var userModel: UserModel
     private val userViewModel: UserViewModel by navGraphViewModels(R.id.nav_graph)
+    private val recipeViewModel: RecipeViewModel by navGraphViewModels(R.id.nav_graph)
+    private lateinit var recipeAdapter: RecipeAdapter
 
-    private val recipeRepository = RecipeRepository()
-    private lateinit var recipesGlobal: List<Recipe>
     companion object {
         private const val TAG: String = "MainFragment"
     }
@@ -47,22 +45,31 @@ class MainFragment : Fragment(), RecipeClickListener {
         savedInstanceState: Bundle?
     ): View {
         binding = MainFragmentBinding.inflate(inflater, container, false)
-
-        val user = getCurrentUser()
-
         val view = binding.root
+        getCurrentUser()
+
+//        TODO set layout based on width
+        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+        binding.recyclerView.itemAnimator = DefaultItemAnimator()
+        recipeViewModel.getRecipes().observe(viewLifecycleOwner){
+            Log.d(TAG, "recipe observer: elements ${it.size}")
+            recipeAdapter = RecipeAdapter(it, this)
+            binding.recyclerView.adapter = recipeAdapter
+        }
+
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val recipes = populateRecipes()
-        val fragment = this
-        binding.recyclerView.apply {
-            layoutManager = GridLayoutManager(requireContext(), 3)
-            adapter = RecipeAdapter(recipes, fragment)
-        }
+        recipeViewModel.populateRecipes(userViewModel.getEmail())
+//        val recipes = recipeViewModel.getRecipesList()
+//        val fragment = this
+//        binding.recyclerView.apply {
+//            layoutManager = GridLayoutManager(requireContext(), 3)
+//            adapter = RecipeAdapter(recipes, fragment)
+//        }
 
         binding.bottomAppBar.inflateMenu(R.menu.bottom_menu)
 
@@ -99,23 +106,14 @@ class MainFragment : Fragment(), RecipeClickListener {
 
         firebaseAuth.addAuthStateListener {
             Log.d(TAG, "Auth listener: ${it.currentUser?.email}")
-            populateRecipes()
+            recipeViewModel.populateRecipes(it.currentUser?.email.toString())
         }
 
-        val googleUser = GoogleSignIn.getLastSignedInAccount(requireContext())
+//        val googleUser = GoogleSignIn.getLastSignedInAccount(requireContext())
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
             .build()
         googleAuth = GoogleSignIn.getClient(requireActivity(), gso)
-
-//        if (accountFirebase != null) {
-//            currentUser = getCurrentUser(accountFirebase!!)
-//            Log.d(TAG, "accountFirebase : ok")
-//        }
-//        if (googleUser != null) {
-//            currentUser = getCurrentUser(googleUser!!)
-//            Log.d(TAG, "accountGoogle : ok")
-//        }
 
         return firebaseUser
     }
@@ -145,46 +143,6 @@ class MainFragment : Fragment(), RecipeClickListener {
         view?.let { Navigation.findNavController(it).navigate(R.id.mainFragmentToNewRecipeFragment) }
     }
 
-    private fun populateRecipes(): List<Recipe> {
-        val recipesAux = recipeRepository.getAllByEmail(userViewModel.getEmail())
-        val recipes = recipesAux.filterNotNull()
-        Log.d(TAG, "Populate Recipe: user -> ${userViewModel.getEmail()}")
-        Log.d(TAG, "Populate Recipes: recipesAux -> $recipesAux")
-        Log.d(TAG, "Populate Recipes: recipes -> $recipes")
-        return recipes
-//        val r1 = Recipe(
-//            R.drawable.noodles_test,
-//            "First"
-//        )
-//        recipeList.add(r1)
-//
-//        Log.d(TAG, r1.toJson().toString())
-//
-//        val r2 = Recipe(
-//            R.drawable.noodles_test,
-//            "Second"
-//        )
-//
-//        val r3 = Recipe(
-//            R.drawable.noodles_test,
-//            "Third"
-//        )
-//
-//        val r4= Recipe(
-//            R.drawable.ic_launcher_background,
-//            "Fifth"
-//        )
-//
-//        recipeList.add(r2)
-//        recipeList.add(r3)
-//        recipeList.add(r4)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        // TODO: Use the ViewModel
-    }
 
     override fun onClick(recipe: Recipe) {
         view?.let { Navigation.findNavController(it).navigate(R.id.mainFragmentToRecipeDetailFragment) }
