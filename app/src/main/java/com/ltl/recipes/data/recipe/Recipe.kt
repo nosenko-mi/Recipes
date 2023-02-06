@@ -1,7 +1,8 @@
-package com.ltl.recipes.recipe
+package com.ltl.recipes.data.recipe
 
 import com.google.firebase.firestore.ServerTimestamp
 import com.google.gson.Gson
+import com.ltl.recipes.database.recipe.RecipeEntity
 import com.ltl.recipes.ingredient.Ingredient
 import com.ltl.recipes.utils.Validatable
 import com.ltl.recipes.utils.Writable
@@ -37,5 +38,14 @@ data class Recipe (
         val gson = Gson()
         val jsonRecipe: String = gson.toJson(this)
         return JSONObject(jsonRecipe)
+    }
+}
+
+fun List<Recipe>.asDatabaseModel(): List<RecipeEntity> {
+    return map {
+        RecipeEntity(
+            it.id, it.coverImg, it.imgRef, it.author, it.createdAt, it.title, it.description,
+            it.servingsNum, it.ingredients, it.steps, it.isPublic
+        )
     }
 }
