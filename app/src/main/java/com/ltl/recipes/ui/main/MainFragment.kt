@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -21,9 +22,9 @@ import com.google.firebase.ktx.Firebase
 import com.ltl.recipes.R
 import com.ltl.recipes.data.user.UserViewModel
 import com.ltl.recipes.databinding.MainFragmentBinding
-import com.ltl.recipes.recipe.Recipe
-import com.ltl.recipes.recipe.RecipeAdapter
-import com.ltl.recipes.recipe.RecipeClickListener
+import com.ltl.recipes.data.recipe.Recipe
+import com.ltl.recipes.data.recipe.RecipeAdapter
+import com.ltl.recipes.data.recipe.RecipeClickListener
 import com.ltl.recipes.viewmodels.RecipeViewModel
 
 
@@ -33,7 +34,16 @@ class MainFragment : Fragment(), RecipeClickListener {
     private var firebaseAuth: FirebaseAuth = Firebase.auth
     private lateinit var googleAuth: GoogleSignInClient
     private val userViewModel: UserViewModel by navGraphViewModels(R.id.nav_graph)
-    private val recipeViewModel: RecipeViewModel by navGraphViewModels(R.id.nav_graph)
+//    private val recipeViewModel: RecipeViewModel by navGraphViewModels(R.id.nav_graph)
+
+    private val recipeViewModel: RecipeViewModel by lazy {
+        val activity = requireNotNull(this.activity) {
+            "You can only access the viewModel after onActivityCreated()"
+        }
+        ViewModelProvider(this, RecipeViewModel.Factory(activity.application, userViewModel.getCurrentUser().value!!))
+            .get(RecipeViewModel::class.java)
+    }
+
     private lateinit var recipeAdapter: RecipeAdapter
 
     companion object {

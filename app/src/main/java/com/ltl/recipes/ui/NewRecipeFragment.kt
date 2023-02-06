@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
+import android.icu.util.LocaleData
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -32,20 +33,29 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.ltl.recipes.R
-import com.ltl.recipes.data.user.UserViewModel
-import com.ltl.recipes.databinding.FragmentNewRecipeBinding
 import com.ltl.recipes.ingredient.Ingredient
 import com.ltl.recipes.ingredient.IngredientRecycleViewAdapter
 import com.ltl.recipes.ingredient.IngredientViewModel
 import com.ltl.recipes.ingredient.QuantityType
-import com.ltl.recipes.recipe.Recipe
-import com.ltl.recipes.recipe.RecipeRepository
+import com.ltl.recipes.data.recipe.Recipe
+import com.ltl.recipes.data.recipe.RecipeRepository
+import com.ltl.recipes.data.user.UserViewModel
+import com.ltl.recipes.database.RecipesDatabase
+import com.ltl.recipes.database.getInstance
+import com.ltl.recipes.database.recipe.RecipeEntity
+import com.ltl.recipes.databinding.FragmentNewRecipeBinding
 import com.ltl.recipes.utils.PhotoConverter
 import com.ltl.recipes.utils.StorageHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.*
 
 
@@ -61,7 +71,8 @@ class NewRecipeFragment : Fragment() {
 
     private val ingredientViewModel: IngredientViewModel by navGraphViewModels(R.id.nav_graph)
     private val userViewModel: UserViewModel by navGraphViewModels(R.id.nav_graph)
-    private val recipeRepository = RecipeRepository()
+    private lateinit var recipeRepository: RecipeRepository
+    private lateinit var recipesDb: RecipesDatabase
 
     private val requestPermissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestPermission()
@@ -132,6 +143,10 @@ class NewRecipeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        recipesDb = getInstance(requireContext())
+        recipeRepository = RecipeRepository(recipesDb)
+
         recipeImg = binding.recipeImgImageView
         recipeImg.setOnClickListener{
             showBottomSheetDialog()
@@ -282,16 +297,36 @@ class NewRecipeFragment : Fragment() {
 
     private fun addRecipeSequence(): Boolean {
         val recipe = collectRecipeData()
-//        validate data
+
         Log.d(TAG, "SAVE RECIPE: $recipe")
         Log.d(TAG, "SAVE RECIPE: isValid: ${recipe.isValid()}")
+
+        //        validate data
         if (!recipe.isValid()){
 //            show error
             return false
         }
-//        save recipe
+
         addRecipe(recipe)
-//        return result?
+        addRecipeLocally(recipe)
+
+        return true
+    }
+
+    private fun addRecipeLocally(recipe: Recipe): Boolean{
+        if (!recipe.isValid()){
+            return false
+        }
+        val entity = RecipeEntity(
+            null, recipe.coverImg, recipe.imgRef, recipe.author, Date(), recipe.title,
+            recipe.description, recipe.servingsNum, recipe.ingredients ,recipe.steps, recipe.isPublic
+        )
+        Log.d(TAG, "Add recipe locally: date=${entity.createdAt?.time}")
+
+        GlobalScope.launch(Dispatchers.IO) {
+            recipesDb.recipeDao().addRecipe(entity)
+        }
+
         return true
     }
 

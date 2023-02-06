@@ -1,11 +1,17 @@
-package com.ltl.recipes.recipe
+package com.ltl.recipes.data.recipe
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.ltl.recipes.database.RecipesDatabase
+import com.ltl.recipes.database.recipe.asDomainModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
-class RecipeRepository {
+class RecipeRepository(private val localDb: RecipesDatabase) {
 
     companion object{
         private const val TAG = "RecipeRepository"
@@ -13,10 +19,14 @@ class RecipeRepository {
         private const val COLLECTION_TEST = "recipes-test"
     }
 
-    private val db = Firebase.firestore
+    private val firestore = Firebase.firestore
+
+    val recipes: LiveData<List<Recipe>> = Transformations.map(localDb.recipeDao().getAll()) {
+          it.asDomainModel()
+    }
 
     fun addRecipe(recipe: Recipe){
-        db.collection(COLLECTION_TEST)
+        firestore.collection(COLLECTION_TEST)
             .add(recipe)
             .addOnSuccessListener { documentReference ->
                 Log.d(TAG, "Add recipe: success: ${documentReference.id}")
@@ -26,9 +36,18 @@ class RecipeRepository {
             }
     }
 
+    suspend fun refreshRecipes(email: String){
+        withContext(Dispatchers.IO){
+//            fetch recipes from the network using the Retrofit service instance
+            val recipes = getAllByEmail(email)
+//            store the playlist in the Room database.
+            localDb.recipeDao().insertAll(recipes.asDatabaseModel())
+        }
+    }
+
     private fun getAllByEmailOld(email: String): List<Recipe?>{
         var recipes: List<Recipe?> = emptyList()
-        db.collection(COLLECTION_TEST)
+        firestore.collection(COLLECTION_TEST)
             .whereEqualTo("author", email)
             .get()
             .addOnSuccessListener { documents ->
@@ -47,7 +66,7 @@ class RecipeRepository {
 
     suspend fun getAllByEmail(email: String): List<Recipe> {
         val recipes: List<Recipe?>
-        val documents = db.collection(COLLECTION_TEST).whereEqualTo("author", email)
+        val documents = firestore.collection(COLLECTION_TEST).whereEqualTo("author", email)
         return try {
             val snapshot = documents.get().await()
             Log.d(TAG, "GetAllByEmailAsync: documents ${snapshot.documents.size}")
