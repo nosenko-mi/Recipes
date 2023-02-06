@@ -1,4 +1,4 @@
-package com.ltl.recipes.recipe
+package com.ltl.recipes.data.recipe
 
 import androidx.recyclerview.widget.RecyclerView
 import com.ltl.recipes.databinding.RecipeCardBinding
