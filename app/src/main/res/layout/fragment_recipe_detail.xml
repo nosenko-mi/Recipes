@@ -31,7 +31,7 @@
                 android:cropToPadding="true"
                 android:scaleType="centerCrop"
                 android:layout_gravity="center"
-                android:src="@drawable/noodles_test"
+                android:src="@drawable/recipe_default"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -136,17 +136,31 @@
                     app:layout_constraintStart_toStartOf="parent"
                     />
 
-                <TextView
-                    android:id="@+id/ingredientsTmpText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="start"
+<!--                <TextView-->
+<!--                    android:id="@+id/ingredientsTmpText"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:gravity="start"-->
+<!--                    android:paddingTop="8dp"-->
+<!--                    android:paddingBottom="8dp"-->
+<!--                    android:text="@string/lorem_ingredients"-->
+<!--                    android:textSize="16sp"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    />-->
+
+                <RelativeLayout
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
-                    android:text="@string/lorem_ingredients"
-                    android:textSize="16sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    />
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/ingredientRecycleView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:isScrollContainer="false"/>
+
+                </RelativeLayout>
 
                 <TextView
                     android:id="@+id/stepsTitle"
@@ -162,7 +176,7 @@
                     />
 
                 <TextView
-                    android:id="@+id/stepsTmp"
+                    android:id="@+id/stepsText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start"
@@ -170,8 +184,7 @@
                     android:paddingBottom="8dp"
                     android:text="@string/lorem_long"
                     android:textSize="16sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    />
+                    app:layout_constraintStart_toStartOf="parent" />
 
             </LinearLayout>
 
