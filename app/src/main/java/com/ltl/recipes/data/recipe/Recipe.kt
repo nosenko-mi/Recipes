@@ -26,7 +26,7 @@ data class Recipe (
     var tags: List<String> = emptyList(),
     val id: Int? = recipeList.size,
 )
-    : Writable, Validatable
+    : Writable, Validatable, java.io.Serializable
 {
 
 //    W/Firestore: (24.4.2) [CustomClassMapper]: No setter/field for valid found on class Recipe
