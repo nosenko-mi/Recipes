@@ -155,7 +155,9 @@ class MainFragment : Fragment(), RecipeClickListener {
 
 
     override fun onClick(recipe: Recipe) {
-        view?.let { Navigation.findNavController(it).navigate(R.id.mainFragmentToRecipeDetailFragment) }
+        val action = MainFragmentDirections.mainFragmentToRecipeDetailFragment(recipe)
+        view?.let { Navigation.findNavController(it).navigate(action) }
+//        view?.let { Navigation.findNavController(it).navigate(R.id.mainFragmentToRecipeDetailFragment) }
     }
 
 }
