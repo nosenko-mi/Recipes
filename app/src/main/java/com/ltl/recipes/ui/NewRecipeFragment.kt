@@ -37,10 +37,6 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.ltl.recipes.R
-import com.ltl.recipes.ingredient.Ingredient
-import com.ltl.recipes.ingredient.IngredientRecycleViewAdapter
-import com.ltl.recipes.ingredient.IngredientViewModel
-import com.ltl.recipes.ingredient.QuantityType
 import com.ltl.recipes.data.recipe.Recipe
 import com.ltl.recipes.data.recipe.RecipeRepository
 import com.ltl.recipes.data.user.UserViewModel
@@ -48,6 +44,7 @@ import com.ltl.recipes.database.RecipesDatabase
 import com.ltl.recipes.database.getInstance
 import com.ltl.recipes.database.recipe.RecipeEntity
 import com.ltl.recipes.databinding.FragmentNewRecipeBinding
+import com.ltl.recipes.ingredient.*
 import com.ltl.recipes.utils.PhotoConverter
 import com.ltl.recipes.utils.StorageHandler
 import kotlinx.coroutines.Dispatchers
@@ -67,7 +64,7 @@ class NewRecipeFragment : Fragment() {
 
     private lateinit var binding: FragmentNewRecipeBinding
     private lateinit var recipeImg: ImageView
-    private var imgName: String = "default"
+    private var imgName: String = "default.jpg"
 
     private val ingredientViewModel: IngredientViewModel by navGraphViewModels(R.id.nav_graph)
     private val userViewModel: UserViewModel by navGraphViewModels(R.id.nav_graph)
@@ -132,8 +129,11 @@ class NewRecipeFragment : Fragment() {
 
         ingredientViewModel.getIngredients().observe(viewLifecycleOwner){
             Log.d(TAG, "observer: ${it.size}")
-            ingredientRecycleViewAdapter =
-                IngredientRecycleViewAdapter(it, ::deleteIngredient, ::editIngredient)
+            ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(
+                it,
+                IngredientAccessType.EDIT,
+                ::deleteIngredient,
+                ::editIngredient)
 
             binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
         }
