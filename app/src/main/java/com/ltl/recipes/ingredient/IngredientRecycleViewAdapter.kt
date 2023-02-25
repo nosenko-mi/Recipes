@@ -2,12 +2,14 @@ package com.ltl.recipes.ingredient
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.ltl.recipes.databinding.IngredientListItemBinding
 
 class IngredientRecycleViewAdapter (
     private val dataSet: MutableList<Ingredient>,
+    private val type: IngredientAccessType,
     private var onDeleteCallback: ((Ingredient) -> Unit),
     private var onEditCallback: ((Ingredient) -> Unit)
     )
@@ -22,14 +24,20 @@ class IngredientRecycleViewAdapter (
             ingredientQuantityText.text = ingredient.qty.toString()
             ingredientQuantityTypeText.text = ingredient.qtyType.toString()
 
-            root.setOnClickListener{
-                Log.d("Ingredient", "INGREDIENT: edit $ingredient")
-                onEditCallback(ingredient)
-            }
+            // Against SOLID
+            // TODO: think about Visitor + TypeFactory
+            if (type == IngredientAccessType.EDIT){
+                root.setOnClickListener{
+                    Log.d("Ingredient", "INGREDIENT: edit $ingredient")
+                    onEditCallback(ingredient)
+                }
 
-            ingredientDeleteButton.setOnClickListener{
-                Log.d("Ingredient", "INGREDIENT: delete $ingredient")
-                onDeleteCallback(ingredient)
+                ingredientDeleteButton.setOnClickListener{
+                    Log.d("Ingredient", "INGREDIENT: delete $ingredient")
+                    onDeleteCallback(ingredient)
+                }
+            } else {
+                ingredientDeleteButton.visibility = View.INVISIBLE
             }
         }
     }
