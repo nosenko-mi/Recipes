@@ -26,14 +26,19 @@ class RecipeRepository(private val localDb: RecipesDatabase) {
     }
 
     fun addRecipe(recipe: Recipe){
+
         firestore.collection(COLLECTION_TEST)
-            .add(recipe)
-            .addOnSuccessListener { documentReference ->
-                Log.d(TAG, "Add recipe: success: ${documentReference.id}")
-            }
-            .addOnFailureListener { e ->
-                Log.e(TAG, "Add recipe: error ${e.printStackTrace()}")
-            }
+            .document(recipe.id.toString())
+            .set(recipe)
+
+//        firestore.collection(COLLECTION_TEST)
+//            .add(recipe)
+//            .addOnSuccessListener { documentReference ->
+//                Log.d(TAG, "Add recipe: success: ${documentReference.id}")
+//            }
+//            .addOnFailureListener { e ->
+//                Log.e(TAG, "Add recipe: error ${e.printStackTrace()}")
+//            }
     }
 
     suspend fun refreshRecipes(email: String){
@@ -81,5 +86,12 @@ class RecipeRepository(private val localDb: RecipesDatabase) {
 
     fun getAllLocal(){
 
+    }
+
+    fun deleteRecipe(recipe: Recipe) {
+        firestore.collection(COLLECTION_TEST).document("DC")
+            .delete()
+            .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
+            .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
     }
 }

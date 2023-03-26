@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.ltl.recipes.utils.Writable
 import org.json.JSONObject
 
+@kotlinx.serialization.Serializable
 data class Ingredient(
     var title: String = "abstract",
     var qty: Float = 1f,

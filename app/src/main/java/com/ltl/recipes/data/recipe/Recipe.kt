@@ -4,17 +4,21 @@ import com.google.firebase.firestore.ServerTimestamp
 import com.google.gson.Gson
 import com.ltl.recipes.database.recipe.RecipeEntity
 import com.ltl.recipes.ingredient.Ingredient
+import com.ltl.recipes.utils.UUIDSerializer
 import com.ltl.recipes.utils.Validatable
 import com.ltl.recipes.utils.Writable
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 import org.json.JSONObject
 import java.util.*
 
-var recipeList = mutableListOf<Recipe>()
-
+@Serializable
 data class Recipe (
+    val id: String = UUID.randomUUID().toString(),
     var coverImg: Int = 0,
     var author: String = "",
     @ServerTimestamp
+    @Contextual
     var createdAt: Date? = null,
     var imgRef: String = "name.jpg",
     var title: String = "",
@@ -23,13 +27,12 @@ data class Recipe (
     var servingsNum: Int = 1,
     var ingredients: List<Ingredient> = emptyList(),
     var steps: String = "",
-    var tags: List<String> = emptyList(),
-    val id: Int? = recipeList.size,
+    var tags: List<String> = emptyList()
 )
     : Writable, Validatable, java.io.Serializable
 {
 
-//    W/Firestore: (24.4.2) [CustomClassMapper]: No setter/field for valid found on class Recipe
+    // W/Firestore: (24.4.2) [CustomClassMapper]: No setter/field for valid found on class Recipe
     override fun isValid(): Boolean {
         return title != "" && ingredients.isNotEmpty()
     }

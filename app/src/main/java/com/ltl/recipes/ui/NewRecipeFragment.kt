@@ -318,7 +318,7 @@ class NewRecipeFragment : Fragment() {
             return false
         }
         val entity = RecipeEntity(
-            null, recipe.coverImg, recipe.imgRef, recipe.author, Date(), recipe.title,
+            UUID.randomUUID().toString(), recipe.coverImg, recipe.imgRef, recipe.author, Date(), recipe.title,
             recipe.description, recipe.servingsNum, recipe.ingredients ,recipe.steps, recipe.isPublic
         )
         Log.d(TAG, "Add recipe locally: date=${entity.createdAt?.time}")
@@ -363,18 +363,6 @@ class NewRecipeFragment : Fragment() {
 
     private fun editIngredient(ingredient: Ingredient){
         goToaEditIngredient(ingredient)
-    }
-
-    private fun testRecipeRepository() {
-        val recipe = Recipe()
-        recipe.title = "test3"
-        val i1 = Ingredient("i1", 1.0f, QuantityType.GRAM)
-        val i2 = Ingredient("i2", 30f, QuantityType.MILL)
-        val i3 = Ingredient("i3", 2.0f, QuantityType.SPOON)
-        val iList = listOf(i1, i2, i3)
-
-        recipe.ingredients = iList
-        recipeRepository.addRecipe(recipe)
     }
 
     private fun goToAddIngredient() {

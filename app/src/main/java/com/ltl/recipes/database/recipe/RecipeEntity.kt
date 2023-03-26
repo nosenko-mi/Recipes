@@ -8,8 +8,8 @@ import java.util.*
 
 @Entity(tableName = "recipe_table")
 data class RecipeEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int?,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
     var coverImg: Int = 0,
     var imgRef: String = "name.jpg",
     var author: String = "",
@@ -26,8 +26,8 @@ data class RecipeEntity(
 fun List<RecipeEntity>.asDomainModel(): List<Recipe> {
     return map {
         Recipe(
-            it.coverImg, it.author, it.createdAt, it.imgRef, it.title, it.description,
-            it.isPublic, it.servingsNum, it.ingredients, it.steps, emptyList(), it.id
+            it.id, it.coverImg, it.author, it.createdAt, it.imgRef, it.title, it.description,
+            it.isPublic, it.servingsNum, it.ingredients, it.steps, emptyList()
         )
     }
 }
