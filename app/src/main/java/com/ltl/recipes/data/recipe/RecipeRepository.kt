@@ -28,17 +28,8 @@ class RecipeRepository(private val localDb: RecipesDatabase) {
     fun addRecipe(recipe: Recipe){
 
         firestore.collection(COLLECTION_TEST)
-            .document(recipe.id.toString())
+            .document(recipe.id)
             .set(recipe)
-
-//        firestore.collection(COLLECTION_TEST)
-//            .add(recipe)
-//            .addOnSuccessListener { documentReference ->
-//                Log.d(TAG, "Add recipe: success: ${documentReference.id}")
-//            }
-//            .addOnFailureListener { e ->
-//                Log.e(TAG, "Add recipe: error ${e.printStackTrace()}")
-//            }
     }
 
     suspend fun refreshRecipes(email: String){
@@ -48,25 +39,6 @@ class RecipeRepository(private val localDb: RecipesDatabase) {
 //            store the playlist in the Room database.
             localDb.recipeDao().insertAll(recipes.asDatabaseModel())
         }
-    }
-
-    private fun getAllByEmailOld(email: String): List<Recipe?>{
-        var recipes: List<Recipe?> = emptyList()
-        firestore.collection(COLLECTION_TEST)
-            .whereEqualTo("author", email)
-            .get()
-            .addOnSuccessListener { documents ->
-                try{
-                    recipes = documents.toObjects(Recipe::class.java)
-                    Log.d(TAG, "Get All By Email: success $recipes")
-                } catch (e: Exception){
-                    Log.d(TAG, "Get All By Email: error ${e.printStackTrace()}")
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.d(TAG, "Get Recipe: error ${e.printStackTrace()}")
-            }
-        return recipes
     }
 
     suspend fun getAllByEmail(email: String): List<Recipe> {
@@ -84,12 +56,8 @@ class RecipeRepository(private val localDb: RecipesDatabase) {
         }
     }
 
-    fun getAllLocal(){
-
-    }
-
     fun deleteRecipe(recipe: Recipe) {
-        firestore.collection(COLLECTION_TEST).document("DC")
+        firestore.collection(COLLECTION_TEST).document(recipe.id)
             .delete()
             .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully deleted!") }
             .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }

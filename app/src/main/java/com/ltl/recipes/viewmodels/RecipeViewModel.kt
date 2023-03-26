@@ -90,6 +90,13 @@ class RecipeViewModel(application: Application, currentUser: UserModel): ViewMod
         recipes.value = recipes.value
     }
 
+    fun deleteRecipe(recipe: Recipe){
+        repository.deleteRecipe(recipe)
+
+        recipes.value?.remove(recipe)
+        recipes.value = recipes.value
+    }
+
     fun setRecipes(new: List<Recipe>){
         recipes.value = new.toMutableList()
         recipes.value = recipes.value

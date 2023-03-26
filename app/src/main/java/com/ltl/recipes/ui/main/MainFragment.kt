@@ -1,11 +1,15 @@
 package com.ltl.recipes.ui.main
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.core.content.PermissionChecker
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
@@ -15,6 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -34,7 +40,6 @@ class MainFragment : Fragment(), RecipeClickListener {
     private var firebaseAuth: FirebaseAuth = Firebase.auth
     private lateinit var googleAuth: GoogleSignInClient
     private val userViewModel: UserViewModel by navGraphViewModels(R.id.nav_graph)
-//    private val recipeViewModel: RecipeViewModel by navGraphViewModels(R.id.nav_graph)
 
     private val recipeViewModel: RecipeViewModel by lazy {
         val activity = requireNotNull(this.activity) {
@@ -74,12 +79,6 @@ class MainFragment : Fragment(), RecipeClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         recipeViewModel.populateRecipes(userViewModel.getEmail())
-//        val recipes = recipeViewModel.getRecipesList()
-//        val fragment = this
-//        binding.recyclerView.apply {
-//            layoutManager = GridLayoutManager(requireContext(), 3)
-//            adapter = RecipeAdapter(recipes, fragment)
-//        }
 
         binding.bottomAppBar.inflateMenu(R.menu.bottom_menu)
 
@@ -104,6 +103,7 @@ class MainFragment : Fragment(), RecipeClickListener {
                 else -> super.onOptionsItemSelected(it)
             }
         }
+
         binding.fab.setOnClickListener{
             goToNewRecipeFragment()
         }
@@ -144,8 +144,6 @@ class MainFragment : Fragment(), RecipeClickListener {
 
     private fun goToAccountFragment() {
         Navigation.findNavController(binding.root).navigate(R.id.mainFragmentToLoginFragment)
-//        view?.let { Navigation.findNavController(it).navigate(R.id.mainFragmentToLoginFragment) }
-
     }
 
     private fun goToNewRecipeFragment() {
@@ -153,11 +151,33 @@ class MainFragment : Fragment(), RecipeClickListener {
         view?.let { Navigation.findNavController(it).navigate(R.id.mainFragmentToNewRecipeFragment) }
     }
 
-
     override fun onClick(recipe: Recipe) {
         val action = MainFragmentDirections.mainFragmentToRecipeDetailFragment(recipe)
         view?.let { Navigation.findNavController(it).navigate(action) }
-//        view?.let { Navigation.findNavController(it).navigate(R.id.mainFragmentToRecipeDetailFragment) }
     }
 
+    override fun onLongClick(recipe: Recipe): Boolean {
+        Log.d(TAG, "long click")
+
+        showBottomSheetDialog(recipe)
+        return true
+    }
+
+    private fun showBottomSheetDialog(recipe: Recipe) {
+
+        val bottomSheetDialog = BottomSheetDialog(requireContext())
+        bottomSheetDialog.setContentView(R.layout.recipe_actions_bottom_sheet_dialog)
+
+        val delete = bottomSheetDialog.findViewById<LinearLayout>(R.id.deleteLayout)
+
+        if (delete != null) {
+            delete.setOnClickListener {
+
+                recipeViewModel.deleteRecipe(recipe)
+                bottomSheetDialog.dismiss()
+            }
+            bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            bottomSheetDialog.show()
+        }
+    }
 }

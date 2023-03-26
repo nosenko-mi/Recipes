@@ -16,5 +16,9 @@ class RecipeViewHolder(
             recipeCardBinding.cardView.setOnClickListener{
                 clickListener.onClick(recipe)
             }
+
+            recipeCardBinding.cardView.setOnLongClickListener {
+                clickListener.onLongClick(recipe)
+            }
         }
 }
