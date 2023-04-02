@@ -4,7 +4,6 @@ import com.google.firebase.firestore.ServerTimestamp
 import com.google.gson.Gson
 import com.ltl.recipes.database.recipe.RecipeEntity
 import com.ltl.recipes.ingredient.Ingredient
-import com.ltl.recipes.utils.UUIDSerializer
 import com.ltl.recipes.utils.Validatable
 import com.ltl.recipes.utils.Writable
 import kotlinx.serialization.Contextual
