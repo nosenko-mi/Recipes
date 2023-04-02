@@ -31,5 +31,10 @@ class IngredientViewModel: ViewModel() {
         ingredients.value = ingredients.value
     }
 
+    fun clear(){
+        ingredients.value?.clear()
+        ingredients.value = ingredients.value
+    }
+
 
 }

@@ -168,6 +168,7 @@ class NewRecipeFragment : Fragment() {
             val isSuccessful = addRecipeSequence()
             if (isSuccessful) {
                 Log.d(TAG, "SAVE RECIPE: success")
+                ingredientViewModel.clear()
                 goToMainFragment()
             } else {
                 Log.d(TAG, "SAVE RECIPE: error")
