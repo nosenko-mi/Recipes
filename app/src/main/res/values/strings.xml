@@ -49,4 +49,5 @@
     <string name="login_failed">"Login failed"</string>
     <string name="register"><u>Register</u></string>
     <string name="delete_recipe_text">Delete recipe</string>
+    <string name="edit_recipe_text">Edit recipe</string>
 </resources>
