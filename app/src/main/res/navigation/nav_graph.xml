@@ -56,6 +56,11 @@
             app:popUpTo="@id/editIngredientFragment"
             app:popUpToInclusive="true"
             />
+        <argument
+            android:name="currentRecipe"
+            app:argType="com.ltl.recipes.data.recipe.Recipe"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/addIngredientFragment"
