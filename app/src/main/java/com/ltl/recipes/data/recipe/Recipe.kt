@@ -51,3 +51,10 @@ fun List<Recipe>.asDatabaseModel(): List<RecipeEntity> {
         )
     }
 }
+
+fun Recipe.asDatabaseModel(): RecipeEntity {
+    return RecipeEntity(
+        this.id, this.coverImg, this.imgRef, this.author, this.createdAt, this.title, this.description,
+        this.servingsNum, this.ingredients, this.steps, this.isPublic
+    )
+}
