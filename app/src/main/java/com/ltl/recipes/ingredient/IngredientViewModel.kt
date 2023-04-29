@@ -21,6 +21,11 @@ class IngredientViewModel: ViewModel() {
         return ingredients
     }
 
+    fun add(newIngredients: List<Ingredient>){
+        ingredients.value = newIngredients.toMutableList()
+        ingredients.value = ingredients.value
+    }
+
     fun addIngredient(ingredient: Ingredient) {
         ingredients.value?.add(ingredient)
         ingredients.value = ingredients.value
