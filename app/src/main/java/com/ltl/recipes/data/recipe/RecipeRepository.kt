@@ -26,10 +26,9 @@ class RecipeRepository(private val localDb: RecipesDatabase) {
     }
 
     fun addRecipe(recipe: Recipe){
-
-        firestore.collection(COLLECTION_TEST)
-            .document(recipe.id)
-            .set(recipe)
+            firestore.collection(COLLECTION_TEST)
+                .document(recipe.id)
+                .set(recipe)
     }
 
     suspend fun refreshRecipes(email: String){
@@ -54,6 +53,10 @@ class RecipeRepository(private val localDb: RecipesDatabase) {
             Log.e(TAG, "Get Recipe: error ${e.printStackTrace()}")
             emptyList()
         }
+    }
+
+    fun editRecipe(recipe: Recipe){
+        addRecipe(recipe)
     }
 
     fun deleteRecipe(recipe: Recipe) {
