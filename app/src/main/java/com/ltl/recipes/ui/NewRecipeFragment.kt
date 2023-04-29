@@ -26,7 +26,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker.PERMISSION_DENIED
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,6 +41,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.ltl.recipes.R
 import com.ltl.recipes.data.recipe.Recipe
 import com.ltl.recipes.data.recipe.RecipeRepository
+import com.ltl.recipes.data.recipe.asDatabaseModel
 import com.ltl.recipes.data.user.UserViewModel
 import com.ltl.recipes.database.RecipesDatabase
 import com.ltl.recipes.database.getInstance
@@ -68,8 +71,11 @@ class NewRecipeFragment : Fragment() {
 
     private val ingredientViewModel: IngredientViewModel by navGraphViewModels(R.id.nav_graph)
     private val userViewModel: UserViewModel by navGraphViewModels(R.id.nav_graph)
+    private val args: NewRecipeFragmentArgs by navArgs()
+
     private lateinit var recipeRepository: RecipeRepository
     private lateinit var recipesDb: RecipesDatabase
+
 
     private val requestPermissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestPermission()
@@ -146,7 +152,13 @@ class NewRecipeFragment : Fragment() {
 
         recipesDb = getInstance(requireContext())
         recipeRepository = RecipeRepository(recipesDb)
-
+        Log.d(TAG, "Ingredients count: ${ingredientViewModel.getIngredients().value?.count()}")
+        if (args.currentRecipe != null){
+            Log.d(TAG, "Inflate")
+            // TODO error here!!
+            inflateRecipe(args.currentRecipe!!)
+            Log.d(TAG, "Ingredients count after: ${ingredientViewModel.getIngredients().value?.count()}")
+        }
         recipeImg = binding.recipeImgImageView
         recipeImg.setOnClickListener{
             showBottomSheetDialog()
@@ -180,6 +192,19 @@ class NewRecipeFragment : Fragment() {
                 binding.publicRadioButton.id -> { isPublic = true }
                 binding.privateRadioButton.id -> { isPublic = false }
             }
+        }
+    }
+
+    private fun inflateRecipe(currentRecipe: Recipe) {
+        binding.recipeTitleEditText.setText(currentRecipe.title)
+        binding.recipeDescriptionEditText.setText(currentRecipe.description)
+        binding.stepsEditText.setText(currentRecipe.steps)
+        ingredientViewModel.add(currentRecipe.ingredients)
+        binding.servingSpinner.setSelection(currentRecipe.servingsNum - 1)
+
+        if (currentRecipe.isPublic){
+            binding.publicRadioButton.isChecked = true
+            isPublic = true
         }
     }
 
@@ -318,16 +343,12 @@ class NewRecipeFragment : Fragment() {
         if (!recipe.isValid()){
             return false
         }
-        val entity = RecipeEntity(
-            UUID.randomUUID().toString(), recipe.coverImg, recipe.imgRef, recipe.author, Date(), recipe.title,
-            recipe.description, recipe.servingsNum, recipe.ingredients ,recipe.steps, recipe.isPublic
-        )
+        val entity = recipe.asDatabaseModel()
         Log.d(TAG, "Add recipe locally: date=${entity.createdAt?.time}")
 
-        GlobalScope.launch(Dispatchers.IO) {
-            recipesDb.recipeDao().addRecipe(entity)
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
+            recipesDb.recipeDao().upsertRecipe(entity)
         }
-
         return true
     }
 
@@ -336,7 +357,12 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun collectRecipeData(): Recipe {
-        val recipe = Recipe()
+        var recipe = Recipe()
+
+        if (args.currentRecipe != null){
+            recipe = args.currentRecipe!!.copy(id = args.currentRecipe!!.id)
+        }
+
 //        TODO validate input fields
         try {
             recipe.imgRef = imgName
@@ -371,6 +397,7 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun goToMainFragment() {
+        ingredientViewModel.clear()
         view?.let { Navigation.findNavController(it).navigate(R.id.newRecipeFragmentToMainFragment) }
     }
 

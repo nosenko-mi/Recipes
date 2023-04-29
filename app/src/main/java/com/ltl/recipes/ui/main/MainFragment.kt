@@ -146,9 +146,10 @@ class MainFragment : Fragment(), RecipeClickListener {
         Navigation.findNavController(binding.root).navigate(R.id.mainFragmentToLoginFragment)
     }
 
-    private fun goToNewRecipeFragment() {
+    private fun goToNewRecipeFragment(recipe: Recipe? = null) {
         Log.d(TAG, "Action: to LoginFragment")
-        view?.let { Navigation.findNavController(it).navigate(R.id.mainFragmentToNewRecipeFragment) }
+        val action = MainFragmentDirections.mainFragmentToNewRecipeFragment(recipe)
+        view?.let { Navigation.findNavController(it).navigate(action) }
     }
 
     override fun onClick(recipe: Recipe) {
@@ -169,11 +170,17 @@ class MainFragment : Fragment(), RecipeClickListener {
         bottomSheetDialog.setContentView(R.layout.recipe_actions_bottom_sheet_dialog)
 
         val delete = bottomSheetDialog.findViewById<LinearLayout>(R.id.deleteLayout)
+        val edit = bottomSheetDialog.findViewById<LinearLayout>(R.id.editLayout)
 
-        if (delete != null) {
+        if (delete != null && edit != null) {
             delete.setOnClickListener {
-
                 recipeViewModel.deleteRecipe(recipe)
+                bottomSheetDialog.dismiss()
+            }
+
+            edit.setOnClickListener {
+                // go to edit recipe fragment
+                goToNewRecipeFragment(recipe)
                 bottomSheetDialog.dismiss()
             }
             bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
