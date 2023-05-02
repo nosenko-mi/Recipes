@@ -7,6 +7,10 @@ import com.ltl.recipes.data.recipe.Recipe
 import com.ltl.recipes.data.recipe.RecipeRepository
 import com.ltl.recipes.data.user.UserModel
 import com.ltl.recipes.database.getInstance
+import com.ltl.recipes.ui_events.RecipeListEvent
+import com.ltl.recipes.utils.UiEvent
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -18,6 +22,24 @@ class RecipeViewModel(application: Application, currentUser: UserModel): ViewMod
     private val repository = RecipeRepository(getInstance(application))
     private val recipes = MutableLiveData<MutableList<Recipe>>()
 
+    // TODO realize events!
+    private val _uiEvent = Channel<UiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
+
+    fun onEvent(event: RecipeListEvent){
+        when(event) {
+            RecipeListEvent.OnAddFavoriteClick -> TODO()
+            RecipeListEvent.OnAddRecipeClick -> TODO()
+            is RecipeListEvent.OnDeleteRecipeClick -> TODO()
+            RecipeListEvent.OnFavoriteClick -> TODO()
+            RecipeListEvent.OnHomeClick -> TODO()
+            RecipeListEvent.OnProfileClick -> TODO()
+            is RecipeListEvent.OnRecipeClick -> TODO()
+            is RecipeListEvent.OnRecipeLongClick -> TODO()
+            RecipeListEvent.OnSearchClick -> TODO()
+            RecipeListEvent.OnUndoDeleteClick -> TODO()
+        }
+    }
     /**
      *  A list of recipes visible on the screen
     */
