@@ -31,3 +31,10 @@ fun List<RecipeEntity>.asDomainModel(): List<Recipe> {
         )
     }
 }
+
+fun RecipeEntity.asDomainModel(): Recipe {
+    return Recipe(
+        id, coverImg, author, createdAt, imgRef, title, description,
+        isPublic, servingsNum, ingredients, steps, emptyList()
+    )
+}
