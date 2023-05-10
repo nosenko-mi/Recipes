@@ -148,7 +148,11 @@ class MainFragment : Fragment(), RecipeClickListener {
 
     private fun goToNewRecipeFragment(recipe: Recipe? = null) {
         Log.d(TAG, "Action: to LoginFragment")
-        val action = MainFragmentDirections.mainFragmentToNewRecipeFragment(recipe)
+        var action = MainFragmentDirections.mainFragmentToNewRecipeFragment()
+        if (recipe != null){
+            action = MainFragmentDirections.mainFragmentToNewRecipeFragment(recipe.id)
+        }
+//        action = MainFragmentDirections.mainFragmentToNewRecipeFragment()
         view?.let { Navigation.findNavController(it).navigate(action) }
     }
 
