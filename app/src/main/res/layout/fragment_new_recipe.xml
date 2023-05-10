@@ -1,196 +1,210 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/newRecipeLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".ui.NewRecipeFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ScrollView
+    <data>
+        <variable
+            name="recipeViewModel"
+            type="com.ltl.recipes.viewmodels.NewRecipeViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/newRecipeLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.NewRecipeFragment">
 
-        <LinearLayout
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="-216dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/recipeImgImageView"
+                    android:layout_width="256dp"
+                    android:layout_height="256dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/def_margin_vertical"
+                    android:layout_marginBottom="40dp"
+                    android:src="@mipmap/ic_launcher" />
+
+                <TextView
+                    android:id="@+id/recipeTitleTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="monospace"
+                    android:text="Recipe title"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/recipeTitleEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="40dp"
+                    android:afterTextChanged="@{(v)-> recipeViewModel.updateTitle(v)}"
+                    android:hint="Enter recipe title"
+                    android:text="@{recipeViewModel.title}" />
+
+                <TextView
+                    android:id="@+id/recipeDescriptionTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="monospace"
+                    android:text="Recipe description"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/recipeDescriptionEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="40dp"
+                    android:hint="Enter description"
+                    android:text="@{recipeViewModel.description}"
+                    android:afterTextChanged="@{(v)-> recipeViewModel.updateDescription(v)}"
+                    />
+
+
+                <TextView
+                    android:id="@+id/servingTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="monospace"
+                    android:text="Serving size"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/servingSpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="40dp"
+                    android:entries="@array/serving_size"
+                    android:selectedItemPosition="@={recipeViewModel.servings.number - 1}"
+                    />
+
+                <TextView
+                    android:id="@+id/recipeIngredientsTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="monospace"
+                    android:text="Ingredients"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/ingredientRecycleView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:isScrollContainer="false" />
+
+                </RelativeLayout>
+
+
+                <Button
+                    android:id="@+id/addIngredientButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="40dp"
+                    android:text="Add ingredient" />
+
+                <TextView
+                    android:id="@+id/recipeStepsTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="monospace"
+                    android:text="Steps"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/stepsEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="40dp"
+                    android:hint="How to cook?"
+                    android:text="@{recipeViewModel.steps}"
+                    android:afterTextChanged="@{(v)-> recipeViewModel.updateSteps(v)}"
+                    />
+
+                <Button
+                    android:id="@+id/addStepButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="40dp"
+                    android:text="Add step"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/sharingOptionTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="monospace"
+                    android:text="Sharing option"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <RadioGroup
+                    android:id="@+id/sharingRadioGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="80dp"
+                    android:onCheckedChanged="@{recipeViewModel::updatePublicity}">
+
+                    <RadioButton
+                        android:id="@+id/privateRadioButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="Private" />
+
+                    <RadioButton
+                        android:id="@+id/publicRadioButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Public">
+
+                    </RadioButton>
+                </RadioGroup>
+
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <Button
+            android:id="@+id/addRecipeButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            >
+            android:text="Done"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
-            <ImageView
-                android:id="@+id/recipeImgImageView"
-                android:layout_width="256dp"
-                android:layout_height="256dp"
-                android:src="@mipmap/ic_launcher"
-                android:layout_marginBottom="40dp"
-                android:layout_marginTop="@dimen/def_margin_vertical"
-                android:layout_gravity="center_horizontal"
-                />
+        </Button>
 
-            <TextView
-                android:id="@+id/recipeTitleTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="monospace"
-                android:text="Recipe title" />
-
-            <EditText
-                android:id="@+id/recipeTitleEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp"
-                android:hint="Enter recipe title"/>
-
-            <TextView
-                android:id="@+id/recipeDescriptionTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="monospace"
-                android:text="Recipe description" />
-
-            <EditText
-                android:id="@+id/recipeDescriptionEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp"
-                android:hint="Enter description"/>
-
-
-            <TextView
-                android:id="@+id/servingTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="monospace"
-                android:text="Serving size" />
-
-            <Spinner
-                android:id="@+id/servingSpinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:entries="@array/serving_size"
-                android:layout_marginBottom="40dp"
-                />
-
-            <TextView
-                android:id="@+id/recipeIngredientsTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="monospace"
-                android:text="Ingredients" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/ingredientRecycleView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:isScrollContainer="false"/>
-
-            </RelativeLayout>
-
-
-
-            <Button
-                android:id="@+id/addIngredientButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp"
-                android:text="Add ingredient"/>
-
-            <TextView
-                android:id="@+id/recipeStepsTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="monospace"
-                android:text="Steps" />
-
-            <EditText
-                android:id="@+id/stepsEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp"
-                android:hint="How to cook?"/>
-
-            <Button
-                android:visibility="gone"
-                android:id="@+id/addStepButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp"
-                android:text="Add step"/>
-
-            <TextView
-                android:id="@+id/sharingOptionTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="monospace"
-                android:text="Sharing option" />
-
-            <RadioGroup
-                android:id="@+id/sharingRadioGroup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="80dp"
-                >
-
-                <RadioButton
-                    android:id="@+id/privateRadioButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Private"
-                    android:checked="true">
-                </RadioButton>
-
-
-                <RadioButton
-                    android:id="@+id/publicRadioButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Public"
-                    >
-
-                </RadioButton>
-            </RadioGroup>
-
-
-        </LinearLayout>
-
-    </ScrollView>
-
-    <Button
-        android:id="@+id/addRecipeButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:text="Done"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-    </Button>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
