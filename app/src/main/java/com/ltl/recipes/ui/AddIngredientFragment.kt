@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.compose.ui.text.toUpperCase
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.navigation.navGraphViewModels
@@ -16,8 +15,9 @@ import com.ltl.recipes.databinding.FragmentAddIngredientBinding
 import com.ltl.recipes.ingredient.Ingredient
 import com.ltl.recipes.ingredient.IngredientViewModel
 import com.ltl.recipes.ingredient.QuantityType
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class AddIngredientFragment : Fragment() {
 
     private lateinit var binding: FragmentAddIngredientBinding
