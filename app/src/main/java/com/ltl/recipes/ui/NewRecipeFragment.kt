@@ -205,13 +205,6 @@ class NewRecipeFragment : Fragment() {
                 Log.d(TAG, "SAVE RECIPE: error")
             }
         }
-
-        binding.sharingRadioGroup.setOnCheckedChangeListener{ group, checkedId ->
-            when (checkedId) {
-                binding.publicRadioButton.id -> { isPublic = true }
-                binding.privateRadioButton.id -> { isPublic = false }
-            }
-        }
     }
 
     private fun subscribeToObservables(){

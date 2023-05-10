@@ -155,38 +155,7 @@
                     android:text="Add step"
                     android:visibility="gone" />
 
-                <TextView
-                    android:id="@+id/sharingOptionTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:fontFamily="monospace"
-                    android:text="Sharing option"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
 
-                <RadioGroup
-                    android:id="@+id/sharingRadioGroup"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="80dp"
-                    android:onCheckedChanged="@{recipeViewModel::updatePublicity}">
-
-                    <RadioButton
-                        android:id="@+id/privateRadioButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:checked="true"
-                        android:text="Private" />
-
-                    <RadioButton
-                        android:id="@+id/publicRadioButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Public">
-
-                    </RadioButton>
-                </RadioGroup>
 
 
             </LinearLayout>
