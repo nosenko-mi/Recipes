@@ -3,13 +3,16 @@ package com.ltl.recipes.data.recipe
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.ltl.recipes.database.RecipesDatabase
 import com.ltl.recipes.database.recipe.asDomainModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.io.IOException
 
 class RecipeRepository(private val localDb: RecipesDatabase) {
 
@@ -25,10 +28,12 @@ class RecipeRepository(private val localDb: RecipesDatabase) {
           it.asDomainModel()
     }
 
-    fun addRecipe(recipe: Recipe){
-            firestore.collection(COLLECTION_TEST)
-                .document(recipe.id)
-                .set(recipe)
+    suspend fun addRecipe(recipe: Recipe){
+        firestore.collection(COLLECTION_TEST)
+            .document(recipe.id)
+            .set(recipe)
+
+        localDb.recipeDao().upsertRecipe(recipe.asDatabaseModel())
     }
 
     suspend fun refreshRecipes(email: String){
@@ -38,6 +43,19 @@ class RecipeRepository(private val localDb: RecipesDatabase) {
 //            store the playlist in the Room database.
             localDb.recipeDao().insertAll(recipes.asDatabaseModel())
         }
+    }
+
+    suspend fun getRecipeById(id: String): Recipe? {
+        var recipe = localDb.recipeDao().getRecipeById(id)?.asDomainModel()
+        try {
+            val document = firestore.collection(COLLECTION_TEST).document(id).get().await()
+            Log.d(TAG, "GetRecipeById FIREBASE: documents ${document.id}")
+            recipe = document.toObject(Recipe::class.java)
+        } catch (networkError: IOException) {
+            Log.d(TAG, "RecipeRepository ERROR: ${networkError.message}")
+        }
+        Log.d(TAG, "RecipeRepository getRecipeById: $recipe")
+        return recipe
     }
 
     suspend fun getAllByEmail(email: String): List<Recipe> {
@@ -55,7 +73,7 @@ class RecipeRepository(private val localDb: RecipesDatabase) {
         }
     }
 
-    fun editRecipe(recipe: Recipe){
+    suspend fun editRecipe(recipe: Recipe){
         addRecipe(recipe)
     }
 
