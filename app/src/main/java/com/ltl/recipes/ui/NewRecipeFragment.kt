@@ -350,7 +350,8 @@ class NewRecipeFragment : Fragment() {
 
     private fun addRecipeSequence(): Boolean {
         // TODO: error while checking data
-        viewModel.setIngredients(ingredientViewModel.getIngredients().value?.toList() ?: ArrayList())
+        viewModel.setIngredients(ingredientViewModel.getIngredientsAsMutableList())
+//        viewModel.setIngredients(ingredientViewModel.getIngredients().value?.toList() ?: ArrayList())
         val t = viewModel.insertRecipe(userViewModel.getEmail())
         return t
     }
