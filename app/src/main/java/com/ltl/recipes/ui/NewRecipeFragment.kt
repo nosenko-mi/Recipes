@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
-import android.icu.util.LocaleData
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -25,7 +24,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker.PERMISSION_DENIED
 import androidx.core.content.PermissionChecker.checkSelfPermission
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
@@ -35,8 +36,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.ltl.recipes.R
 import com.ltl.recipes.data.recipe.Recipe
@@ -45,20 +44,22 @@ import com.ltl.recipes.data.recipe.asDatabaseModel
 import com.ltl.recipes.data.user.UserViewModel
 import com.ltl.recipes.database.RecipesDatabase
 import com.ltl.recipes.database.getInstance
-import com.ltl.recipes.database.recipe.RecipeEntity
 import com.ltl.recipes.databinding.FragmentNewRecipeBinding
-import com.ltl.recipes.ingredient.*
+import com.ltl.recipes.ingredient.Ingredient
+import com.ltl.recipes.ingredient.IngredientAccessType
+import com.ltl.recipes.ingredient.IngredientRecycleViewAdapter
+import com.ltl.recipes.ingredient.IngredientViewModel
 import com.ltl.recipes.utils.PhotoConverter
 import com.ltl.recipes.utils.StorageHandler
+import com.ltl.recipes.viewmodels.NewRecipeViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.*
 
-
+@AndroidEntryPoint
 class NewRecipeFragment : Fragment() {
 
     private var isPublic = false
@@ -72,6 +73,15 @@ class NewRecipeFragment : Fragment() {
     private val ingredientViewModel: IngredientViewModel by navGraphViewModels(R.id.nav_graph)
     private val userViewModel: UserViewModel by navGraphViewModels(R.id.nav_graph)
     private val args: NewRecipeFragmentArgs by navArgs()
+    // TODO: error viewmodel creates after going back from addIngredient. Use sharedviewmodel
+//    -- Perhaps you can wrap the Fragment A and Fragment B inside another fragment
+//    (making A and B as child fragments on that container fragment).
+//    This way, you can create the viewModel scoped to the container Fragment and use it in both child fragments.
+//    -- Thanks for the suggestion! For various reusability reasons we ended up
+//    creating an additional ViewModel shared across the fragments with by activityViewModels()
+//    and using setter methods, as suggested in the linked comment above.
+    private val viewModel: NewRecipeViewModel by viewModels()
+//    private val viewModel: NewRecipeViewModel by activityViewModels()
 
     private lateinit var recipeRepository: RecipeRepository
     private lateinit var recipesDb: RecipesDatabase
@@ -123,26 +133,34 @@ class NewRecipeFragment : Fragment() {
                               container: ViewGroup?,
                               savedInstanceState: Bundle?
     ): View {
+        Log.d(TAG, "NewRecipeFragment starts")
 
-        binding = FragmentNewRecipeBinding.inflate(inflater, container, false)
+//        binding = FragmentNewRecipeBinding.inflate(inflater, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_new_recipe,container, false)
+        binding.lifecycleOwner = this
         val view = binding.root
+        binding.recipeViewModel = viewModel
 
-        binding.ingredientRecycleView.setHasFixedSize(true)
-//        val l = object: LinearLayoutManager(context) { override fun canScrollVertically() = false }
-        val layoutManager = LinearLayoutManager(context)
-        binding.ingredientRecycleView.layoutManager = layoutManager
-        binding.ingredientRecycleView.itemAnimator = DefaultItemAnimator()
+//        binding.ingredientRecycleView.setHasFixedSize(true)
+////        val l = object: LinearLayoutManager(context) { override fun canScrollVertically() = false }
+//        val layoutManager = LinearLayoutManager(context)
+//        binding.ingredientRecycleView.layoutManager = layoutManager
+//        binding.ingredientRecycleView.itemAnimator = DefaultItemAnimator()
+//
+//        ingredientViewModel.getIngredients().observe(viewLifecycleOwner){
+//            Log.d(TAG, "observer: ${it.size}")
+//            ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(
+//                it,
+//                IngredientAccessType.EDIT,
+//                ::deleteIngredient,
+//                ::editIngredient)
+//
+//            binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
+//        }
 
-        ingredientViewModel.getIngredients().observe(viewLifecycleOwner){
-            Log.d(TAG, "observer: ${it.size}")
-            ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(
-                it,
-                IngredientAccessType.EDIT,
-                ::deleteIngredient,
-                ::editIngredient)
-
-            binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
-        }
+        // TODO: collect ui state
+        // https://developer.android.com/kotlin/flow/stateflow-and-sharedflow
+        subscribeToObservables()
 
         return view
     }
@@ -153,12 +171,12 @@ class NewRecipeFragment : Fragment() {
         recipesDb = getInstance(requireContext())
         recipeRepository = RecipeRepository(recipesDb)
         Log.d(TAG, "Ingredients count: ${ingredientViewModel.getIngredients().value?.count()}")
-        if (args.currentRecipe != null){
-            Log.d(TAG, "Inflate")
-            // TODO error here!!
-            inflateRecipe(args.currentRecipe!!)
-            Log.d(TAG, "Ingredients count after: ${ingredientViewModel.getIngredients().value?.count()}")
-        }
+
+        Toast.makeText(context, args.recipeId, Toast.LENGTH_SHORT).show()
+//        viewModel.refresh(args.recipeId)
+        Log.d(TAG, "Recipe id: ${args.recipeId}")
+
+
         recipeImg = binding.recipeImgImageView
         recipeImg.setOnClickListener{
             showBottomSheetDialog()
@@ -180,6 +198,7 @@ class NewRecipeFragment : Fragment() {
             val isSuccessful = addRecipeSequence()
             if (isSuccessful) {
                 Log.d(TAG, "SAVE RECIPE: success")
+                viewModel.clear()
                 ingredientViewModel.clear()
                 goToMainFragment()
             } else {
@@ -195,16 +214,23 @@ class NewRecipeFragment : Fragment() {
         }
     }
 
-    private fun inflateRecipe(currentRecipe: Recipe) {
-        binding.recipeTitleEditText.setText(currentRecipe.title)
-        binding.recipeDescriptionEditText.setText(currentRecipe.description)
-        binding.stepsEditText.setText(currentRecipe.steps)
-        ingredientViewModel.add(currentRecipe.ingredients)
-        binding.servingSpinner.setSelection(currentRecipe.servingsNum - 1)
+    private fun subscribeToObservables(){
+//        TODO: Add observers for other fields
+        binding.ingredientRecycleView.setHasFixedSize(true)
+//        val l = object: LinearLayoutManager(context) { override fun canScrollVertically() = false }
+        val layoutManager = LinearLayoutManager(context)
+        binding.ingredientRecycleView.layoutManager = layoutManager
+        binding.ingredientRecycleView.itemAnimator = DefaultItemAnimator()
 
-        if (currentRecipe.isPublic){
-            binding.publicRadioButton.isChecked = true
-            isPublic = true
+        ingredientViewModel.getIngredients().observe(viewLifecycleOwner){
+            Log.d(TAG, "observer: ${it.size}")
+            ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(
+                it,
+                IngredientAccessType.EDIT,
+                ::deleteIngredient,
+                ::editIngredient)
+
+            binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
         }
     }
 
@@ -284,6 +310,12 @@ class NewRecipeFragment : Fragment() {
         dispatchTakePictureIntent()
     }
 
+    private fun createFileName(): String{
+        val ref = SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis())
+        viewModel.setImgRef(ref)
+        return ref
+    }
+
     private var cameraLauncher = registerForActivityResult<Intent, ActivityResult>(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -292,14 +324,16 @@ class NewRecipeFragment : Fragment() {
             val photo = result.data!!.extras!!["data"] as Bitmap?
 
             // Create time stamped name and MediaStore entry.
-            imgName = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
-                .format(System.currentTimeMillis())
+//            imgName = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
+//                .format(System.currentTimeMillis()).
+            imgName = createFileName()
 
             // Set the image in imageview for display
             recipeImg.setImageBitmap(photo)
 
             // upload the image
             val data = photo?.let { PhotoConverter().bitmapToByteArray(it) }
+//            TODO: Change collection to prod
             val storageHandler = StorageHandler("tests", imgName)
 
             if (data != null){
@@ -322,21 +356,10 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun addRecipeSequence(): Boolean {
-        val recipe = collectRecipeData()
-
-        Log.d(TAG, "SAVE RECIPE: $recipe")
-        Log.d(TAG, "SAVE RECIPE: isValid: ${recipe.isValid()}")
-
-        //        validate data
-        if (!recipe.isValid()){
-//            show error
-            return false
-        }
-
-        addRecipe(recipe)
-        addRecipeLocally(recipe)
-
-        return true
+        // TODO: error while checking data
+        viewModel.setIngredients(ingredientViewModel.getIngredients().value?.toList() ?: ArrayList())
+        val t = viewModel.insertRecipe(userViewModel.getEmail())
+        return t
     }
 
     private fun addRecipeLocally(recipe: Recipe): Boolean{
@@ -353,15 +376,11 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun addRecipe(recipe: Recipe) {
-        recipeRepository.addRecipe(recipe)
+//        recipeRepository.addRecipe(recipe)
     }
 
     private fun collectRecipeData(): Recipe {
         var recipe = Recipe()
-
-        if (args.currentRecipe != null){
-            recipe = args.currentRecipe!!.copy(id = args.currentRecipe!!.id)
-        }
 
 //        TODO validate input fields
         try {
@@ -385,6 +404,7 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun deleteIngredient(ingredient: Ingredient){
+        viewModel.removeIngredient(ingredient)
         ingredientViewModel.removeIngredient(ingredient)
     }
 
@@ -397,6 +417,7 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun goToMainFragment() {
+        viewModel.clear()
         ingredientViewModel.clear()
         view?.let { Navigation.findNavController(it).navigate(R.id.newRecipeFragmentToMainFragment) }
     }
