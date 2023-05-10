@@ -356,19 +356,6 @@ class NewRecipeFragment : Fragment() {
         return t
     }
 
-    private fun addRecipeLocally(recipe: Recipe): Boolean{
-        if (!recipe.isValid()){
-            return false
-        }
-        val entity = recipe.asDatabaseModel()
-        Log.d(TAG, "Add recipe locally: date=${entity.createdAt?.time}")
-
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
-            recipesDb.recipeDao().upsertRecipe(entity)
-        }
-        return true
-    }
-
     private fun addRecipe(recipe: Recipe) {
 //        recipeRepository.addRecipe(recipe)
     }
