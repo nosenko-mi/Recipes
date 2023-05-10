@@ -13,6 +13,9 @@ interface RecipeDao {
     @Query("SELECT * FROM recipe_table WHERE author LIKE :email")
     suspend fun findByEmail(email: String): List<RecipeEntity>
 
+    @Query("SELECT * FROM recipe_table WHERE id LIKE :id")
+    suspend fun getRecipeById(id: String): RecipeEntity?
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun addRecipe(recipe: RecipeEntity)
 
@@ -20,7 +23,7 @@ interface RecipeDao {
     fun insertAll( recipes: List<RecipeEntity>)
 
     @Upsert
-    fun upsertRecipe(recipe: RecipeEntity)
+    suspend fun upsertRecipe(recipe: RecipeEntity)
 
     @Delete
     suspend fun deleteRecipe(recipe: RecipeEntity)
