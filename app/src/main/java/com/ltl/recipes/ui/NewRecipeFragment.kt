@@ -81,11 +81,6 @@ class NewRecipeFragment : Fragment() {
 //    creating an additional ViewModel shared across the fragments with by activityViewModels()
 //    and using setter methods, as suggested in the linked comment above.
     private val viewModel: NewRecipeViewModel by viewModels()
-//    private val viewModel: NewRecipeViewModel by activityViewModels()
-
-    private lateinit var recipeRepository: RecipeRepository
-    private lateinit var recipesDb: RecipesDatabase
-
 
     private val requestPermissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestPermission()
@@ -168,8 +163,6 @@ class NewRecipeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recipesDb = getInstance(requireContext())
-        recipeRepository = RecipeRepository(recipesDb)
         Log.d(TAG, "Ingredients count: ${ingredientViewModel.getIngredients().value?.count()}")
 
         Toast.makeText(context, args.recipeId, Toast.LENGTH_SHORT).show()
