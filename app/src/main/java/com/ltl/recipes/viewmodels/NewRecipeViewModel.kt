@@ -28,7 +28,9 @@ class NewRecipeViewModel @Inject constructor(
         private val TAG: String = "NewRecipeViewModel"
     }
 
-    var _recipe = MutableLiveData<Recipe?>(null)
+//    var _recipe = MutableLiveData<Recipe?>(null)
+    private val _recipe = MutableStateFlow<Recipe?>(null)
+    val recipe = _recipe.asStateFlow()
 
 //    private var _title = MutableLiveData("")
     private val _title = MutableStateFlow("")
@@ -52,7 +54,9 @@ class NewRecipeViewModel @Inject constructor(
     private val _isPublic = MutableStateFlow(false)
     val isPublic = _isPublic.asStateFlow()
 
-    private val _ingredients = MutableLiveData<MutableList<Ingredient>>(ArrayList())
+//    private val _ingredients = MutableLiveData<MutableList<Ingredient>>(ArrayList())
+    private val _ingredients = MutableStateFlow<MutableList<Ingredient>>(ArrayList())
+    val ingredients = _ingredients.asStateFlow()
 
 //    private val _imgRef = MutableLiveData("default.jpg")
     private val _imgRef = MutableStateFlow("default.jpg")
@@ -79,8 +83,9 @@ class NewRecipeViewModel @Inject constructor(
                     servings.value.setNumber(recipe.servingsNum)
                     _isPublic.value = recipe.isPublic
                     _imgRef.value = recipe.imgRef
-                    setIngredients(recipe.ingredients)
-                    setRecipe(recipe)
+                    _ingredients.value = recipe.ingredients.toMutableList()
+//                    setIngredients(recipe.ingredients)
+                    _recipe.value = recipe
                 }
                 Log.d(TAG, "recipe servings: ${servings.value.getNumber()}")
             }
@@ -97,16 +102,20 @@ class NewRecipeViewModel @Inject constructor(
         }
         val recipe = Recipe()
         try {
-            recipe.imgRef = _imgRef.value!!
-            recipe.title = _title.value.toString()
-            recipe.description = _description.value.toString()
-            recipe.servingsNum = _servingNum.value!!
-            recipe.steps = _steps.value.toString()
-            recipe.isPublic = _isPublic.value!!
+            recipe.imgRef = _imgRef.value
+            recipe.title = _title.value
+            recipe.description = _description.value
+            recipe.servingsNum = _servingNum.value
+            recipe.steps = _steps.value
+            recipe.isPublic = _isPublic.value
             recipe.author = author
-            if (getIngredients().value != null){
-                recipe.ingredients = getIngredients().value!!.toList()
+            if (_ingredients.value.isNotEmpty()){
+                recipe.ingredients = _ingredients.value
+                Log.d("NewRecipeViewModel", "COLLECT DATA: ingredients collected")
             }
+//            if (getIngredients().value != null){
+//                recipe.ingredients = getIngredients().value!!.toList()
+//            }
             Log.d("NewRecipeViewModel", "COLLECT DATA: ingredients: ${recipe.ingredients}")
 
         } catch (e: Exception){
@@ -115,25 +124,26 @@ class NewRecipeViewModel @Inject constructor(
 
         setRecipe(recipe)
         viewModelScope.launch (Dispatchers.IO) {
-            repository.addRecipe(_recipe.value!!)
+            _recipe.value?.let { repository.addRecipe(it) }
         }
 
         return true
     }
 
     fun isValid(): Boolean{
-        if (_title.value!!.isEmpty() || _ingredients.value!!.isEmpty()) return false
+        if (_title.value.isEmpty() || _ingredients.value.isEmpty()) return false
 
         return true
     }
 
     fun setRecipe(recipe: Recipe){
-        _recipe.postValue(recipe)
+//        _recipe.postValue(recipe)
+        _recipe.value = recipe
     }
 
-    fun getRecipe(): LiveData<Recipe?>{
-        return _recipe
-    }
+//    fun getRecipe(): LiveData<Recipe?>{
+//        return _recipe
+//    }
 
     fun updateTitle(editable: Editable){
         _title.value = editable.toString()
@@ -157,8 +167,9 @@ class NewRecipeViewModel @Inject constructor(
         _imgRef.value = ref
     }
 
-    fun setIngredients(newIngredients: List<Ingredient>){
-        _ingredients.postValue(newIngredients.toMutableList())
+    fun setIngredients(newIngredients: MutableList<Ingredient>){
+//        _ingredients.postValue(newIngredients.toMutableList())
+        _ingredients.value = newIngredients
     }
 
     fun addIngredient(ingredient: Ingredient) {
@@ -166,9 +177,9 @@ class NewRecipeViewModel @Inject constructor(
         _ingredients.value = _ingredients.value
     }
 
-    fun getIngredients(): LiveData<MutableList<Ingredient>> {
-        return _ingredients
-    }
+//    fun getIngredients(): LiveData<MutableList<Ingredient>> {
+//        return _ingredients
+//    }
 
     fun removeIngredient(ingredient: Ingredient){
         _ingredients.value?.remove(ingredient)
