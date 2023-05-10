@@ -21,6 +21,22 @@ class IngredientViewModel: ViewModel() {
         return ingredients
     }
 
+    fun getIngredientsAsList(): List<Ingredient>{
+        var list = emptyList<Ingredient>()
+        ingredients.value?.let { mutableList ->
+            list = mutableList.toList()
+        }
+        return list
+    }
+
+    fun getIngredientsAsMutableList(): MutableList<Ingredient>{
+        val list = mutableListOf<Ingredient>()
+        ingredients.value?.let {
+            list.addAll(it)
+        }
+        return list
+    }
+
     fun add(newIngredients: List<Ingredient>){
         ingredients.value = newIngredients.toMutableList()
         ingredients.value = ingredients.value
