@@ -7,7 +7,9 @@ import com.ltl.recipes.data.recipe.Recipe
 import com.ltl.recipes.data.recipe.RecipeClickListener
 import com.ltl.recipes.ui.main.MainFragment
 import com.ltl.recipes.ui.main.RecipeDetailFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
