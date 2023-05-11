@@ -37,7 +37,8 @@ class EditIngredientFragment : Fragment() {
 
         try {
             Log.d(TAG, "args: ${args.ingredientEditExtra}")
-            Log.d(TAG, "viewModel: ${viewModel.getIngredients()}")
+//            Log.d(TAG, "viewModel: ${viewModel.getIngredients()}")
+            Log.d(TAG, "viewModel: ${viewModel.ingredients}")
         } catch (e: Exception){
             Log.e(TAG, "ERROR args: ${e.printStackTrace()}")
         }

@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ltl.recipes.ingredient.Ingredient
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class IngredientViewModel: ViewModel() {
 
@@ -11,15 +13,13 @@ class IngredientViewModel: ViewModel() {
 //        MutableLiveData<MutableList<Ingredient?>>()
 //    }
 
-    private val ingredients = MutableLiveData<MutableList<Ingredient>>()
+//    private val ingredients = MutableLiveData<MutableList<Ingredient>>()
+    private val _ingredients = MutableStateFlow<MutableList<Ingredient>>(ArrayList())
+    val ingredients = _ingredients.asStateFlow()
 
-    init {
-        ingredients.value = ArrayList()
-    }
-
-    fun getIngredients(): LiveData<MutableList<Ingredient>> {
-        return ingredients
-    }
+//    fun getIngredients(): LiveData<MutableList<Ingredient>> {
+//        return ingredients
+//    }
 
     fun getIngredientsAsList(): List<Ingredient>{
         var list = emptyList<Ingredient>()
@@ -38,23 +38,23 @@ class IngredientViewModel: ViewModel() {
     }
 
     fun add(newIngredients: List<Ingredient>){
-        ingredients.value = newIngredients.toMutableList()
-        ingredients.value = ingredients.value
+        _ingredients.value = newIngredients.toMutableList()
+//        ingredients.value = ingredients.value
     }
 
     fun addIngredient(ingredient: Ingredient) {
-        ingredients.value?.add(ingredient)
-        ingredients.value = ingredients.value
+        _ingredients.value?.add(ingredient)
+//        ingredients.value = ingredients.value
     }
 
     fun removeIngredient(ingredient: Ingredient){
-        ingredients.value?.remove(ingredient)
-        ingredients.value = ingredients.value
+        _ingredients.value?.remove(ingredient)
+//        ingredients.value = ingredients.value
     }
 
     fun clear(){
         ingredients.value?.clear()
-        ingredients.value = ingredients.value
+//        ingredients.value = ingredients.value
     }
 
 

@@ -4,18 +4,19 @@ import android.text.Editable
 import android.util.Log
 import android.widget.RadioGroup
 import androidx.lifecycle.*
+import com.google.android.material.snackbar.Snackbar
 import com.ltl.recipes.data.ServingNumber
 import com.ltl.recipes.data.recipe.Recipe
 import com.ltl.recipes.data.recipe.RecipeRepository
 import com.ltl.recipes.ingredient.Ingredient
 import com.ltl.recipes.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -96,43 +97,40 @@ class NewRecipeViewModel @Inject constructor(
         Log.w("tag", "onTextChanged $s")
     }
 
-    fun insertRecipe(author: String): Boolean{
+    suspend fun insertRecipe(currentUser: String): Boolean{
+        var isSuccess = false
         if (!isValid()){
-            return false
+            return isSuccess
         }
-        val recipe = Recipe()
+        val r = Recipe()
         try {
-            recipe.imgRef = _imgRef.value
-            recipe.title = _title.value
-            recipe.description = _description.value
-            recipe.servingsNum = _servingNum.value
-            recipe.steps = _steps.value
-            recipe.isPublic = _isPublic.value
-            recipe.author = author
-            if (_ingredients.value.isNotEmpty()){
-                recipe.ingredients = _ingredients.value
-                Log.d("NewRecipeViewModel", "COLLECT DATA: ingredients collected")
+            with(r){
+                imgRef = _imgRef.value
+                title = _title.value
+                description = _description.value
+                servingsNum = _servingNum.value
+                steps = _steps.value
+                isPublic = _isPublic.value
+                author = currentUser
+                ingredients = _ingredients.value
             }
-//            if (getIngredients().value != null){
-//                recipe.ingredients = getIngredients().value!!.toList()
-//            }
-            Log.d("NewRecipeViewModel", "COLLECT DATA: ingredients: ${recipe.ingredients}")
+            _recipe.value = r
+            if (r.ingredients.isNotEmpty()) {
+                repository.addRecipe(r)
+                isSuccess = true
+            } else {
+                Log.e("NewRecipeViewModel", "INSERT DATA: recipe.ingredients IS EMPTY")
+            }
 
         } catch (e: Exception){
             Log.e("NewRecipeViewModel", "COLLECT DATA: error $e")
         }
 
-        setRecipe(recipe)
-        viewModelScope.launch (Dispatchers.IO) {
-            _recipe.value?.let { repository.addRecipe(it) }
-        }
-
-        return true
+        return isSuccess
     }
 
     fun isValid(): Boolean{
         if (_title.value.isEmpty() || _ingredients.value.isEmpty()) return false
-
         return true
     }
 

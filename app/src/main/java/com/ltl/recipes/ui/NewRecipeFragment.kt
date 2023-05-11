@@ -39,11 +39,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.storage.FirebaseStorage
 import com.ltl.recipes.R
 import com.ltl.recipes.data.recipe.Recipe
-import com.ltl.recipes.data.recipe.RecipeRepository
-import com.ltl.recipes.data.recipe.asDatabaseModel
 import com.ltl.recipes.data.user.UserViewModel
-import com.ltl.recipes.database.RecipesDatabase
-import com.ltl.recipes.database.getInstance
 import com.ltl.recipes.databinding.FragmentNewRecipeBinding
 import com.ltl.recipes.ingredient.Ingredient
 import com.ltl.recipes.ingredient.IngredientAccessType
@@ -54,7 +50,9 @@ import com.ltl.recipes.utils.StorageHandler
 import com.ltl.recipes.viewmodels.NewRecipeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -71,6 +69,7 @@ class NewRecipeFragment : Fragment() {
     private var imgName: String = "default.jpg"
 
     private val ingredientViewModel: IngredientViewModel by navGraphViewModels(R.id.nav_graph)
+//    private val ingredientViewModel: IngredientViewModel by navGraphViewModels(R.id.nav_graph)
     private val userViewModel: UserViewModel by navGraphViewModels(R.id.nav_graph)
     private val args: NewRecipeFragmentArgs by navArgs()
     // TODO: error viewmodel creates after going back from addIngredient. Use sharedviewmodel
@@ -163,7 +162,8 @@ class NewRecipeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.d(TAG, "Ingredients count: ${ingredientViewModel.getIngredients().value?.count()}")
+        Log.d(TAG, "Ingredients count: ${ingredientViewModel.ingredients.value?.count()}")
+//        Log.d(TAG, "Ingredients count: ${ingredientViewModel.getIngredients().value?.count()}")
 
         Toast.makeText(context, args.recipeId, Toast.LENGTH_SHORT).show()
 //        viewModel.refresh(args.recipeId)
@@ -188,15 +188,7 @@ class NewRecipeFragment : Fragment() {
         }
 
         binding.addRecipeButton.setOnClickListener{
-            val isSuccessful = addRecipeSequence()
-            if (isSuccessful) {
-                Log.d(TAG, "SAVE RECIPE: success")
-                viewModel.clear()
-                ingredientViewModel.clear()
-                goToMainFragment()
-            } else {
-                Log.d(TAG, "SAVE RECIPE: error")
-            }
+            addRecipeSequence()
         }
     }
 
@@ -208,16 +200,28 @@ class NewRecipeFragment : Fragment() {
         binding.ingredientRecycleView.layoutManager = layoutManager
         binding.ingredientRecycleView.itemAnimator = DefaultItemAnimator()
 
-        ingredientViewModel.getIngredients().observe(viewLifecycleOwner){
-            Log.d(TAG, "observer: ${it.size}")
-            ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(
-                it,
-                IngredientAccessType.EDIT,
-                ::deleteIngredient,
-                ::editIngredient)
+        lifecycleScope.launchWhenStarted {
+            ingredientViewModel.ingredients.collectLatest {
+                ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(
+                    it,
+                    IngredientAccessType.EDIT,
+                    ::deleteIngredient,
+                    ::editIngredient)
 
-            binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
+                binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
+            }
         }
+
+//        ingredientViewModel.getIngredients().observe(viewLifecycleOwner){
+//            Log.d(TAG, "observer: ${it.size}")
+//            ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(
+//                it,
+//                IngredientAccessType.EDIT,
+//                ::deleteIngredient,
+//                ::editIngredient)
+//
+//            binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
+//        }
     }
 
     private fun showBottomSheetDialog() {
@@ -341,41 +345,54 @@ class NewRecipeFragment : Fragment() {
         }
     }
 
-    private fun addRecipeSequence(): Boolean {
-        // TODO: error while checking data
-        viewModel.setIngredients(ingredientViewModel.getIngredientsAsMutableList())
-//        viewModel.setIngredients(ingredientViewModel.getIngredients().value?.toList() ?: ArrayList())
-        val t = viewModel.insertRecipe(userViewModel.getEmail())
-        return t
+    private fun addRecipeSequence() {
+        viewModel.setIngredients(ingredientViewModel.ingredients.value)
+        Log.d(TAG, "addRecipeSequence(): viewModel.ingredients = ${viewModel.ingredients.value}")
+        var isSuccess = false
+        val job = lifecycleScope.launch(Dispatchers.IO){
+            isSuccess = viewModel.insertRecipe(userViewModel.getEmail())
+        }
+        runBlocking {
+            job.join()
+        }
+
+        if (isSuccess) {
+            Log.d(TAG, "SAVE RECIPE: success")
+            viewModel.clear()
+            ingredientViewModel.clear()
+            goToMainFragment()
+        } else {
+            Log.d(TAG, "SAVE RECIPE: error")
+        }
     }
 
     private fun addRecipe(recipe: Recipe) {
 //        recipeRepository.addRecipe(recipe)
     }
 
-    private fun collectRecipeData(): Recipe {
-        var recipe = Recipe()
-
-//        TODO validate input fields
-        try {
-            recipe.imgRef = imgName
-            recipe.title = binding.recipeTitleEditText.text.toString()
-            recipe.description = binding.recipeDescriptionEditText.text.toString()
-            recipe.servingsNum = binding.servingSpinner.selectedItem.toString().toInt()
-            if (ingredientViewModel.getIngredients().value != null){
-                recipe.ingredients = ingredientViewModel.getIngredients().value!!.toList()
-            }
-            Log.d(TAG, "COLLECT DATA: ingredients: ${recipe.ingredients}")
-            recipe.steps = binding.stepsEditText.text.toString()
-            recipe.isPublic = isPublic
-
-            recipe.author = userViewModel.getEmail()
-        } catch (e: Exception){
-            Log.e(TAG, "COLLECT DATA: error $e")
-        }
-
-        return recipe
-    }
+//    private fun collectRecipeData(): Recipe {
+//        var recipe = Recipe()
+//
+////        TODO validate input fields
+//        try {
+//            recipe.imgRef = imgName
+//            recipe.title = binding.recipeTitleEditText.text.toString()
+//            recipe.description = binding.recipeDescriptionEditText.text.toString()
+//            recipe.servingsNum = binding.servingSpinner.selectedItem.toString().toInt()
+//            if (ingredientViewModel.getIngredients().value != null){
+//                recipe.ingredients = ingredientViewModel.getIngredients().value!!.toList()
+//            }
+//            Log.d(TAG, "COLLECT DATA: ingredients: ${recipe.ingredients}")
+//            recipe.steps = binding.stepsEditText.text.toString()
+//            recipe.isPublic = isPublic
+//
+//            recipe.author = userViewModel.getEmail()
+//        } catch (e: Exception){
+//            Log.e(TAG, "COLLECT DATA: error $e")
+//        }
+//
+//        return recipe
+//    }
 
     private fun deleteIngredient(ingredient: Ingredient){
         viewModel.removeIngredient(ingredient)
