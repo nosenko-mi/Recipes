@@ -39,7 +39,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.FirebaseStorage
 import com.ltl.recipes.R
-import com.ltl.recipes.data.recipe.Recipe
 import com.ltl.recipes.data.user.UserViewModel
 import com.ltl.recipes.databinding.FragmentNewRecipeBinding
 import com.ltl.recipes.ingredient.Ingredient
@@ -351,7 +350,7 @@ class NewRecipeFragment : Fragment() {
             if (isSuccess.await()){
                 Log.d(TAG, "SAVE RECIPE: success")
                 withContext(Dispatchers.Main){
-                    viewModel.clear()
+                    viewModel.clearIngredients()
                     ingredientViewModel.clear()
                     goToMainFragment()
                 }
@@ -377,7 +376,7 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun goToMainFragment() {
-        viewModel.clear()
+        viewModel.clearIngredients()
         ingredientViewModel.clear()
         view?.let { Navigation.findNavController(it).navigate(R.id.newRecipeFragmentToMainFragment) }
     }
