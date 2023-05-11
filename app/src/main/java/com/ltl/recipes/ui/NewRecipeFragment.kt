@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.FirebaseStorage
 import com.ltl.recipes.R
 import com.ltl.recipes.data.recipe.Recipe
@@ -49,10 +50,8 @@ import com.ltl.recipes.utils.PhotoConverter
 import com.ltl.recipes.utils.StorageHandler
 import com.ltl.recipes.viewmodels.NewRecipeViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -347,52 +346,22 @@ class NewRecipeFragment : Fragment() {
 
     private fun addRecipeSequence() {
         viewModel.setIngredients(ingredientViewModel.ingredients.value)
-        Log.d(TAG, "addRecipeSequence(): viewModel.ingredients = ${viewModel.ingredients.value}")
-        var isSuccess = false
-        val job = lifecycleScope.launch(Dispatchers.IO){
-            isSuccess = viewModel.insertRecipe(userViewModel.getEmail())
-        }
-        runBlocking {
-            job.join()
-        }
-
-        if (isSuccess) {
-            Log.d(TAG, "SAVE RECIPE: success")
-            viewModel.clear()
-            ingredientViewModel.clear()
-            goToMainFragment()
-        } else {
-            Log.d(TAG, "SAVE RECIPE: error")
+        lifecycleScope.launch(Dispatchers.IO){
+            val isSuccess = async { viewModel.insertRecipe(userViewModel.getEmail()) }
+            if (isSuccess.await()){
+                Log.d(TAG, "SAVE RECIPE: success")
+                withContext(Dispatchers.Main){
+                    viewModel.clear()
+                    ingredientViewModel.clear()
+                    goToMainFragment()
+                }
+            } else {
+                Log.d(TAG, "SAVE RECIPE: error")
+                Snackbar.make(binding.addRecipeButton, "Oops... something went wrong", Snackbar.LENGTH_SHORT)
+                    .show()
+            }
         }
     }
-
-    private fun addRecipe(recipe: Recipe) {
-//        recipeRepository.addRecipe(recipe)
-    }
-
-//    private fun collectRecipeData(): Recipe {
-//        var recipe = Recipe()
-//
-////        TODO validate input fields
-//        try {
-//            recipe.imgRef = imgName
-//            recipe.title = binding.recipeTitleEditText.text.toString()
-//            recipe.description = binding.recipeDescriptionEditText.text.toString()
-//            recipe.servingsNum = binding.servingSpinner.selectedItem.toString().toInt()
-//            if (ingredientViewModel.getIngredients().value != null){
-//                recipe.ingredients = ingredientViewModel.getIngredients().value!!.toList()
-//            }
-//            Log.d(TAG, "COLLECT DATA: ingredients: ${recipe.ingredients}")
-//            recipe.steps = binding.stepsEditText.text.toString()
-//            recipe.isPublic = isPublic
-//
-//            recipe.author = userViewModel.getEmail()
-//        } catch (e: Exception){
-//            Log.e(TAG, "COLLECT DATA: error $e")
-//        }
-//
-//        return recipe
-//    }
 
     private fun deleteIngredient(ingredient: Ingredient){
         viewModel.removeIngredient(ingredient)
