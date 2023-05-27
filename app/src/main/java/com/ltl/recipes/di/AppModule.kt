@@ -2,7 +2,6 @@ package com.ltl.recipes.di
 
 import android.app.Application
 import androidx.room.Room
-import com.ltl.recipes.RecipesApp
 import com.ltl.recipes.data.recipe.RecipeRepository
 import com.ltl.recipes.database.RecipesDatabase
 import dagger.Module

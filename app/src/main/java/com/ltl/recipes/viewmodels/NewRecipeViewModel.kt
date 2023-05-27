@@ -2,6 +2,7 @@ package com.ltl.recipes.viewmodels
 
 import android.text.Editable
 import android.util.Log
+import androidx.databinding.InverseBindingListener
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,7 @@ import com.ltl.recipes.data.ServingNumber
 import com.ltl.recipes.data.recipe.Recipe
 import com.ltl.recipes.data.recipe.RecipeRepository
 import com.ltl.recipes.ingredient.Ingredient
+import com.ltl.recipes.ingredient.QuantityType
 import com.ltl.recipes.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +25,7 @@ import javax.inject.Inject
 class NewRecipeViewModel @Inject constructor(
     private val repository: RecipeRepository,
     savedStateHandle: SavedStateHandle
-): ViewModel() {
+): ViewModel(), InverseBindingListener {
 
     companion object{
         private val TAG: String = "NewRecipeViewModel"
@@ -51,6 +53,19 @@ class NewRecipeViewModel @Inject constructor(
 
     private val _ingredients = MutableStateFlow<MutableList<Ingredient>>(ArrayList())
     val ingredients = _ingredients.asStateFlow()
+
+    private val _currentIngredient = MutableStateFlow(Ingredient())
+    val currentIngredient = _currentIngredient.asStateFlow()
+    private var oldIngredient: Ingredient? = null
+
+    fun setCurrentQuantityType(type: QuantityType){
+        _currentIngredient.value.qtyType = type
+    }
+
+    fun clearCurrentIngredient(){
+        _currentIngredient.value = Ingredient()
+        oldIngredient = null
+    }
 
     private val _imgRef = MutableStateFlow("default.jpg")
     val imgRef = _imgRef.asStateFlow()
@@ -86,32 +101,57 @@ class NewRecipeViewModel @Inject constructor(
 
     suspend fun insertRecipe(currentUser: String): Boolean{
         var isSuccess = false
-        if (!isValid()){
-            return isSuccess
+        if (currentUser.isEmpty() || !isValid()){
+            return false
         }
-        val r = Recipe()
-        try {
-            with(r){
-                imgRef = _imgRef.value
-                title = _title.value
-                description = _description.value
-                servingsNum = _servingNum.value
-                steps = _steps.value
-                isPublic = _isPublic.value
-                author = currentUser
-                ingredients = _ingredients.value
-            }
-            _recipe.value = r
-            if (r.ingredients.isNotEmpty()) {
-                repository.addRecipe(r)
-                isSuccess = true
-            } else {
-                Log.e("NewRecipeViewModel", "INSERT DATA: recipe.ingredients IS EMPTY")
-            }
+        recipe.value?.let {
+            try {
+                val r = it.copy()
+                with(r){
+                    imgRef = _imgRef.value
+                    title = _title.value
+                    description = _description.value
+                    servingsNum = _servingNum.value
+                    steps = _steps.value
+                    isPublic = _isPublic.value
+                    author = currentUser
+                    ingredients = _ingredients.value
+                }
+                _recipe.value = r
+                if (r.ingredients.isNotEmpty()) {
+                    repository.addRecipe(r)
+                    isSuccess = true
+                } else {
+                    Log.e("NewRecipeViewModel", "INSERT DATA: recipe.ingredients IS EMPTY")
+                }
 
-        } catch (e: Exception){
-            Log.e("NewRecipeViewModel", "COLLECT DATA: error $e")
+            } catch (e: Exception){
+                Log.e("NewRecipeViewModel", "COLLECT DATA: error $e")
+            }
         }
+//        val r = Recipe()
+//        try {
+//            with(r){
+//                imgRef = _imgRef.value
+//                title = _title.value
+//                description = _description.value
+//                servingsNum = _servingNum.value
+//                steps = _steps.value
+//                isPublic = _isPublic.value
+//                author = currentUser
+//                ingredients = _ingredients.value
+//            }
+//            _recipe.value = r
+//            if (r.ingredients.isNotEmpty()) {
+//                repository.addRecipe(r)
+//                isSuccess = true
+//            } else {
+//                Log.e("NewRecipeViewModel", "INSERT DATA: recipe.ingredients IS EMPTY")
+//            }
+//
+//        } catch (e: Exception){
+//            Log.e("NewRecipeViewModel", "COLLECT DATA: error $e")
+//        }
 
         return isSuccess
     }
@@ -133,8 +173,27 @@ class NewRecipeViewModel @Inject constructor(
         _description.value = editable.toString()
     }
 
+    fun updateQty(editable: Editable){
+        if (editable.toString().isEmpty()){
+            _currentIngredient.value.qty = 0f
+        } else{
+            _currentIngredient.value.qty = editable.toString().toFloat()
+        }
+    }
+
     fun updateSteps(editable: Editable){
         _steps.value = editable.toString()
+    }
+
+    // Method that returns the enum values
+    fun getQuantityTypeValues(): Array<QuantityType> {
+        return QuantityType.values()
+    }
+
+
+    fun setCurrentIngredient(ingredient: Ingredient){
+        _currentIngredient.value = ingredient
+        oldIngredient = ingredient
     }
 
     fun setImgRef(ref: String){
@@ -145,7 +204,19 @@ class NewRecipeViewModel @Inject constructor(
         _ingredients.value = newIngredients
     }
 
+    fun upsertCurrentIngredient(){
+        if (oldIngredient != null && _ingredients.value.contains(oldIngredient)){
+            _ingredients.value.remove(oldIngredient)
+        }
+        if (currentIngredient.value.isValid()){
+            _ingredients.value.add(currentIngredient.value)
+        }
+    }
+
     fun addIngredient(ingredient: Ingredient) {
+        if (_ingredients.value.contains(oldIngredient)){
+            _ingredients.value.remove(oldIngredient)
+        }
         _ingredients.value.add(ingredient)
         _ingredients.value = _ingredients.value
     }
@@ -158,5 +229,10 @@ class NewRecipeViewModel @Inject constructor(
     fun clearIngredients(){
         _ingredients.value.clear()
         _ingredients.value = _ingredients.value
+    }
+
+    override fun onChange() {
+        Log.d(TAG, "NewRecipeViewModel: Ingredient spinner value changed")
+
     }
 }

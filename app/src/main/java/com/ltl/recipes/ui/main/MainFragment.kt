@@ -1,7 +1,5 @@
 package com.ltl.recipes.ui.main
 
-import android.Manifest
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.core.content.PermissionChecker
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
@@ -26,13 +23,12 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.ltl.recipes.R
-import com.ltl.recipes.data.user.UserViewModel
-import com.ltl.recipes.databinding.MainFragmentBinding
 import com.ltl.recipes.data.recipe.Recipe
 import com.ltl.recipes.data.recipe.RecipeAdapter
 import com.ltl.recipes.data.recipe.RecipeClickListener
+import com.ltl.recipes.data.user.UserViewModel
+import com.ltl.recipes.databinding.MainFragmentBinding
 import com.ltl.recipes.viewmodels.RecipeViewModel
-
 
 class MainFragment : Fragment(), RecipeClickListener {
 
@@ -148,10 +144,18 @@ class MainFragment : Fragment(), RecipeClickListener {
 
     private fun goToNewRecipeFragment(recipe: Recipe? = null) {
         Log.d(TAG, "Action: to LoginFragment")
-        var action = MainFragmentDirections.mainFragmentToNewRecipeFragment()
+        var action = MainFragmentDirections.actionMainFragmentToAddEditRecipeParentFragment(userEmail = userViewModel.getEmail())
         if (recipe != null){
-            action = MainFragmentDirections.mainFragmentToNewRecipeFragment(recipe.id)
+            action = MainFragmentDirections.actionMainFragmentToAddEditRecipeParentFragment(
+                recipeId = recipe.id,
+                userEmail = userViewModel.getEmail()
+            )
         }
+
+//        var action = MainFragmentDirections.mainFragmentToNewRecipeFragment()
+//        if (recipe != null){
+//            action = MainFragmentDirections.mainFragmentToNewRecipeFragment(recipe.id)
+//        }
 //        action = MainFragmentDirections.mainFragmentToNewRecipeFragment()
         view?.let { Navigation.findNavController(it).navigate(action) }
     }

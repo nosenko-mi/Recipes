@@ -6,7 +6,8 @@
     <data>
         <variable
             name="recipeViewModel"
-            type="com.ltl.recipes.viewmodels.NewRecipeViewModel" />
+            type="com.ltl.recipes.viewmodels.NewRecipeViewModel"
+            />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -168,7 +169,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:text="Done"
+            android:text="@string/done_string"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">

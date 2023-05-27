@@ -26,9 +26,10 @@ import androidx.core.content.PermissionChecker.PERMISSION_DENIED
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -39,7 +40,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.FirebaseStorage
 import com.ltl.recipes.R
-import com.ltl.recipes.data.user.UserViewModel
 import com.ltl.recipes.databinding.FragmentNewRecipeBinding
 import com.ltl.recipes.ingredient.Ingredient
 import com.ltl.recipes.ingredient.IngredientAccessType
@@ -49,8 +49,11 @@ import com.ltl.recipes.utils.PhotoConverter
 import com.ltl.recipes.utils.StorageHandler
 import com.ltl.recipes.viewmodels.NewRecipeViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -58,26 +61,30 @@ import java.util.*
 @AndroidEntryPoint
 class NewRecipeFragment : Fragment() {
 
-    private var isPublic = false
-
     private lateinit var ingredientRecycleViewAdapter: IngredientRecycleViewAdapter
 
     private lateinit var binding: FragmentNewRecipeBinding
     private lateinit var recipeImg: ImageView
     private var imgName: String = "default.jpg"
 
-    private val ingredientViewModel: IngredientViewModel by navGraphViewModels(R.id.nav_graph)
 //    private val ingredientViewModel: IngredientViewModel by navGraphViewModels(R.id.nav_graph)
-    private val userViewModel: UserViewModel by navGraphViewModels(R.id.nav_graph)
-    private val args: NewRecipeFragmentArgs by navArgs()
-    // TODO: error viewmodel creates after going back from addIngredient. Use sharedviewmodel
-//    -- Perhaps you can wrap the Fragment A and Fragment B inside another fragment
-//    (making A and B as child fragments on that container fragment).
-//    This way, you can create the viewModel scoped to the container Fragment and use it in both child fragments.
-//    -- Thanks for the suggestion! For various reusability reasons we ended up
-//    creating an additional ViewModel shared across the fragments with by activityViewModels()
-//    and using setter methods, as suggested in the linked comment above.
-    private val viewModel: NewRecipeViewModel by viewModels()
+//    private val userViewModel: UserViewModel by navGraphViewModels(R.id.nav_graph)
+//    private val userViewModel: UserViewModel by navGraphViewModels(R.id.add_edit_recipe_nav_graph)
+    private val ingredientViewModel: IngredientViewModel by navGraphViewModels(R.id.add_edit_recipe_nav_graph)
+    val args: NewRecipeFragmentArgs by navArgs()
+
+//    private val viewModel: NewRecipeViewModel by navGraphViewModels(R.id.add_edit_recipe_nav_graph)
+//    private val viewModel: NewRecipeViewModel by viewModels()
+//    private val viewModel: NewRecipeViewModel by activityViewModels()
+    private val viewModel: NewRecipeViewModel by hiltNavGraphViewModels(R.id.add_edit_recipe_nav_graph)
+
+//    private val viewModel: NewRecipeViewModel by viewModels(
+//        ownerProducer = {requireParentFragment()}
+//    )
+    // Equivalent navGraphViewModels code using the viewModels API
+//    private val viewModel: NewRecipeViewModel by viewModels(
+//        { findNavController().getBackStackEntry(R.id.add_edit_recipe_nav_graph) }
+//    )
 
     private val requestPermissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestPermission()
@@ -160,13 +167,15 @@ class NewRecipeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.d(TAG, "Ingredients count: ${ingredientViewModel.ingredients.value?.count()}")
+        Log.d(TAG, "Ingredients count: ${ingredientViewModel.ingredients.value.count()}")
 //        Log.d(TAG, "Ingredients count: ${ingredientViewModel.getIngredients().value?.count()}")
 
-        Toast.makeText(context, args.recipeId, Toast.LENGTH_SHORT).show()
+//        Toast.makeText(context, args.recipeId, Toast.LENGTH_SHORT).show()
 //        viewModel.refresh(args.recipeId)
-        Log.d(TAG, "Recipe id: ${args.recipeId}")
+//        Log.d(TAG, "Recipe id: ${args.recipeId}")
 
+        Log.d("viewmodel", "NewRecipeFragment VM: $viewModel")
+        Log.d("viewmodel", "NewRecipeFragment VM value: ${viewModel.recipe.value.toString()}")
 
         recipeImg = binding.recipeImgImageView
         recipeImg.setOnClickListener{
@@ -182,7 +191,8 @@ class NewRecipeFragment : Fragment() {
 
         binding.addIngredientButton.setOnClickListener{
 //            Toast.makeText(context, "Add ingredient", Toast.LENGTH_SHORT).show()
-            goToAddIngredient()
+//            goToAddIngredient()
+            goToAddEditIngredient()
         }
 
         binding.addRecipeButton.setOnClickListener{
@@ -191,35 +201,41 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun subscribeToObservables(){
-//        TODO: Add observers for other fields
         binding.ingredientRecycleView.setHasFixedSize(true)
 //        val l = object: LinearLayoutManager(context) { override fun canScrollVertically() = false }
         val layoutManager = LinearLayoutManager(context)
         binding.ingredientRecycleView.layoutManager = layoutManager
         binding.ingredientRecycleView.itemAnimator = DefaultItemAnimator()
 
+//        lifecycleScope.launchWhenStarted {
+//            ingredientViewModel.ingredients.collectLatest {
+//                ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(
+//                    it,
+//                    IngredientAccessType.EDIT,
+//                    ::deleteIngredient,
+//                    ::editIngredient)
+//                binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
+//            }
+
         lifecycleScope.launchWhenStarted {
-            ingredientViewModel.ingredients.collectLatest {
+            viewModel.ingredients.collectLatest {
                 ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(
                     it,
                     IngredientAccessType.EDIT,
                     ::deleteIngredient,
                     ::editIngredient)
-
                 binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
             }
-        }
 
-//        ingredientViewModel.getIngredients().observe(viewLifecycleOwner){
-//            Log.d(TAG, "observer: ${it.size}")
-//            ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(
-//                it,
-//                IngredientAccessType.EDIT,
-//                ::deleteIngredient,
-//                ::editIngredient)
-//
-//            binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
-//        }
+//            viewModel.ingredients.collectLatest {
+//                ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(
+//                    it,
+//                    IngredientAccessType.EDIT,
+//                    ::deleteIngredient,
+//                    ::editIngredient)
+//                binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
+//            }
+        }
     }
 
     private fun showBottomSheetDialog() {
@@ -344,18 +360,18 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun addRecipeSequence() {
-        viewModel.setIngredients(ingredientViewModel.ingredients.value)
+//        viewModel.setIngredients(ingredientViewModel.ingredients.value)
         lifecycleScope.launch(Dispatchers.IO){
-            val isSuccess = async { viewModel.insertRecipe(userViewModel.getEmail()) }
+            val isSuccess = async { viewModel.insertRecipe(args.userEmail) }
             if (isSuccess.await()){
-                Log.d(TAG, "SAVE RECIPE: success")
+                Log.d(TAG, "addRecipeSequence: success")
                 withContext(Dispatchers.Main){
                     viewModel.clearIngredients()
                     ingredientViewModel.clear()
                     goToMainFragment()
                 }
             } else {
-                Log.d(TAG, "SAVE RECIPE: error")
+                Log.d(TAG, "addRecipeSequence: error")
                 Snackbar.make(binding.addRecipeButton, "Oops... something went wrong", Snackbar.LENGTH_SHORT)
                     .show()
             }
@@ -368,22 +384,32 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun editIngredient(ingredient: Ingredient){
-        goToaEditIngredient(ingredient)
+//        goToaEditIngredient(ingredient)
+        viewModel.setCurrentIngredient(ingredient)
+        goToAddEditIngredient()
     }
 
+
     private fun goToAddIngredient() {
-        view?.let { Navigation.findNavController(it).navigate(R.id.newRecipeFragmentToAddIngredientFragment) }
+//        view?.let { Navigation.findNavController(it).navigate(R.id.newRecipeFragmentToAddIngredientFragment) }
     }
 
     private fun goToMainFragment() {
-        viewModel.clearIngredients()
-        ingredientViewModel.clear()
-        view?.let { Navigation.findNavController(it).navigate(R.id.newRecipeFragmentToMainFragment) }
+//        viewModel.clearIngredients()
+//        view?.let { Navigation.findNavController(it).navigate(R.id.newRecipeFragmentToMainFragment) }
+        findNavController().popBackStack()
+    }
+
+    private fun goToAddEditIngredient(){
+        view?.let {
+            Navigation.findNavController(it)
+                .navigate(R.id.action_newRecipeFragment2_to_addIngredientFragment2)
+        }
     }
 
     private fun goToaEditIngredient(ingredient: Ingredient) {
-        val action = NewRecipeFragmentDirections.newRecipeFragmentToEditIngredientFragment(ingredient)
-        view?.let { Navigation.findNavController(it).navigate(action) }
+//        val action = NewRecipeFragmentDirections.newRecipeFragmentToEditIngredientFragment(ingredient)
+//        view?.let { Navigation.findNavController(it).navigate(action) }
     }
 
     companion object {

@@ -13,13 +13,27 @@
         <action
             android:id="@+id/mainFragmentToRecipeDetailFragment"
             app:destination="@id/recipeDetailFragment"/>
-        <action
-            android:id="@+id/mainFragmentToNewRecipeFragment"
-            app:destination="@id/newRecipeFragment" />
+<!--        <action-->
+<!--            android:id="@+id/mainFragmentToNewRecipeFragment"-->
+<!--            app:destination="@id/newRecipeFragment" />-->
         <action
             android:id="@+id/mainFragmentToLoginFragment"
             app:destination="@id/loginFragment"
             />
+        <action
+            android:id="@+id/action_mainFragment_to_addEditRecipeParentFragment"
+            app:destination="@id/add_edit_recipe_nav_graph">
+            <argument
+                android:name="recipeId"
+                app:argType="string"
+                android:defaultValue="-1"/>
+
+            <argument
+                android:name="userEmail"
+                app:argType="string"
+                android:defaultValue=""/>
+        </action>
+
     </fragment>
     <fragment
         android:id="@+id/recipeDetailFragment"
@@ -34,55 +48,6 @@
         <argument
             android:name="recipeAttr"
             app:argType="com.ltl.recipes.data.recipe.Recipe" />
-    </fragment>
-    <fragment
-        android:id="@+id/newRecipeFragment"
-        android:name="com.ltl.recipes.ui.NewRecipeFragment"
-        android:label="fragment_new_recipe"
-        tools:layout="@layout/fragment_new_recipe" >
-        <action
-            android:id="@+id/newRecipeFragmentToMainFragment"
-            app:popUpTo="@id/mainFragment"
-            />
-        <action
-            android:id="@+id/newRecipeFragmentToAddIngredientFragment"
-            app:destination="@id/addIngredientFragment"
-            app:popUpTo="@id/addIngredientFragment"
-            app:popUpToInclusive="true"
-            />
-        <action
-            android:id="@+id/newRecipeFragmentToEditIngredientFragment"
-            app:destination="@id/editIngredientFragment"
-            app:popUpTo="@id/editIngredientFragment"
-            app:popUpToInclusive="true"
-            />
-        <argument
-            android:name="recipeId"
-            app:argType="string"
-            android:defaultValue="-1" />
-    </fragment>
-    <fragment
-        android:id="@+id/addIngredientFragment"
-        android:name="com.ltl.recipes.ui.AddIngredientFragment"
-        android:label="AddIngredientFragment" >
-        <action
-            android:id="@+id/addIngredientFragmentToNewRecipeFragment"
-            app:popUpTo="@id/newRecipeFragment"
-            >
-        </action>
-    </fragment>
-    <fragment
-        android:id="@+id/editIngredientFragment"
-        android:name="com.ltl.recipes.ui.EditIngredientFragment"
-        android:label="EditIngredientFragment" >
-        <argument
-            android:name="ingredientEditExtra"
-            app:argType="com.ltl.recipes.ingredient.Ingredient"
-            />
-        <action
-            android:id="@+id/editIngredientFragmentToNewRecipeFragment"
-            app:popUpTo="@id/newRecipeFragment"
-            />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -111,4 +76,6 @@
             app:popUpToInclusive="true"
             />
     </fragment>
+
+    <include app:graph="@navigation/add_edit_recipe_nav_graph" />
 </navigation>

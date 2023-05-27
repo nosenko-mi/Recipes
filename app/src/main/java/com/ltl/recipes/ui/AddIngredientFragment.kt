@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.navigation.navGraphViewModels
@@ -31,7 +32,7 @@ class AddIngredientFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentAddIngredientBinding.inflate(inflater, container, false)
         val view = binding.root
@@ -40,6 +41,7 @@ class AddIngredientFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
 
         binding.quantityTypeSpinner.adapter =
             ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, QuantityType.values())
@@ -81,8 +83,17 @@ class AddIngredientFragment : Fragment() {
     }
 
     private fun goToAddRecipe() {
-        val action = AddIngredientFragmentDirections.addIngredientFragmentToNewRecipeFragment()
-        view?.let { Navigation.findNavController(it).navigate(action) }
+        view?.let { Navigation.findNavController(it).popBackStack() }
+//        val action = AddIngredientFragmentDirections.addIngredientFragmentToNewRecipeFragment()
+//        view?.let { Navigation.findNavController(it).navigate(action) }
+    }
+
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            // Navigate to the FirstFragment and remove the SecondFragment from the back stack.
+//            navController.navigate(R.id.action_secondFragment2_to_firstFragment2)
+            view?.let { Navigation.findNavController(it).popBackStack() }
+        }
     }
 
     companion object {

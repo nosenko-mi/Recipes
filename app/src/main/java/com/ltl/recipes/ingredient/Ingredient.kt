@@ -6,7 +6,7 @@ import org.json.JSONObject
 
 @kotlinx.serialization.Serializable
 data class Ingredient(
-    var title: String = "abstract",
+    var title: String = "",
     var qty: Float = 1f,
     var qtyType: QuantityType = QuantityType.NONE
 )
@@ -23,6 +23,9 @@ data class Ingredient(
     }
 
     fun isValid(): Boolean {
-        return title != "abstract"
+        if (title.isEmpty() || qty.isNaN() || qty < 0){
+            return false
+        }
+        return true
     }
 }

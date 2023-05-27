@@ -8,8 +8,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
-import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.ltl.recipes.R
 import com.ltl.recipes.databinding.FragmentEditIngredientBinding
@@ -19,7 +17,7 @@ import com.ltl.recipes.ingredient.QuantityType
 
 class EditIngredientFragment : Fragment() {
 
-    val args: EditIngredientFragmentArgs by navArgs()
+//    val args: EditIngredientFragmentArgs by navArgs()
     private val viewModel: IngredientViewModel by navGraphViewModels(R.id.nav_graph)
 
 
@@ -33,11 +31,9 @@ class EditIngredientFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         try {
-            Log.d(TAG, "args: ${args.ingredientEditExtra}")
-//            Log.d(TAG, "viewModel: ${viewModel.getIngredients()}")
             Log.d(TAG, "viewModel: ${viewModel.ingredients}")
         } catch (e: Exception){
             Log.e(TAG, "ERROR args: ${e.printStackTrace()}")
@@ -63,27 +59,18 @@ class EditIngredientFragment : Fragment() {
     }
 
     private fun bindFields() {
-
         val spinner = binding.eQuantityTypeSpinner
-
-        binding.eIngredientTitleEdit.setText(args.ingredientEditExtra.title)
-        binding.eIngredientQuantityEdit.setText(args.ingredientEditExtra.qty.toString())
-        spinner.setSelection(
-            spinnerAdapter.getPosition(args.ingredientEditExtra.qtyType)
-        )
     }
 
     private fun editIngredientSequence(){
         val ingredient = collectData()
         Log.d(TAG, ingredient.toString())
         if (!ingredient.isValid()){
-//            show error
             Toast.makeText(context, "Invalid ingredient data", Toast.LENGTH_SHORT).show()
             Log.d(TAG, "INVALID ingredient")
         } else {
 //            TODO send ingredient back to AddNewRecipeFragment
             viewModel.addIngredient(ingredient)
-            viewModel.removeIngredient(args.ingredientEditExtra)
             goToAddRecipe()
         }
     }
@@ -106,8 +93,8 @@ class EditIngredientFragment : Fragment() {
     }
 
     private fun goToAddRecipe() {
-        val action = EditIngredientFragmentDirections.editIngredientFragmentToNewRecipeFragment()
-        view?.let { Navigation.findNavController(it).navigate(action) }
+//        val action = EditIngredientFragmentDirections.editIngredientFragmentToNewRecipeFragment()
+//        view?.let { Navigation.findNavController(it).navigate(action) }
     }
 
     companion object {
