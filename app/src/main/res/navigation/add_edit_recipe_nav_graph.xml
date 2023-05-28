@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/add_edit_recipe_nav_graph"
+    app:startDestination="@id/newRecipeFragment2">
+
+    <fragment
+        android:id="@+id/newRecipeFragment2"
+        android:name="com.ltl.recipes.ui.NewRecipeFragment"
+        tools:layout="@layout/fragment_new_recipe"
+        android:label="NewRecipeFragment" >
+        <argument
+            android:name="recipeId"
+            app:argType="string"
+            android:defaultValue="-1"/>
+        <argument
+            android:name="userEmail"
+            app:argType="string"
+            android:defaultValue=""/>
+        <action
+            android:id="@+id/action_newRecipeFragment2_to_addIngredientFragment2"
+            app:destination="@id/addIngredientFragment2"
+            app:popUpTo="@id/newRecipeFragment2"/>
+    </fragment>
+    <fragment
+        android:id="@+id/addIngredientFragment2"
+        android:name="com.ltl.recipes.ui.AddEditIngredientFragment"
+        tools:layout="@layout/fragment_add_edit_ingredient"
+        android:label="AddEditIngredientFragment" />
+</navigation>
