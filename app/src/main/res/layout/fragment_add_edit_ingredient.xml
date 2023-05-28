@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="recipeViewModel"
+            type="com.ltl.recipes.viewmodels.NewRecipeViewModel"
+            />
+        <variable
+            name="quantityType"
+            type="com.ltl.recipes.ingredient.ObservableQuantityType"
+            />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginStart="@dimen/def_margin_horizontal"
+        android:layout_marginEnd="@dimen/def_margin_horizontal">
+
+
+        <TextView
+            android:id="@+id/addIngredientText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/def_margin_vertical"
+            android:textSize="@dimen/text_caption"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:text="Add/Edit ingredient" />
+
+        <EditText
+            android:id="@+id/ingredientTitleEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/def_margin_spread"
+            app:layout_constraintTop_toBottomOf="@id/addIngredientText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:hint="Ingredient name"
+            android:text="@={recipeViewModel.currentIngredient.title}"
+            android:inputType="text" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/ingredientTitleEdit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <EditText
+                android:id="@+id/ingredientQuantityEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/def_margin_dense"
+                android:layout_weight="1"
+                app:layout_constraintTop_toBottomOf="@id/ingredientTitleEdit"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:hint="Quantity"
+                android:text="@{String.valueOf(recipeViewModel.currentIngredient.qty)}"
+                android:afterTextChanged="@{(v)-> recipeViewModel.updateQty(v)}"
+                android:inputType="numberDecimal" />
+
+            <Spinner
+                android:id="@+id/quantityTypeSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/def_margin_dense"
+                app:layout_constraintTop_toBottomOf="@id/ingredientQuantityEdit"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginBottom="40dp" />
+
+<!--            <Spinner-->
+<!--                android:id="@+id/quantityTypeSpinner"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="@dimen/def_margin_dense"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/ingredientQuantityEdit"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:entries="@{recipeViewModel.quantityTypeValues}"-->
+<!--                app:selectedValue="@{recipeViewModel.currentIngredient.qtyType}"-->
+<!--                app:selectedValueAttrChanged="@{recipeViewModel::onChange}"-->
+<!--                android:layout_marginBottom="40dp" />-->
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/addButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/def_margin_vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/done_string" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
