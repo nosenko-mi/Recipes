@@ -67,24 +67,10 @@ class NewRecipeFragment : Fragment() {
     private lateinit var recipeImg: ImageView
     private var imgName: String = "default.jpg"
 
-//    private val ingredientViewModel: IngredientViewModel by navGraphViewModels(R.id.nav_graph)
-//    private val userViewModel: UserViewModel by navGraphViewModels(R.id.nav_graph)
-//    private val userViewModel: UserViewModel by navGraphViewModels(R.id.add_edit_recipe_nav_graph)
     private val ingredientViewModel: IngredientViewModel by navGraphViewModels(R.id.add_edit_recipe_nav_graph)
     val args: NewRecipeFragmentArgs by navArgs()
 
-//    private val viewModel: NewRecipeViewModel by navGraphViewModels(R.id.add_edit_recipe_nav_graph)
-//    private val viewModel: NewRecipeViewModel by viewModels()
-//    private val viewModel: NewRecipeViewModel by activityViewModels()
     private val viewModel: NewRecipeViewModel by hiltNavGraphViewModels(R.id.add_edit_recipe_nav_graph)
-
-//    private val viewModel: NewRecipeViewModel by viewModels(
-//        ownerProducer = {requireParentFragment()}
-//    )
-    // Equivalent navGraphViewModels code using the viewModels API
-//    private val viewModel: NewRecipeViewModel by viewModels(
-//        { findNavController().getBackStackEntry(R.id.add_edit_recipe_nav_graph) }
-//    )
 
     private val requestPermissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestPermission()
@@ -134,31 +120,11 @@ class NewRecipeFragment : Fragment() {
     ): View {
         Log.d(TAG, "NewRecipeFragment starts")
 
-//        binding = FragmentNewRecipeBinding.inflate(inflater, container, false)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_new_recipe,container, false)
         binding.lifecycleOwner = this
         val view = binding.root
         binding.recipeViewModel = viewModel
 
-//        binding.ingredientRecycleView.setHasFixedSize(true)
-////        val l = object: LinearLayoutManager(context) { override fun canScrollVertically() = false }
-//        val layoutManager = LinearLayoutManager(context)
-//        binding.ingredientRecycleView.layoutManager = layoutManager
-//        binding.ingredientRecycleView.itemAnimator = DefaultItemAnimator()
-//
-//        ingredientViewModel.getIngredients().observe(viewLifecycleOwner){
-//            Log.d(TAG, "observer: ${it.size}")
-//            ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(
-//                it,
-//                IngredientAccessType.EDIT,
-//                ::deleteIngredient,
-//                ::editIngredient)
-//
-//            binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
-//        }
-
-        // TODO: collect ui state
-        // https://developer.android.com/kotlin/flow/stateflow-and-sharedflow
         subscribeToObservables()
 
         return view
@@ -168,11 +134,6 @@ class NewRecipeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         Log.d(TAG, "Ingredients count: ${ingredientViewModel.ingredients.value.count()}")
-//        Log.d(TAG, "Ingredients count: ${ingredientViewModel.getIngredients().value?.count()}")
-
-//        Toast.makeText(context, args.recipeId, Toast.LENGTH_SHORT).show()
-//        viewModel.refresh(args.recipeId)
-//        Log.d(TAG, "Recipe id: ${args.recipeId}")
 
         Log.d("viewmodel", "NewRecipeFragment VM: $viewModel")
         Log.d("viewmodel", "NewRecipeFragment VM value: ${viewModel.recipe.value.toString()}")
@@ -190,8 +151,6 @@ class NewRecipeFragment : Fragment() {
             .into(recipeImg)
 
         binding.addIngredientButton.setOnClickListener{
-//            Toast.makeText(context, "Add ingredient", Toast.LENGTH_SHORT).show()
-//            goToAddIngredient()
             goToAddEditIngredient()
         }
 
@@ -206,16 +165,6 @@ class NewRecipeFragment : Fragment() {
         val layoutManager = LinearLayoutManager(context)
         binding.ingredientRecycleView.layoutManager = layoutManager
         binding.ingredientRecycleView.itemAnimator = DefaultItemAnimator()
-
-//        lifecycleScope.launchWhenStarted {
-//            ingredientViewModel.ingredients.collectLatest {
-//                ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(
-//                    it,
-//                    IngredientAccessType.EDIT,
-//                    ::deleteIngredient,
-//                    ::editIngredient)
-//                binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
-//            }
 
         lifecycleScope.launchWhenStarted {
             viewModel.ingredients.collectLatest {
@@ -309,7 +258,6 @@ class NewRecipeFragment : Fragment() {
         }
     }
 
-
     private fun startCamera(){
         dispatchTakePictureIntent()
     }
@@ -388,7 +336,6 @@ class NewRecipeFragment : Fragment() {
         viewModel.setCurrentIngredient(ingredient)
         goToAddEditIngredient()
     }
-
 
     private fun goToAddIngredient() {
 //        view?.let { Navigation.findNavController(it).navigate(R.id.newRecipeFragmentToAddIngredientFragment) }
