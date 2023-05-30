@@ -1,6 +1,7 @@
 package com.ltl.recipes.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -133,15 +134,15 @@ class NewRecipeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setListeners()
+
         Log.d(TAG, "Ingredients count: ${ingredientViewModel.ingredients.value.count()}")
 
         Log.d("viewmodel", "NewRecipeFragment VM: $viewModel")
         Log.d("viewmodel", "NewRecipeFragment VM value: ${viewModel.recipe.value.toString()}")
 
         recipeImg = binding.recipeImgImageView
-        recipeImg.setOnClickListener{
-            showBottomSheetDialog()
-        }
+
 //        Glide snippet
 //        TODO: create standard img
         val storageReference = FirebaseStorage.getInstance().getReference("tests/name.jpg")
@@ -149,6 +150,13 @@ class NewRecipeFragment : Fragment() {
             .load(storageReference)
             .dontAnimate()
             .into(recipeImg)
+
+    }
+
+    private fun setListeners(){
+        recipeImg.setOnClickListener{
+            showBottomSheetDialog()
+        }
 
         binding.addIngredientButton.setOnClickListener{
             goToAddEditIngredient()
