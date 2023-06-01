@@ -308,6 +308,7 @@ class NewRecipeFragment : Fragment() {
 //            TODO: Change collection to prod
             val storageHandler = FirebaseStorageHandler("tests", imgName)
 
+            // TODO: 2. implement viewmodel.insertPhoto(imgName)
             if (data != null){
                 storageHandler.putPhoto(data)
             }
