@@ -1,7 +1,6 @@
 package com.ltl.recipes.ui
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -25,7 +24,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker.PERMISSION_DENIED
 import androidx.core.content.PermissionChecker.checkSelfPermission
-import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
@@ -51,9 +49,8 @@ import com.ltl.recipes.ingredient.Ingredient
 import com.ltl.recipes.ingredient.IngredientAccessType
 import com.ltl.recipes.ingredient.IngredientRecycleViewAdapter
 import com.ltl.recipes.ingredient.IngredientViewModel
-import com.ltl.recipes.ui.main.RecipeDetailFragment
 import com.ltl.recipes.utils.PhotoConverter
-import com.ltl.recipes.utils.StorageHandler
+import com.ltl.recipes.utils.FirebaseStorageHandler
 import com.ltl.recipes.viewmodels.NewRecipeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -289,7 +286,7 @@ class NewRecipeFragment : Fragment() {
         dispatchTakePictureIntent()
     }
 
-    private fun createFileName(): String{
+    private fun createFileName(): String {
         val ref = SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis())
         viewModel.setImgRef(ref)
         return ref
@@ -299,21 +296,17 @@ class NewRecipeFragment : Fragment() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
+
             // BitMap is data structure of image file which store the image in memory
             val photo = result.data!!.extras!!["data"] as Bitmap?
-
             // Create time stamped name and MediaStore entry.
-//            imgName = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
-//                .format(System.currentTimeMillis()).
             imgName = createFileName()
-
             // Set the image in imageview for display
             recipeImg.setImageBitmap(photo)
-
             // upload the image
             val data = photo?.let { PhotoConverter().bitmapToByteArray(it) }
 //            TODO: Change collection to prod
-            val storageHandler = StorageHandler("tests", imgName)
+            val storageHandler = FirebaseStorageHandler("tests", imgName)
 
             if (data != null){
                 storageHandler.putPhoto(data)
