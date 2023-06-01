@@ -8,7 +8,7 @@ import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
 import java.io.File
 
-class StorageHandler(directory: String, filename: String) {
+class FirebaseStorageHandler(directory: String, filename: String) {
 
     private val firebaseStorage = FirebaseStorage.getInstance()
     private var dirRef: StorageReference
