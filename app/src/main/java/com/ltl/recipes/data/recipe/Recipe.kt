@@ -2,6 +2,7 @@ package com.ltl.recipes.data.recipe
 
 import com.google.firebase.firestore.ServerTimestamp
 import com.google.gson.Gson
+import com.ltl.recipes.constants.AppConstants
 import com.ltl.recipes.database.recipe.RecipeEntity
 import com.ltl.recipes.ingredient.Ingredient
 import com.ltl.recipes.utils.Validatable
@@ -19,7 +20,7 @@ data class Recipe (
     @ServerTimestamp
     @Contextual
     var createdAt: Date? = null,
-    var imgRef: String = "name.jpg",
+    var imgRef: String = AppConstants.defaultImgRef,
     var title: String = "",
     var description: String = "",
     var isPublic: Boolean = false,
