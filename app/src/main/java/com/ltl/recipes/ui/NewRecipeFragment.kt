@@ -25,10 +25,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker.PERMISSION_DENIED
 import androidx.core.content.PermissionChecker.checkSelfPermission
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -40,21 +43,21 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.ltl.recipes.R
+import com.ltl.recipes.constants.FirebaseConstants
 import com.ltl.recipes.databinding.FragmentNewRecipeBinding
 import com.ltl.recipes.ingredient.Ingredient
 import com.ltl.recipes.ingredient.IngredientAccessType
 import com.ltl.recipes.ingredient.IngredientRecycleViewAdapter
 import com.ltl.recipes.ingredient.IngredientViewModel
+import com.ltl.recipes.ui.main.RecipeDetailFragment
 import com.ltl.recipes.utils.PhotoConverter
 import com.ltl.recipes.utils.StorageHandler
 import com.ltl.recipes.viewmodels.NewRecipeViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -125,7 +128,7 @@ class NewRecipeFragment : Fragment() {
         binding.lifecycleOwner = this
         val view = binding.root
         binding.recipeViewModel = viewModel
-
+        recipeImg = binding.recipeImgImageView
         subscribeToObservables()
 
         return view
@@ -134,23 +137,28 @@ class NewRecipeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        Log.d(TAG, "VM: $viewModel")
+        Log.d(TAG, "VM value: ${viewModel.recipe.value.toString()}")
+        Log.d(TAG, "VM imgRef= ${viewModel.imgRef.value}")
+        Log.d(TAG, "VM recipe.imgRef= ${viewModel.recipe.value?.imgRef}")
+
+        loadImg(viewModel.imgRef.value)
         setListeners()
+    }
 
-        Log.d(TAG, "Ingredients count: ${ingredientViewModel.ingredients.value.count()}")
+    private fun loadImg(ref: String){
+        val location = buildString {
+            append(FirebaseConstants.StorageBaseUrlTest)
+            append(ref)
+        }
+        val fileRef: StorageReference = FirebaseStorage.getInstance()
+            .getReference(location)
+        Log.d(TAG, "loadImg: fileRef = $fileRef")
 
-        Log.d("viewmodel", "NewRecipeFragment VM: $viewModel")
-        Log.d("viewmodel", "NewRecipeFragment VM value: ${viewModel.recipe.value.toString()}")
-
-        recipeImg = binding.recipeImgImageView
-
-//        Glide snippet
-//        TODO: create standard img
-        val storageReference = FirebaseStorage.getInstance().getReference("tests/name.jpg")
         Glide.with(requireContext())
-            .load(storageReference)
-            .dontAnimate()
-            .into(recipeImg)
-
+            .load(fileRef)
+            .placeholder(R.drawable.recipe_default)
+            .into(binding.recipeImgImageView)
     }
 
     private fun setListeners(){
@@ -174,24 +182,35 @@ class NewRecipeFragment : Fragment() {
         binding.ingredientRecycleView.layoutManager = layoutManager
         binding.ingredientRecycleView.itemAnimator = DefaultItemAnimator()
 
-        lifecycleScope.launchWhenStarted {
-            viewModel.ingredients.collectLatest {
-                ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(
-                    it,
-                    IngredientAccessType.EDIT,
-                    ::deleteIngredient,
-                    ::editIngredient)
-                binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
+        viewLifecycleOwner.lifecycleScope.launch (Dispatchers.Main) {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.ingredients.collectLatest {
+                    Log.d(TAG, "viewModel.ingredients.collectLatest = $it")
+                    ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(
+                        it,
+                        IngredientAccessType.EDIT,
+                        ::deleteIngredient,
+                        ::editIngredient)
+                    binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
+                }
             }
+        }
 
-//            viewModel.ingredients.collectLatest {
-//                ingredientRecycleViewAdapter = IngredientRecycleViewAdapter(
-//                    it,
-//                    IngredientAccessType.EDIT,
-//                    ::deleteIngredient,
-//                    ::editIngredient)
-//                binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
-//            }
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+            viewModel.imgRef.collect {
+                Log.d(TAG, "viewModel.imgRef.collectLatest = $it")
+                loadImg(it)
+            }
+        }
+    }
+
+    private fun renderProgressBar(value: Boolean) {
+        if (value){
+            binding.progressBar.visibility = View.VISIBLE
+            binding.newRecipeScrollLayout.visibility = View.GONE
+        } else {
+            binding.progressBar.visibility = View.GONE
+            binding.newRecipeScrollLayout.visibility = View.VISIBLE
         }
     }
 
@@ -317,6 +336,8 @@ class NewRecipeFragment : Fragment() {
 
     private fun addRecipeSequence() {
 //        viewModel.setIngredients(ingredientViewModel.ingredients.value)
+        // TODO: Activities can use lifecycleScope directly, but Fragments should instead use
+        // viewLifecycleOwner.lifecycleScope.
         lifecycleScope.launch(Dispatchers.IO){
             val isSuccess = async { viewModel.insertRecipe(args.userEmail) }
             if (isSuccess.await()){

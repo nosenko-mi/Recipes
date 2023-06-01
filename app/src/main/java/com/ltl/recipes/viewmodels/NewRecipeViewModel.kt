@@ -6,6 +6,7 @@ import androidx.databinding.InverseBindingListener
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ltl.recipes.constants.AppConstants
 import com.ltl.recipes.data.ServingNumber
 import com.ltl.recipes.data.recipe.Recipe
 import com.ltl.recipes.data.recipe.RecipeRepository
@@ -30,6 +31,9 @@ class NewRecipeViewModel @Inject constructor(
     companion object{
         private val TAG: String = "NewRecipeViewModel"
     }
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
 
     private val _recipe = MutableStateFlow<Recipe?>(null)
     val recipe = _recipe.asStateFlow()
@@ -67,13 +71,14 @@ class NewRecipeViewModel @Inject constructor(
         oldIngredient = null
     }
 
-    private val _imgRef = MutableStateFlow("default.jpg")
+    private val _imgRef = MutableStateFlow(AppConstants.defaultImgRef)
     val imgRef = _imgRef.asStateFlow()
 
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
     init {
+        _isLoading.value = true
         var recipeId = savedStateHandle.get<String>("recipeId")
         if (recipeId == null){
             recipeId = "-1"
@@ -82,7 +87,8 @@ class NewRecipeViewModel @Inject constructor(
     }
 
     fun refresh(id: String){
-        if (id != "-1"){
+        if (id != "-1") {
+            Log.d(TAG, "init VM: Load recipe from repository")
             viewModelScope.launch (Dispatchers.IO) {
                 repository.getRecipeById(id)?. let { recipe ->
                     _title.value = recipe.title
@@ -91,17 +97,24 @@ class NewRecipeViewModel @Inject constructor(
                     servings.value.setNumber(recipe.servingsNum)
                     _isPublic.value = recipe.isPublic
                     _imgRef.value = recipe.imgRef
+                    Log.d(TAG, "init VM: imgRef = ${_imgRef.value}")
                     _ingredients.value = recipe.ingredients.toMutableList()
                     _recipe.value = recipe
                 }
-                Log.d(TAG, "recipe servings: ${servings.value.getNumber()}")
+                Log.d(TAG, "init VM: _recipe.value = ${_recipe.value}")
+                _isLoading.value = false
             }
+        } else {
+            Log.d(TAG, "init VM: Set default recipe")
+            _recipe.value = Recipe()
+            _isLoading.value = false
         }
     }
 
     suspend fun insertRecipe(currentUser: String): Boolean{
         var isSuccess = false
         if (currentUser.isEmpty() || !isValid()){
+            Log.e(TAG, "insertRecipe: currentUser is empty or not valid")
             return false
         }
         recipe.value?.let {
@@ -121,12 +134,13 @@ class NewRecipeViewModel @Inject constructor(
                 if (r.ingredients.isNotEmpty()) {
                     repository.addRecipe(r)
                     isSuccess = true
+                    Log.e("NewRecipeViewModel", "repository.addRecipe(r): isSuccess = $isSuccess")
                 } else {
                     Log.e("NewRecipeViewModel", "INSERT DATA: recipe.ingredients IS EMPTY")
                 }
 
             } catch (e: Exception){
-                Log.e("NewRecipeViewModel", "COLLECT DATA: error $e")
+                Log.e(TAG, "COLLECT DATA: error $e")
             }
         }
 //        val r = Recipe()
@@ -229,6 +243,10 @@ class NewRecipeViewModel @Inject constructor(
     fun clearIngredients(){
         _ingredients.value.clear()
         _ingredients.value = _ingredients.value
+    }
+
+    fun isDefaultImgRef(): Boolean {
+        return imgRef.value == AppConstants.defaultImgRef
     }
 
     override fun onChange() {
