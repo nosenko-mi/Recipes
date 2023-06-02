@@ -86,40 +86,64 @@ class NewRecipeFragment : Fragment() {
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val data = result.data
-            // do your operation from here....
-            if (data != null && data.data != null) {
-                val selectedImageUri: Uri? = data.data
-                val selectedImageBitmap: Bitmap
-                Log.d(TAG, "Gallery launcher: selectedImageUri=$selectedImageUri")
-                // Gallery launcher: selectedImageUri=content://com.miui.gallery.open/raw/%2Fstorage%2Femulated%2F0%2FDCIM%2FScreenshots%2FScreenshot_2023-06-02-11-01-38-683_com.miui.home.jpg
-                val fileName = createFileName()
-//                val data = photo?.let { PhotoConverter().bitmapToByteArray(it) }
-                var fileData: ByteArray
-
-                try {
-                    selectedImageUri?.let {
-                        if(Build.VERSION.SDK_INT < 28) {
-                            val bitmap = MediaStore.Images.Media.getBitmap(
-                                requireContext().contentResolver,
-                                selectedImageUri
-                            )
-                            fileData = PhotoConverter().bitmapToByteArray(bitmap)
-                            recipeImg.setImageBitmap(bitmap)
-                        } else {
-                            val source = ImageDecoder.createSource(requireContext().contentResolver, selectedImageUri)
-                            val bitmap = ImageDecoder.decodeBitmap(source)
-                            fileData = PhotoConverter().bitmapToByteArray(bitmap)
-                            recipeImg.setImageBitmap(bitmap)
-                        }
-                        viewModel.insertPhoto(fileName, fileData)
-                    }
-                } catch (e: IOException) {
-                    Log.e(TAG, e.message.toString())
-                    e.printStackTrace()
-                }
-//                recipeImg.setImageBitmap(selectedImageBitmap)
+            val resultData = result.data
+            if (resultData == null || resultData.data == null){
+                Log.e(TAG, "Gallery launcher: result.data || data.data is null")
+                return@registerForActivityResult
             }
+
+            val selectedImageUri: Uri = resultData.data!!
+            Log.d(TAG, "Gallery launcher: selectedImageUri=$selectedImageUri")
+
+            val fileName = createFileName()
+            Log.d(TAG, "Gallery launcher: createFileName()=$fileName")
+            val bitmap: Bitmap
+            try {
+                if(Build.VERSION.SDK_INT < 28) {
+                    bitmap = MediaStore.Images.Media.getBitmap(
+                        requireContext().contentResolver,
+                        selectedImageUri
+                    )
+                } else {
+                    val source = ImageDecoder.createSource(requireContext().contentResolver, selectedImageUri)
+                    bitmap = ImageDecoder.decodeBitmap(source)
+                }
+                val fileData = PhotoConverter().bitmapToByteArray(bitmap)
+                recipeImg.setImageBitmap(bitmap)
+                viewModel.insertPhoto(fileName, fileData)
+            } catch (e: IOException) {
+                Log.e(TAG, e.message.toString())
+                e.printStackTrace()
+            }
+
+//            val data = result.data
+//            if (data != null && data.data != null) {
+//                val selectedImageUri: Uri = data.data!!
+//                Log.d(TAG, "Gallery launcher: selectedImageUri=$selectedImageUri")
+//                val fileName = createFileName()
+//                val bitmap: Bitmap
+//
+//                try {
+//                    if(Build.VERSION.SDK_INT < 28) {
+//                        bitmap = MediaStore.Images.Media.getBitmap(
+//                            requireContext().contentResolver,
+//                            selectedImageUri
+//                        )
+//                    } else {
+//                        val source = ImageDecoder.createSource(requireContext().contentResolver, selectedImageUri)
+//                        bitmap = ImageDecoder.decodeBitmap(source)
+//                    }
+//                    val fileData = PhotoConverter().bitmapToByteArray(bitmap)
+//                    recipeImg.setImageBitmap(bitmap)
+//                    viewModel.insertPhoto(fileName, fileData)
+//                } catch (e: IOException) {
+//                    Log.e(TAG, e.message.toString())
+//                    e.printStackTrace()
+//                }
+////                recipeImg.setImageBitmap(selectedImageBitmap)
+//            }
+
+
         }
     }
 
