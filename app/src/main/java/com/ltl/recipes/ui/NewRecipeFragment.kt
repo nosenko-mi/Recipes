@@ -296,37 +296,19 @@ class NewRecipeFragment : Fragment() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-
-            // BitMap is data structure of image file which store the image in memory
             val photo = result.data!!.extras!!["data"] as Bitmap?
-            // Create time stamped name and MediaStore entry.
             imgName = createFileName()
-            // Set the image in imageview for display
             recipeImg.setImageBitmap(photo)
-            // upload the image
             val data = photo?.let { PhotoConverter().bitmapToByteArray(it) }
-//            TODO: Change collection to prod
-//            val storageHandler = FirebaseStorageHandler("tests", imgName)
-            val path = buildString { append(FirebaseConstants.StorageBaseUrlTest).append(imgName) }
-            val storageHandler = FirebaseStorageHandler(path)
-
-            // TODO: 2. implement viewmodel.insertPhoto(imgName)
             if (data != null){
                 Log.d(TAG, "inserting photo into storage...")
-//                viewModel.insertPhoto(data)
                 viewModel.insertPhoto(imgName, data)
-//                viewModel.insertPhoto(FirebaseStorageImage(imgName, data))
-//                storageHandler.putPhoto(data)
-                // update imgRef
-                viewModel.setImgRef(imgName)
             } else {
                 Log.e(TAG, "photo data is null")
-
             }
-
         }
         else {
-            Toast.makeText(context, "Error while taking photo", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Error occurred while taking photo", Toast.LENGTH_SHORT).show()
         }
     }
 
