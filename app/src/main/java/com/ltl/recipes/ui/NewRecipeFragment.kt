@@ -115,35 +115,6 @@ class NewRecipeFragment : Fragment() {
                 Log.e(TAG, e.message.toString())
                 e.printStackTrace()
             }
-
-//            val data = result.data
-//            if (data != null && data.data != null) {
-//                val selectedImageUri: Uri = data.data!!
-//                Log.d(TAG, "Gallery launcher: selectedImageUri=$selectedImageUri")
-//                val fileName = createFileName()
-//                val bitmap: Bitmap
-//
-//                try {
-//                    if(Build.VERSION.SDK_INT < 28) {
-//                        bitmap = MediaStore.Images.Media.getBitmap(
-//                            requireContext().contentResolver,
-//                            selectedImageUri
-//                        )
-//                    } else {
-//                        val source = ImageDecoder.createSource(requireContext().contentResolver, selectedImageUri)
-//                        bitmap = ImageDecoder.decodeBitmap(source)
-//                    }
-//                    val fileData = PhotoConverter().bitmapToByteArray(bitmap)
-//                    recipeImg.setImageBitmap(bitmap)
-//                    viewModel.insertPhoto(fileName, fileData)
-//                } catch (e: IOException) {
-//                    Log.e(TAG, e.message.toString())
-//                    e.printStackTrace()
-//                }
-////                recipeImg.setImageBitmap(selectedImageBitmap)
-//            }
-
-
         }
     }
 
