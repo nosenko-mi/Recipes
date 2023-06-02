@@ -248,9 +248,13 @@ class NewRecipeViewModel @Inject constructor(
     }
 
     fun insertPhoto(imgName: String, imgData: ByteArray?){
-        viewModelScope.launch (Dispatchers.IO){
-            imgData?.let {
+        Log.d(TAG, "Insert photo: starts...")
+        imgData?.let {
+            viewModelScope.launch (Dispatchers.IO) {
+                Log.d(TAG, "Insert photo: launched coroutine")
                 firebaseStorageHandler.putPhoto(imgName, imgData)
+                Log.d(TAG, "Insert photo: change _imgRef...")
+                _imgRef.value = imgName
             }
         }
     }
