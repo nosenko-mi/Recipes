@@ -37,20 +37,17 @@ class FirebaseStorageHandler(path: String) {
     }
 
     suspend fun putPhoto(imgName: String, imgData: ByteArray){
-        imgRef = imgRef.child(imgName)
+        Log.d(TAG, "Put photo starts...")
+        val ref = imgRef.child(imgName)
+        Log.d(TAG, "File path: $ref")
         val metadata = StorageMetadata.Builder()
             .setContentType("image/jpg")
             .build()
-        imgRef.putBytes(imgData, metadata)
-            .addOnSuccessListener {
-                Log.d(TAG, it.metadata.toString())
+        val task = ref.putBytes(imgData, metadata).await()
 
-            }
-            .addOnFailureListener{
-                Log.e(TAG, it.message.toString())
-            }
-
-//        val t = imgRef.putBytes(data, metadata).await()
+        task.error?.let {
+            Log.e(TAG,"Put photo: ${it.message}")
+        }
     }
 
     fun getPhoto(path: String): Bitmap{
