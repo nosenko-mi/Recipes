@@ -10,6 +10,7 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -54,6 +55,7 @@ import com.ltl.recipes.viewmodels.NewRecipeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
+import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -66,6 +68,7 @@ class NewRecipeFragment : Fragment() {
     private lateinit var binding: FragmentNewRecipeBinding
     private lateinit var recipeImg: ImageView
     private var imgName: String = "default.jpg"
+    lateinit var currentPhotoPath: String
 
     private val ingredientViewModel: IngredientViewModel by navGraphViewModels(R.id.add_edit_recipe_nav_graph)
     val args: NewRecipeFragmentArgs by navArgs()
@@ -294,14 +297,29 @@ class NewRecipeFragment : Fragment() {
         return ref
     }
 
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp: String = createFileName()
+        val storageDir: File? = context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
+    }
+
     private var cameraLauncher = registerForActivityResult<Intent, ActivityResult>(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val photo = result.data!!.extras!!["data"] as Bitmap?
+            val bitmap = result.data!!.extras!!["data"] as Bitmap?
             imgName = createFileName()
-            recipeImg.setImageBitmap(photo)
-            val data = photo?.let { PhotoConverter().bitmapToByteArray(it) }
+            recipeImg.setImageBitmap(bitmap)
+            val data = bitmap?.let { PhotoConverter().bitmapToByteArray(it) }
             if (data != null){
                 Log.d(TAG, "inserting photo into storage...")
                 viewModel.insertPhoto(imgName, data)
