@@ -2,6 +2,7 @@ package com.ltl.recipes.di
 
 import androidx.lifecycle.SavedStateHandle
 import com.ltl.recipes.data.recipe.RecipeRepository
+import com.ltl.recipes.utils.FirebaseStorageHandler
 import com.ltl.recipes.viewmodels.NewRecipeViewModel
 import dagger.Module
 import dagger.Provides
@@ -17,8 +18,9 @@ object NewRecipeViewModelModule {
     @FragmentScoped // Use the appropriate scope for your use case
     fun provideNewRecipeViewModel(
         repository: RecipeRepository,
+        firebaseStorageHandler: FirebaseStorageHandler,
         savedStateHandle: SavedStateHandle
     ): NewRecipeViewModel {
-        return NewRecipeViewModel(repository, savedStateHandle)
+        return NewRecipeViewModel(repository, firebaseStorageHandler, savedStateHandle)
     }
 }

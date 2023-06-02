@@ -43,6 +43,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.ltl.recipes.R
+import com.ltl.recipes.constants.AppConstants
 import com.ltl.recipes.constants.FirebaseConstants
 import com.ltl.recipes.databinding.FragmentNewRecipeBinding
 import com.ltl.recipes.ingredient.Ingredient
@@ -194,7 +195,7 @@ class NewRecipeFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
-            viewModel.imgRef.collect {
+            viewModel.imgRef.collectLatest {
                 Log.d(TAG, "viewModel.imgRef.collectLatest = $it")
                 loadImg(it)
             }
@@ -288,7 +289,6 @@ class NewRecipeFragment : Fragment() {
 
     private fun createFileName(): String {
         val ref = SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis())
-        viewModel.setImgRef(ref)
         return ref
     }
 
@@ -306,11 +306,22 @@ class NewRecipeFragment : Fragment() {
             // upload the image
             val data = photo?.let { PhotoConverter().bitmapToByteArray(it) }
 //            TODO: Change collection to prod
-            val storageHandler = FirebaseStorageHandler("tests", imgName)
+//            val storageHandler = FirebaseStorageHandler("tests", imgName)
+            val path = buildString { append(FirebaseConstants.StorageBaseUrlTest).append(imgName) }
+            val storageHandler = FirebaseStorageHandler(path)
 
             // TODO: 2. implement viewmodel.insertPhoto(imgName)
             if (data != null){
-                storageHandler.putPhoto(data)
+                Log.d(TAG, "inserting photo into storage...")
+//                viewModel.insertPhoto(data)
+                viewModel.insertPhoto(imgName, data)
+//                viewModel.insertPhoto(FirebaseStorageImage(imgName, data))
+//                storageHandler.putPhoto(data)
+                // update imgRef
+                viewModel.setImgRef(imgName)
+            } else {
+                Log.e(TAG, "photo data is null")
+
             }
 
         }
