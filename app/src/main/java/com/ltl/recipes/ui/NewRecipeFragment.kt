@@ -43,7 +43,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.ltl.recipes.R
-import com.ltl.recipes.constants.AppConstants
 import com.ltl.recipes.constants.FirebaseConstants
 import com.ltl.recipes.databinding.FragmentNewRecipeBinding
 import com.ltl.recipes.ingredient.Ingredient
@@ -51,7 +50,6 @@ import com.ltl.recipes.ingredient.IngredientAccessType
 import com.ltl.recipes.ingredient.IngredientRecycleViewAdapter
 import com.ltl.recipes.ingredient.IngredientViewModel
 import com.ltl.recipes.utils.PhotoConverter
-import com.ltl.recipes.utils.FirebaseStorageHandler
 import com.ltl.recipes.viewmodels.NewRecipeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -93,6 +91,12 @@ class NewRecipeFragment : Fragment() {
             if (data != null && data.data != null) {
                 val selectedImageUri: Uri? = data.data
                 val selectedImageBitmap: Bitmap
+                Log.d(TAG, "Gallery launcher: selectedImageUri=$selectedImageUri")
+                // Gallery launcher: selectedImageUri=content://com.miui.gallery.open/raw/%2Fstorage%2Femulated%2F0%2FDCIM%2FScreenshots%2FScreenshot_2023-06-02-11-01-38-683_com.miui.home.jpg
+                val fileName = createFileName()
+//                val data = photo?.let { PhotoConverter().bitmapToByteArray(it) }
+                var fileData: ByteArray
+
                 try {
                     selectedImageUri?.let {
                         if(Build.VERSION.SDK_INT < 28) {
@@ -100,12 +104,15 @@ class NewRecipeFragment : Fragment() {
                                 requireContext().contentResolver,
                                 selectedImageUri
                             )
+                            fileData = PhotoConverter().bitmapToByteArray(bitmap)
                             recipeImg.setImageBitmap(bitmap)
                         } else {
                             val source = ImageDecoder.createSource(requireContext().contentResolver, selectedImageUri)
                             val bitmap = ImageDecoder.decodeBitmap(source)
+                            fileData = PhotoConverter().bitmapToByteArray(bitmap)
                             recipeImg.setImageBitmap(bitmap)
                         }
+                        viewModel.insertPhoto(fileName, fileData)
                     }
                 } catch (e: IOException) {
                     Log.e(TAG, e.message.toString())
