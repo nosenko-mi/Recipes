@@ -134,9 +134,10 @@ class NewRecipeViewModel @Inject constructor(
                 }
                 _recipe.value = r
                 if (r.ingredients.isNotEmpty()) {
+                    Log.d("NewRecipeViewModel", "repository.addRecipe: $r")
                     repository.addRecipe(r)
                     isSuccess = true
-                    Log.e("NewRecipeViewModel", "repository.addRecipe(r): isSuccess = $isSuccess")
+                    Log.d("NewRecipeViewModel", "repository.addRecipe(r): isSuccess = $isSuccess")
                 } else {
                     Log.e("NewRecipeViewModel", "INSERT DATA: recipe.ingredients IS EMPTY")
                 }
