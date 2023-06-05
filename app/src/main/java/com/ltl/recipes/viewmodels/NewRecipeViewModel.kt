@@ -75,6 +75,9 @@ class NewRecipeViewModel @Inject constructor(
 
     private val _imgRef = MutableStateFlow(AppConstants.defaultImgRef)
     val imgRef = _imgRef.asStateFlow()
+    private val _currentImgRef = MutableStateFlow(AppConstants.defaultImgRef)
+    val currentImgRef = _currentImgRef.asStateFlow()
+
 
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
@@ -207,14 +210,13 @@ class NewRecipeViewModel @Inject constructor(
         return QuantityType.values()
     }
 
+    fun setCurrentImgRef(ref: String){
+        _currentImgRef.value = ref
+    }
 
     fun setCurrentIngredient(ingredient: Ingredient){
         _currentIngredient.value = ingredient
         oldIngredient = ingredient
-    }
-
-    fun setImgRef(ref: String){
-        _imgRef.value = ref
     }
 
     fun setIngredients(newIngredients: MutableList<Ingredient>){
