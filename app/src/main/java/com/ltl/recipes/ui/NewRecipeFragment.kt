@@ -23,6 +23,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.content.PermissionChecker.PERMISSION_DENIED
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.databinding.DataBindingUtil
@@ -56,6 +57,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -68,7 +70,7 @@ class NewRecipeFragment : Fragment() {
     private lateinit var binding: FragmentNewRecipeBinding
     private lateinit var recipeImg: ImageView
     private var imgName: String = "default.jpg"
-    lateinit var currentPhotoPath: String
+    private lateinit var currentPhotoPath: String
 
     private val ingredientViewModel: IngredientViewModel by navGraphViewModels(R.id.add_edit_recipe_nav_graph)
     val args: NewRecipeFragmentArgs by navArgs()
@@ -289,7 +291,8 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun startCamera(){
-        dispatchTakePictureIntent()
+        dispatchTakePictureIntent2()
+//        dispatchTakePictureIntent()
     }
 
     private fun createFileName(): String {
@@ -309,6 +312,7 @@ class NewRecipeFragment : Fragment() {
         ).apply {
             // Save a file: path for use with ACTION_VIEW intents
             currentPhotoPath = absolutePath
+            viewModel.setCurrentImgRef(timeStamp)
         }
     }
 
@@ -316,20 +320,57 @@ class NewRecipeFragment : Fragment() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val bitmap = result.data!!.extras!!["data"] as Bitmap?
-            imgName = createFileName()
-            recipeImg.setImageBitmap(bitmap)
-            val data = bitmap?.let { PhotoConverter().bitmapToByteArray(it) }
-            if (data != null){
-                Log.d(TAG, "inserting photo into storage...")
-                viewModel.insertPhoto(imgName, data)
-            } else {
-                Log.e(TAG, "photo data is null")
+            val file = File(currentPhotoPath)
+            val uri = Uri.fromFile(file)
+            Log.d(TAG, "Camera launcher: uri= $uri")
+            Log.d(TAG, "Camera launcher: file name= ${file.name}")
+            Log.d(TAG, "Camera launcher: current img ref= ${viewModel.currentImgRef.value}")
+            val bitmap: Bitmap
+            try {
+                if(Build.VERSION.SDK_INT < 28) {
+                    bitmap = MediaStore.Images.Media.getBitmap(
+                        requireContext().contentResolver,
+                        uri
+                    )
+                } else {
+                    val source = ImageDecoder.createSource(requireContext().contentResolver, uri)
+                    bitmap = ImageDecoder.decodeBitmap(source)
+                }
+                val fileData = PhotoConverter().bitmapToByteArray(bitmap)
+                recipeImg.setImageBitmap(bitmap)
+                viewModel.insertPhoto(viewModel.currentImgRef.value, fileData)
+            } catch (e: IOException) {
+                Log.e(TAG, e.message.toString())
+                e.printStackTrace()
             }
+
+//            recipeImg.setImageBitmap(bitmap)
+//            val data = bitmap?.let { PhotoConverter().bitmapToByteArray(it) }
+//            if (data != null){
+//                Log.d(TAG, "inserting photo into storage...")
+//                viewModel.insertPhoto(imgName, data)
+//            } else {
+//                Log.e(TAG, "photo data is null")
+//            }
         }
         else {
             Toast.makeText(context, "Error occurred while taking photo", Toast.LENGTH_SHORT).show()
         }
+//        if (result.resultCode == Activity.RESULT_OK) {
+//            val bitmap = result.data!!.extras!!["data"] as Bitmap?
+//            imgName = createFileName()
+//            recipeImg.setImageBitmap(bitmap)
+//            val data = bitmap?.let { PhotoConverter().bitmapToByteArray(it) }
+//            if (data != null){
+//                Log.d(TAG, "inserting photo into storage...")
+//                viewModel.insertPhoto(imgName, data)
+//            } else {
+//                Log.e(TAG, "photo data is null")
+//            }
+//        }
+//        else {
+//            Toast.makeText(context, "Error occurred while taking photo", Toast.LENGTH_SHORT).show()
+//        }
     }
 
     private fun dispatchTakePictureIntent() {
@@ -338,6 +379,31 @@ class NewRecipeFragment : Fragment() {
             cameraLauncher.launch(takePictureIntent)
         } catch (e: ActivityNotFoundException) {
             // display error state to the user
+        }
+    }
+
+    private fun dispatchTakePictureIntent2() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            // Ensure that there's a camera activity to handle the intent
+            takePictureIntent.resolveActivity(requireContext().packageManager)?.also {
+                // Create the File where the photo should go
+                val photoFile: File? = try {
+                    createImageFile()
+                } catch (ex: IOException) {
+                    // Error occurred while creating the File
+                    null
+                }
+                // Continue only if the File was successfully created
+                photoFile?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                        requireContext(),
+                        "com.ltl.recipes.fileprovider",
+                        it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    cameraLauncher.launch(takePictureIntent)
+                }
+            }
         }
     }
 
