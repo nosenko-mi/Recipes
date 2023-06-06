@@ -9,17 +9,43 @@ class RecipeAdapter(
     private val recipes: List<Recipe>,
     private val clickListener: RecipeClickListener
     )
-    : RecyclerView.Adapter<RecipeViewHolder>()
+    : RecyclerView.Adapter<RecipeAdapter.ViewHolder>()
 {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
-        val from = LayoutInflater.from(parent.context)
-        val binding = RecipeCardBinding.inflate(from, parent, false)
-        return RecipeViewHolder(binding, clickListener)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    val from = LayoutInflater.from(parent.context)
+    val binding = RecipeCardBinding.inflate(from, parent, false)
+    return ViewHolder(binding, clickListener)
+}
 
-    override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(recipes[position])
     }
 
     override fun getItemCount(): Int = recipes.size
+
+    inner class ViewHolder(
+        private val recipeCardBinding: RecipeCardBinding,
+        private val clickListener: RecipeClickListener
+    )
+        : RecyclerView.ViewHolder(recipeCardBinding.root)
+    {
+        fun bind(recipe: Recipe){
+            loadImg(recipe.imgRef)
+
+            recipeCardBinding.recipeImg.setImageResource(recipe.coverImg)
+            recipeCardBinding.recipeTitle.text = recipe.title
+
+            recipeCardBinding.cardView.setOnClickListener{
+                clickListener.onClick(recipe)
+            }
+
+            recipeCardBinding.cardView.setOnLongClickListener {
+                clickListener.onLongClick(recipe)
+            }
+        }
+
+        private fun loadImg(ref: String){
+
+        }
+    }
 }
