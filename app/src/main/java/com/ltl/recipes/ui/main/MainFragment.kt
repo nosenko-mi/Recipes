@@ -13,6 +13,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -28,6 +29,7 @@ import com.ltl.recipes.data.recipe.RecipeAdapter
 import com.ltl.recipes.data.recipe.RecipeClickListener
 import com.ltl.recipes.data.user.UserViewModel
 import com.ltl.recipes.databinding.MainFragmentBinding
+import com.ltl.recipes.utils.GlideImageLoader
 import com.ltl.recipes.viewmodels.RecipeViewModel
 
 class MainFragment : Fragment(), RecipeClickListener {
@@ -64,7 +66,13 @@ class MainFragment : Fragment(), RecipeClickListener {
         binding.recyclerView.itemAnimator = DefaultItemAnimator()
         recipeViewModel.getRecipes().observe(viewLifecycleOwner){
             Log.d(TAG, "recipe observer: elements ${it.size}")
-            recipeAdapter = RecipeAdapter(it, this)
+
+            recipeAdapter = RecipeAdapter(
+                it,
+                this,
+                GlideImageLoader(Glide.with(this))
+            )
+
             binding.recyclerView.adapter = recipeAdapter
         }
 

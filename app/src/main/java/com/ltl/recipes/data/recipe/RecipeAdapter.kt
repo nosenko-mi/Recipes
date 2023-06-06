@@ -4,10 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.ltl.recipes.databinding.RecipeCardBinding
+import com.ltl.recipes.utils.GlideImageLoader
 
 class RecipeAdapter(
     private val recipes: List<Recipe>,
-    private val clickListener: RecipeClickListener
+    private val clickListener: RecipeClickListener,
+    private val imageLoader: GlideImageLoader
     )
     : RecyclerView.Adapter<RecipeAdapter.ViewHolder>()
 {
@@ -30,9 +32,8 @@ class RecipeAdapter(
         : RecyclerView.ViewHolder(recipeCardBinding.root)
     {
         fun bind(recipe: Recipe){
-            loadImg(recipe.imgRef)
+            imageLoader.loadImage(recipe.imgRef, recipeCardBinding.recipeImg)
 
-            recipeCardBinding.recipeImg.setImageResource(recipe.coverImg)
             recipeCardBinding.recipeTitle.text = recipe.title
 
             recipeCardBinding.cardView.setOnClickListener{
@@ -44,8 +45,5 @@ class RecipeAdapter(
             }
         }
 
-        private fun loadImg(ref: String){
-
-        }
     }
 }
