@@ -57,7 +57,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -291,8 +290,7 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun startCamera(){
-        dispatchTakePictureIntent2()
-//        dispatchTakePictureIntent()
+        dispatchTakePictureIntent()
     }
 
     private fun createFileName(): String {
@@ -343,46 +341,13 @@ class NewRecipeFragment : Fragment() {
                 Log.e(TAG, e.message.toString())
                 e.printStackTrace()
             }
-
-//            recipeImg.setImageBitmap(bitmap)
-//            val data = bitmap?.let { PhotoConverter().bitmapToByteArray(it) }
-//            if (data != null){
-//                Log.d(TAG, "inserting photo into storage...")
-//                viewModel.insertPhoto(imgName, data)
-//            } else {
-//                Log.e(TAG, "photo data is null")
-//            }
         }
         else {
             Toast.makeText(context, "Error occurred while taking photo", Toast.LENGTH_SHORT).show()
         }
-//        if (result.resultCode == Activity.RESULT_OK) {
-//            val bitmap = result.data!!.extras!!["data"] as Bitmap?
-//            imgName = createFileName()
-//            recipeImg.setImageBitmap(bitmap)
-//            val data = bitmap?.let { PhotoConverter().bitmapToByteArray(it) }
-//            if (data != null){
-//                Log.d(TAG, "inserting photo into storage...")
-//                viewModel.insertPhoto(imgName, data)
-//            } else {
-//                Log.e(TAG, "photo data is null")
-//            }
-//        }
-//        else {
-//            Toast.makeText(context, "Error occurred while taking photo", Toast.LENGTH_SHORT).show()
-//        }
     }
 
     private fun dispatchTakePictureIntent() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        try {
-            cameraLauncher.launch(takePictureIntent)
-        } catch (e: ActivityNotFoundException) {
-            // display error state to the user
-        }
-    }
-
-    private fun dispatchTakePictureIntent2() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             // Ensure that there's a camera activity to handle the intent
             takePictureIntent.resolveActivity(requireContext().packageManager)?.also {
