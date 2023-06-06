@@ -77,6 +77,7 @@ class NewRecipeViewModel @Inject constructor(
     val imgRef = _imgRef.asStateFlow()
     private val _currentImgRef = MutableStateFlow(AppConstants.defaultImgRef)
     val currentImgRef = _currentImgRef.asStateFlow()
+    var currentPhotoPath = ""
 
 
     private val _uiEvent = Channel<UiEvent>()

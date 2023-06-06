@@ -68,8 +68,6 @@ class NewRecipeFragment : Fragment() {
 
     private lateinit var binding: FragmentNewRecipeBinding
     private lateinit var recipeImg: ImageView
-    private var imgName: String = "default.jpg"
-    private lateinit var currentPhotoPath: String
 
     private val ingredientViewModel: IngredientViewModel by navGraphViewModels(R.id.add_edit_recipe_nav_graph)
     val args: NewRecipeFragmentArgs by navArgs()
@@ -309,7 +307,8 @@ class NewRecipeFragment : Fragment() {
             storageDir /* directory */
         ).apply {
             // Save a file: path for use with ACTION_VIEW intents
-            currentPhotoPath = absolutePath
+//            currentPhotoPath = absolutePath
+            viewModel.currentPhotoPath = absolutePath
             viewModel.setCurrentImgRef(timeStamp)
         }
     }
@@ -318,7 +317,8 @@ class NewRecipeFragment : Fragment() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val file = File(currentPhotoPath)
+            val file = File(viewModel.currentPhotoPath)
+//            val file = File(currentPhotoPath)
             val uri = Uri.fromFile(file)
             Log.d(TAG, "Camera launcher: uri= $uri")
             Log.d(TAG, "Camera launcher: file name= ${file.name}")
