@@ -26,7 +26,6 @@
                 android:id="@+id/recipeImg"
                 android:layout_width="match_parent"
                 android:layout_height="236dp"
-                android:src="@drawable/noodles_test"
                 android:cropToPadding="true"
                 android:layout_gravity="center"
                 android:scaleType="centerCrop">
