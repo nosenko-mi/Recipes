@@ -2,14 +2,12 @@ package com.ltl.recipes.data.recipe
 
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.map
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.ltl.recipes.database.RecipesDatabase
 import com.ltl.recipes.database.recipe.asDomainModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -24,8 +22,8 @@ class RecipeRepository(private val localDb: RecipesDatabase) {
 
     private val firestore = Firebase.firestore
 
-    val recipes: LiveData<List<Recipe>> = Transformations.map(localDb.recipeDao().getAll()) {
-          it.asDomainModel()
+    val recipes: LiveData<List<Recipe>> = localDb.recipeDao().getAll().map {
+        it.asDomainModel()
     }
 
     suspend fun addRecipe(recipe: Recipe){
