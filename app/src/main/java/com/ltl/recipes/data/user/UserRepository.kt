@@ -1,7 +1,6 @@
 package com.ltl.recipes.data.user
 
 import android.util.Log
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -36,7 +35,7 @@ class UserRepository {
         docRef.get()
             .addOnSuccessListener { document ->
                 if (!document.exists()){
-                    docRef.set(UserModel(user.displayName, user.email))
+                    docRef.set(UserModel(user.displayName.toString(), user.email))
                     Log.d(TAG, "Add user: success ${document.id}")
                 } else {
                     Log.d(TAG, "Add user: already exists ${document.id}")
