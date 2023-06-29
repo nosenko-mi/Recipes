@@ -14,15 +14,8 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.ltl.recipes.R
 import com.ltl.recipes.data.recipe.Recipe
 import com.ltl.recipes.data.recipe.RecipeAdapter
@@ -35,8 +28,6 @@ import com.ltl.recipes.viewmodels.RecipeViewModel
 class MainFragment : Fragment(), RecipeClickListener {
 
     private lateinit var binding: MainFragmentBinding
-    private var firebaseAuth: FirebaseAuth = Firebase.auth
-    private lateinit var googleAuth: GoogleSignInClient
     private val userViewModel: UserViewModel by navGraphViewModels(R.id.nav_graph)
 
     private val recipeViewModel: RecipeViewModel by lazy {
@@ -59,7 +50,6 @@ class MainFragment : Fragment(), RecipeClickListener {
     ): View {
         binding = MainFragmentBinding.inflate(inflater, container, false)
         val view = binding.root
-        getCurrentUser()
 
 //        TODO set layout based on width
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
@@ -96,8 +86,7 @@ class MainFragment : Fragment(), RecipeClickListener {
                     true
                 }
                 R.id.accountMenuButton -> {
-                    tmpSignOut()
-                    goToAccountFragment()
+                    goToUserProfileFragment()
                     true
                 }
                 R.id.favMenuButton -> {
@@ -113,31 +102,6 @@ class MainFragment : Fragment(), RecipeClickListener {
         }
     }
 
-    private fun getCurrentUser(): FirebaseUser? {
-        Log.d(TAG, "UserViewModel: ${userViewModel.getCurrentUser().value}")
-        val firebaseUser = firebaseAuth.currentUser
-        Log.d(TAG, "FirebaseAuth: $firebaseUser")
-
-        firebaseAuth.addAuthStateListener {
-            Log.d(TAG, "Auth listener: ${it.currentUser?.email}")
-            recipeViewModel.populateRecipes(it.currentUser?.email.toString())
-        }
-
-//        val googleUser = GoogleSignIn.getLastSignedInAccount(requireContext())
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestEmail()
-            .build()
-        googleAuth = GoogleSignIn.getClient(requireActivity(), gso)
-
-        return firebaseUser
-    }
-
-    private fun tmpSignOut() {
-        firebaseAuth.signOut()
-//        TODO check googleAuth first
-        googleAuth.signOut()
-    }
-
     private fun goToFavFragment() {
         Toast.makeText(context, "Favorite", Toast.LENGTH_SHORT).show()
     }
@@ -146,8 +110,8 @@ class MainFragment : Fragment(), RecipeClickListener {
         Toast.makeText(context, "Home", Toast.LENGTH_SHORT).show()
     }
 
-    private fun goToAccountFragment() {
-        Navigation.findNavController(binding.root).navigate(R.id.mainFragmentToLoginFragment)
+    private fun goToUserProfileFragment() {
+        Navigation.findNavController(binding.root).navigate(R.id.action_mainFragment_to_userProfileFragment)
     }
 
     private fun goToNewRecipeFragment(recipe: Recipe? = null) {
@@ -160,11 +124,6 @@ class MainFragment : Fragment(), RecipeClickListener {
             )
         }
 
-//        var action = MainFragmentDirections.mainFragmentToNewRecipeFragment()
-//        if (recipe != null){
-//            action = MainFragmentDirections.mainFragmentToNewRecipeFragment(recipe.id)
-//        }
-//        action = MainFragmentDirections.mainFragmentToNewRecipeFragment()
         view?.let { Navigation.findNavController(it).navigate(action) }
     }
 
@@ -195,7 +154,6 @@ class MainFragment : Fragment(), RecipeClickListener {
             }
 
             edit.setOnClickListener {
-                // go to edit recipe fragment
                 goToNewRecipeFragment(recipe)
                 bottomSheetDialog.dismiss()
             }
