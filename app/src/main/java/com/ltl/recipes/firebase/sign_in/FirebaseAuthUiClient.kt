@@ -15,7 +15,8 @@ import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.cancellation.CancellationException
 
 class FirebaseAuthUiClient(
-    private val context: Context, private val oneTapClient: SignInClient
+    private val context: Context,
+    private val oneTapClient: SignInClient
 ) {
     private val auth = Firebase.auth
 
@@ -104,9 +105,9 @@ class FirebaseAuthUiClient(
 
     private fun buildSignInRequest(): BeginSignInRequest {
         return BeginSignInRequest.Builder().setGoogleIdTokenRequestOptions(
-                BeginSignInRequest.GoogleIdTokenRequestOptions.builder().setSupported(true)
-                    .setFilterByAuthorizedAccounts(false)
-                    .setServerClientId(context.getString(R.string.web_client_id)).build()
-            ).setAutoSelectEnabled(true).build()
+            BeginSignInRequest.GoogleIdTokenRequestOptions.builder().setSupported(true)
+                .setFilterByAuthorizedAccounts(false)
+                .setServerClientId(context.getString(R.string.web_client_id)).build()
+        ).setAutoSelectEnabled(true).build()
     }
 }
