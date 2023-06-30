@@ -115,10 +115,6 @@ class MainFragment : Fragment(), RecipeClickListener {
             }
         }
 
-        binding.searchButton.setOnClickListener{
-
-        }
-
         binding.searchEditText.addTextChangedListener {
             recipeViewModel.onSearchTextChange(it.toString())
         }
