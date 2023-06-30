@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -24,6 +26,7 @@ import com.ltl.recipes.data.user.UserViewModel
 import com.ltl.recipes.databinding.MainFragmentBinding
 import com.ltl.recipes.utils.GlideImageLoader
 import com.ltl.recipes.viewmodels.RecipeViewModel
+import kotlinx.coroutines.launch
 
 class MainFragment : Fragment(), RecipeClickListener {
 
@@ -54,16 +57,30 @@ class MainFragment : Fragment(), RecipeClickListener {
 //        TODO set layout based on width
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.itemAnimator = DefaultItemAnimator()
-        recipeViewModel.getRecipes().observe(viewLifecycleOwner){
-            Log.d(TAG, "recipe observer: elements ${it.size}")
+//        recipeViewModel.getRecipes().observe(viewLifecycleOwner){
+//            Log.d(TAG, "recipe observer: elements ${it.size}")
+//
+//            recipeAdapter = RecipeAdapter(
+//                it,
+//                this,
+//                GlideImageLoader(Glide.with(this))
+//            )
+//
+//            binding.recyclerView.adapter = recipeAdapter
+//        }
 
-            recipeAdapter = RecipeAdapter(
-                it,
-                this,
-                GlideImageLoader(Glide.with(this))
-            )
+        lifecycleScope.launch {
+            recipeViewModel.recipes.collect{
+                Log.d(TAG, "recipe observer: elements ${it.size}")
 
-            binding.recyclerView.adapter = recipeAdapter
+                recipeAdapter = RecipeAdapter(
+                    it,
+                    this@MainFragment,
+                    GlideImageLoader(Glide.with(this@MainFragment))
+                )
+
+                binding.recyclerView.adapter = recipeAdapter
+            }
         }
 
         return view
@@ -72,7 +89,8 @@ class MainFragment : Fragment(), RecipeClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recipeViewModel.populateRecipes(userViewModel.getEmail())
+//        recipeViewModel.populateRecipes(userViewModel.getEmail())
+        recipeViewModel.populateRecipesAsFlow(userViewModel.getEmail())
 
         binding.bottomAppBar.inflateMenu(R.menu.bottom_menu)
 
@@ -95,6 +113,14 @@ class MainFragment : Fragment(), RecipeClickListener {
                 }
                 else -> super.onOptionsItemSelected(it)
             }
+        }
+
+        binding.searchButton.setOnClickListener{
+
+        }
+
+        binding.searchEditText.addTextChangedListener {
+            recipeViewModel.onSearchTextChange(it.toString())
         }
 
         binding.fab.setOnClickListener{

@@ -8,6 +8,10 @@ import com.google.firebase.ktx.Firebase
 import com.ltl.recipes.database.RecipesDatabase
 import com.ltl.recipes.database.recipe.asDomainModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -23,6 +27,10 @@ class RecipeRepository(private val localDb: RecipesDatabase) {
     private val firestore = Firebase.firestore
 
     val recipes: LiveData<List<Recipe>> = localDb.recipeDao().getAll().map {
+        it.asDomainModel()
+    }
+
+    val recipesAsFlow: Flow<List<Recipe>> = localDb.recipeDao().getAllAsStateFlow().map {
         it.asDomainModel()
     }
 

@@ -42,6 +42,10 @@ data class Recipe (
         val jsonRecipe: String = gson.toJson(this)
         return JSONObject(jsonRecipe)
     }
+
+    fun doesMatchSearchQuery(query: String): Boolean{
+        return title.contains(query)
+    }
 }
 
 fun List<Recipe>.asDatabaseModel(): List<RecipeEntity> {
