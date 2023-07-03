@@ -7,25 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.google.android.gms.auth.api.identity.Identity
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.ltl.recipes.R
 import com.ltl.recipes.data.user.UserViewModel
 import com.ltl.recipes.firebase.sign_in.FirebaseAuthUiClient
 import com.ltl.recipes.ui.compose.user_profile.UserProfileScreen
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import kotlin.coroutines.cancellation.CancellationException
 
 class UserProfileFragment : Fragment() {
 
