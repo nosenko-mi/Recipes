@@ -88,15 +88,8 @@ class MainFragment : Fragment(), RecipeClickListener {
                     goToHomeFragment()
                     true
                 }
-                R.id.searchMenuButton -> {
-                    true
-                }
                 R.id.accountMenuButton -> {
                     goToUserProfileFragment()
-                    true
-                }
-                R.id.favMenuButton -> {
-                    goToFavFragment()
                     true
                 }
                 else -> super.onOptionsItemSelected(it)

@@ -10,19 +10,6 @@
         />
 
     <item
-        android:id="@+id/favMenuButton"
-        android:icon="@drawable/ic_baseline_favorite_border_24"
-        android:title="Favorite"
-        app:showAsAction="always"
-        />
-
-    <item
-        android:id="@+id/searchMenuButton"
-        android:icon="@drawable/ic_baseline_search_24"
-        android:title="Search"
-        app:showAsAction="always"/>
-
-    <item
         android:id="@+id/accountMenuButton"
         android:icon="@drawable/ic_baseline_account_circle_24"
         android:title="Account"
