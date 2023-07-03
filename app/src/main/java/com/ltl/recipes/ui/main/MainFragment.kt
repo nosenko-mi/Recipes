@@ -57,17 +57,6 @@ class MainFragment : Fragment(), RecipeClickListener {
 //        TODO set layout based on width
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.itemAnimator = DefaultItemAnimator()
-//        recipeViewModel.getRecipes().observe(viewLifecycleOwner){
-//            Log.d(TAG, "recipe observer: elements ${it.size}")
-//
-//            recipeAdapter = RecipeAdapter(
-//                it,
-//                this,
-//                GlideImageLoader(Glide.with(this))
-//            )
-//
-//            binding.recyclerView.adapter = recipeAdapter
-//        }
 
         lifecycleScope.launch {
             recipeViewModel.recipes.collect{
