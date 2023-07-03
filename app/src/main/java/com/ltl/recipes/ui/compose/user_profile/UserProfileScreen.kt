@@ -105,14 +105,6 @@ fun UserProfileScreen(
             }
             Spacer(modifier = Modifier.height(32.dp))
 
-            CardButton(title = "Settings", leadingIcon = Icons.Default.Settings) {
-                Toast
-                    .makeText(context, "Settings", Toast.LENGTH_SHORT)
-                    .show()
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             CardButton(title = "Log out", leadingIcon = Icons.Outlined.Logout) {
                 onSignOut()
             }
