@@ -78,7 +78,6 @@ class MainFragment : Fragment(), RecipeClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        recipeViewModel.populateRecipes(userViewModel.getEmail())
         recipeViewModel.populateRecipesAsFlow(userViewModel.getEmail())
 
         binding.bottomAppBar.inflateMenu(R.menu.bottom_menu)
