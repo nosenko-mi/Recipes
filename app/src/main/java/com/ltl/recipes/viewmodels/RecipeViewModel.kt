@@ -8,7 +8,7 @@ import com.ltl.recipes.data.recipe.RecipeRepository
 import com.ltl.recipes.data.user.UserModel
 import com.ltl.recipes.database.getInstance
 import com.ltl.recipes.ui_events.RecipeListEvent
-import com.ltl.recipes.utils.UiEvent
+import com.ltl.recipes.ui_events.UiEvent
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

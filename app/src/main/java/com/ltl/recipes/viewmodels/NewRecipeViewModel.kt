@@ -13,7 +13,7 @@ import com.ltl.recipes.data.recipe.RecipeRepository
 import com.ltl.recipes.ingredient.Ingredient
 import com.ltl.recipes.ingredient.QuantityType
 import com.ltl.recipes.utils.FirebaseStorageHandler
-import com.ltl.recipes.utils.UiEvent
+import com.ltl.recipes.ui_events.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
