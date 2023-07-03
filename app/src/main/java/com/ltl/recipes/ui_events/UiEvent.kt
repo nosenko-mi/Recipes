@@ -1,4 +1,4 @@
-package com.ltl.recipes.utils
+package com.ltl.recipes.ui_events
 
 sealed class UiEvent {
     object PopBackStack: UiEvent()
