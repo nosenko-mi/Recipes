@@ -7,12 +7,18 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.MainFragment">
 
+    <include
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/toolbar_main"/>
+    
     <EditText
         android:id="@+id/searchEditText"
         android:layout_marginHorizontal="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:hint="Search"
@@ -38,23 +44,25 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
 
-        <com.google.android.material.bottomappbar.BottomAppBar
-            android:id="@+id/bottomAppBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:backgroundTint="@color/design_default_color_primary"
-            app:fabAlignmentMode="end"
-            >
+<!--        <com.google.android.material.bottomappbar.BottomAppBar-->
+<!--            android:id="@+id/bottomAppBar"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="bottom"-->
+<!--            android:backgroundTint="@color/design_default_color_primary"-->
+<!--            app:fabAlignmentMode="end"-->
+<!--            >-->
 
-        </com.google.android.material.bottomappbar.BottomAppBar>
+<!--        </com.google.android.material.bottomappbar.BottomAppBar>-->
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_baseline_add_24"
-            app:layout_anchor="@id/bottomAppBar" />
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

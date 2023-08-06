@@ -80,21 +80,31 @@ class MainFragment : Fragment(), RecipeClickListener {
 
         recipeViewModel.populateRecipesAsFlow(userViewModel.getEmail())
 
-        binding.bottomAppBar.inflateMenu(R.menu.bottom_menu)
 
-        binding.bottomAppBar.setOnMenuItemClickListener{
-            when(it.itemId){
-                R.id.homeMenuButton -> {
-                    goToHomeFragment()
-                    true
-                }
-                R.id.accountMenuButton -> {
-                    goToUserProfileFragment()
-                    true
-                }
-                else -> super.onOptionsItemSelected(it)
-            }
+        binding.toolbar.toolBarAccountButton.setOnClickListener {
+            goToUserProfileFragment()
         }
+
+        binding.toolbar.toolBarSearchButton.setOnClickListener {
+            // show search field
+            Toast.makeText(context, "search", Toast.LENGTH_SHORT).show()
+        }
+
+//        binding.bottomAppBar.inflateMenu(R.menu.bottom_menu)
+//        binding.bottomAppBar.setOnMenuItemClickListener{
+//            when(it.itemId){
+//                R.id.homeMenuButton -> {
+//                    goToHomeFragment()
+//                    true
+//                }
+//                R.id.accountMenuButton -> {
+//                    Toast.makeText(context, "inactive", Toast.LENGTH_SHORT).show()
+////                    goToUserProfileFragment()
+//                    true
+//                }
+//                else -> super.onOptionsItemSelected(it)
+//            }
+//        }
 
         binding.searchEditText.addTextChangedListener {
             recipeViewModel.onSearchTextChange(it.toString())
