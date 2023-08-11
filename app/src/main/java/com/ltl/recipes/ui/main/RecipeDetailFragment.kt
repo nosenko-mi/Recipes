@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -45,7 +46,9 @@ class RecipeDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.toolbar.backButton.setOnClickListener {
+            popBackStack()
+        }
         populateRecipe(args.recipeAttr)
     }
 
@@ -61,6 +64,10 @@ class RecipeDetailFragment : Fragment() {
     private fun loadImg(ref: String){
         val imageLoader = GlideImageLoader(Glide.with(this))
         imageLoader.loadImage(ref, binding.recipeImg)
+    }
+
+    private fun popBackStack(){
+        view?.let { Navigation.findNavController(it).popBackStack()}
     }
 
     companion object {

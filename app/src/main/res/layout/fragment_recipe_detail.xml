@@ -7,14 +7,22 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.RecipeDetailFragment">
 
+    <include
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/toolbar_back"/>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginTop="86dp"
+        android:paddingHorizontal="@dimen/def_margin_horizontal"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,89 +32,55 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/recipeImg"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:cropToPadding="true"
-                android:scaleType="centerCrop"
-                android:layout_gravity="center"
-                android:src="@drawable/recipe_default"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <androidx.cardview.widget.CardView
-                android:id="@+id/recipeTitleCard"
+                android:id="@+id/recipeImgCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginTop="-30dp"
-                app:cardCornerRadius="15dp"
-                android:elevation="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                android:elevation="0dp"
+                app:cardCornerRadius="30dp"
                 >
 
-                <TextView
-                    android:id="@+id/recipeTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="monospace"
-                    android:gravity="center"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:text="Card"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/recipeImg" />
+                <ImageView
+                    android:id="@+id/recipeImg"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:cropToPadding="true"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/recipe_default"
+                    />
 
             </androidx.cardview.widget.CardView>
 
-            <LinearLayout
-                android:id="@+id/recipeActionsLayout"
+
+
+            <TextView
+                android:id="@+id/recipeTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_gravity="center"
-                >
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Add"
-                    android:drawableLeft="@drawable/ic_favorite_border_36_white"
-                    android:gravity="start|center_vertical" />
-
-            </LinearLayout>
+                android:layout_gravity="start"
+                android:gravity="center"
+                android:layout_marginTop="15sp"
+                android:text="@string/title"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/recipeImg" />
 
             <LinearLayout
                 android:id="@+id/recipeTextLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginTop="15dp"
                 >
 
                 <TextView
                     android:id="@+id/descriptionTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="monospace"
                     android:gravity="start"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:text="Description"
+                    android:text="@string/description"
                     android:textSize="20sp"
                     app:layout_constraintStart_toStartOf="parent"
                     />
@@ -116,41 +90,25 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus convallis leo, sit amet ultricies metus dapibus vitae. Etiam arcu urna, aliquam non orci non, finibus finibus elit. Phasellus velit nisi, gravida at luctus sit amet, dignissim at risus. Quisque imperdiet lectus fermentum, pellentesque ligula in, pulvinar sapien. "
+                    android:layout_marginTop="5dp"
+                    android:paddingVertical="5dp"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="parent"
+                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus convallis leo, sit amet ultricies metus dapibus vitae. Etiam arcu urna, aliquam non orci non, finibus finibus elit. Phasellus velit nisi, gravida at luctus sit amet, dignissim at risus. Quisque imperdiet lectus fermentum, pellentesque ligula in, pulvinar sapien. "
                     />
 
                 <TextView
                     android:id="@+id/ingredientsTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="monospace"
                     android:gravity="start"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:text="Ingredients"
                     android:textSize="20sp"
                     app:layout_constraintStart_toStartOf="parent"
+                    android:text="@string/ingredients"
                     />
 
-<!--                <TextView-->
-<!--                    android:id="@+id/ingredientsTmpText"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:gravity="start"-->
-<!--                    android:paddingTop="8dp"-->
-<!--                    android:paddingBottom="8dp"-->
-<!--                    android:text="@string/lorem_ingredients"-->
-<!--                    android:textSize="16sp"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    />-->
-
                 <RelativeLayout
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
+                    android:paddingVertical="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -158,7 +116,10 @@
                         android:id="@+id/ingredientRecycleView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:isScrollContainer="false"/>
+                        android:isScrollContainer="false"
+                        android:clipToPadding="false"
+                        android:paddingVertical="5dp"
+                        />
 
                 </RelativeLayout>
 
@@ -166,12 +127,9 @@
                     android:id="@+id/stepsTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="monospace"
                     android:gravity="start"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:text="Steps"
                     android:textSize="20sp"
+                    android:text="@string/steps"
                     app:layout_constraintStart_toStartOf="parent"
                     />
 
@@ -180,11 +138,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:text="@string/lorem_long"
+                    android:layout_marginTop="5dp"
+                    android:paddingVertical="5dp"
                     android:textSize="16sp"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:text="@string/lorem_long"
+                    />
 
             </LinearLayout>
 
