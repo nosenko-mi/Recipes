@@ -62,5 +62,12 @@
     <string name="ingredients">Ingredients</string>
     <string name="description">Description</string>
     <string name="title">Title</string>
-    <string name="ingredient">ingredient</string>
+    <string name="ingredient">Ingredient</string>
+    <string name="serving_size">Serving size</string>
+    <string name="recipe_description">Recipe description</string>
+    <string name="enter_recipe_title">Enter recipe title</string>
+    <string name="enter_description">Enter description</string>
+    <string name="recipe_title">Recipe title</string>
+    <string name="add_ingredient">Add ingredient</string>
+    <string name="how_to_cook">How to cook?</string>
 </resources>
