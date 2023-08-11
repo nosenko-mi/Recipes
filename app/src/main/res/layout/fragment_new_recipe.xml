@@ -10,6 +10,8 @@
             />
     </data>
 
+
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/newRecipeLayout"
         android:layout_width="match_parent"
@@ -30,12 +32,18 @@
 
             />
 
+        <include
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/toolbar_back"/>
+
         <ScrollView
             android:id="@+id/newRecipeScrollLayout"
+            android:layout_marginTop="56dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="-216dp">
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -50,64 +58,101 @@
                     android:layout_height="256dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="@dimen/def_margin_vertical"
-                    android:layout_marginBottom="40dp"
                     android:src="@mipmap/ic_launcher" />
 
                 <TextView
                     android:id="@+id/recipeTitleTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:fontFamily="monospace"
-                    android:text="Recipe title"
-                    android:textSize="20sp"
+                    android:layout_marginTop="30dp"
+                    android:text="@string/recipe_title"
+                    android:textSize="@dimen/text_caption"
                     android:textStyle="bold" />
 
-                <EditText
-                    android:id="@+id/recipeTitleEditText"
+<!--                <EditText-->
+<!--                    android:id="@+id/recipeTitleEditText"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginBottom="40dp"-->
+<!--                    android:afterTextChanged="@{(v)-> recipeViewModel.updateTitle(v)}"-->
+<!--                    android:hint="@string/enter_recipe_title"-->
+<!--                    android:text="@{recipeViewModel.title}" />-->
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/recipeTitleInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="40dp"
-                    android:afterTextChanged="@{(v)-> recipeViewModel.updateTitle(v)}"
-                    android:hint="Enter recipe title"
-                    android:text="@{recipeViewModel.title}" />
+                    android:layout_marginTop="15dp"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:hint="@string/enter_recipe_title"
+                    >
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/recipeTitleEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{recipeViewModel.title}"
+                        android:afterTextChanged="@{(v)-> recipeViewModel.updateTitle(v)}"
+                        android:inputType="text"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
                     android:id="@+id/recipeDescriptionTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:fontFamily="monospace"
-                    android:text="Recipe description"
-                    android:textSize="20sp"
+                    android:layout_marginTop="30dp"
+                    android:text="@string/recipe_description"
+                    android:textSize="@dimen/text_caption"
+
                     android:textStyle="bold" />
 
-                <EditText
-                    android:id="@+id/recipeDescriptionEditText"
+<!--                <EditText-->
+<!--                    android:id="@+id/recipeDescriptionEditText"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginBottom="40dp"-->
+<!--                    android:hint="@string/enter_description"-->
+<!--                    android:text="@{recipeViewModel.description}"-->
+<!--                    android:afterTextChanged="@{(v)-> recipeViewModel.updateDescription(v)}"-->
+<!--                    />-->
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/recipeDescriptionInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="40dp"
-                    android:hint="Enter description"
-                    android:text="@{recipeViewModel.description}"
-                    android:afterTextChanged="@{(v)-> recipeViewModel.updateDescription(v)}"
-                    />
+                    android:layout_marginTop="15dp"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:hint="@string/enter_description"
+                    >
 
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/recipeDescriptionEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{recipeViewModel.description}"
+                        android:afterTextChanged="@{(v)-> recipeViewModel.updateDescription(v)}"
+                        android:inputType="text"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
                     android:id="@+id/servingTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:fontFamily="monospace"
-                    android:text="Serving size"
-                    android:textSize="20sp"
+                    android:layout_marginTop="30dp"
+                    android:text="@string/serving_size"
+                    android:textSize="@dimen/text_caption"
+
                     android:textStyle="bold" />
 
                 <Spinner
                     android:id="@+id/servingSpinner"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="40dp"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="15dp"
                     android:entries="@array/serving_size"
                     android:selectedItemPosition="@={recipeViewModel.servings.number - 1}"
                     />
@@ -116,15 +161,16 @@
                     android:id="@+id/recipeIngredientsTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:fontFamily="monospace"
-                    android:text="Ingredients"
-                    android:textSize="20sp"
+                    android:layout_marginTop="30dp"
+                    android:text="@string/ingredient"
+                    android:textSize="@dimen/text_caption"
+
                     android:textStyle="bold" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="15dp">
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/ingredientRecycleView"
@@ -135,60 +181,71 @@
                 </RelativeLayout>
 
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/addIngredientButton"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="40dp"
-                    android:text="Add ingredient" />
+                    android:text="@string/add_ingredient" />
 
                 <TextView
                     android:id="@+id/recipeStepsTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:fontFamily="monospace"
-                    android:text="Steps"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/stepsEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="40dp"
-                    android:hint="How to cook?"
-                    android:text="@{recipeViewModel.steps}"
-                    android:afterTextChanged="@{(v)-> recipeViewModel.updateSteps(v)}"
+                    android:layout_marginTop="30dp"
+                    android:text="@string/steps"
+                    android:textSize="@dimen/text_caption"
+                    android:textStyle="bold"
                     />
 
-                <Button
-                    android:id="@+id/addStepButton"
+<!--                <EditText-->
+<!--                    android:id="@+id/stepsEditText"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginBottom="40dp"-->
+<!--                    android:hint="@string/how_to_cook"-->
+<!--                    android:text="@{recipeViewModel.steps}"-->
+<!--                    android:afterTextChanged="@{(v)-> recipeViewModel.updateSteps(v)}"-->
+<!--                    />-->
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/stepsInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="40dp"
-                    android:text="Add step"
-                    android:visibility="gone" />
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="86dp"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:hint="@string/how_to_cook"
+                    >
 
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/stepsEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{recipeViewModel.steps}"
+                        android:afterTextChanged="@{(v)-> recipeViewModel.updateSteps(v)}"
+                        android:inputType="textMultiLine"
+                        />
 
-
+                </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
 
         </ScrollView>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/addRecipeButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
+            android:layout_marginBottom="15dp"
             android:text="@string/done_string"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-        </Button>
+        </com.google.android.material.button.MaterialButton>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

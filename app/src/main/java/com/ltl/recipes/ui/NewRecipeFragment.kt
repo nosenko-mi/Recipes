@@ -174,6 +174,10 @@ class NewRecipeFragment : Fragment() {
         binding.addRecipeButton.setOnClickListener{
             addRecipeSequence()
         }
+
+        binding.toolbar.backButton.setOnClickListener {
+            popBackStack()
+        }
     }
 
     private fun subscribeToObservables(){
@@ -410,8 +414,14 @@ class NewRecipeFragment : Fragment() {
     private fun goToMainFragment() {
 //        viewModel.clearIngredients()
 //        view?.let { Navigation.findNavController(it).navigate(R.id.newRecipeFragmentToMainFragment) }
+        popBackStack()
+    }
+
+    private fun popBackStack(){
         findNavController().popBackStack()
     }
+
+
 
     private fun goToAddEditIngredient(){
         view?.let {
