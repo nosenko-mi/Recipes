@@ -58,4 +58,9 @@
     <string name="or_txt">Or</string>
     <string name="don_t_have_an_account">Don’t have an account? </string>
     <string name="register_text">Register</string>
+    <string name="steps">Steps</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="description">Description</string>
+    <string name="title">Title</string>
+    <string name="ingredient">ingredient</string>
 </resources>
