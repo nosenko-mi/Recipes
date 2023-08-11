@@ -45,6 +45,9 @@ class RegistrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.registerButton.setOnClickListener(registerListener)
+        binding.toolbar.backButton.setOnClickListener {
+            popBackStack()
+        }
     }
 
     private fun registerUserSequence(){
@@ -82,13 +85,19 @@ class RegistrationFragment : Fragment() {
     }
 
     private fun collectRegistrationData(): UserRegistrationRequest{
-        val email = binding.emailRegEditText.text.toString()
+        // TODO validation
+        val email = binding.emailRegEditText.editText?.text.toString()
         val password = binding.passwordRegEditText.text.toString()
-
+        val repeatedPassword = binding.repeatPasswordRegEditText.text.toString()
+        Log.d(TAG, "email=$email; password=$password; repeated=$repeatedPassword")
         return UserRegistrationRequest(email, email, password)
     }
 
     private fun goToMainFragment(){
         view?.let { Navigation.findNavController(it).navigate(R.id.registrationFragmentToMainFragment) }
+    }
+
+    private fun popBackStack(){
+        view?.let {Navigation.findNavController(it).popBackStack()}
     }
 }
