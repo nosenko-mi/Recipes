@@ -7,7 +7,8 @@
     <dimen name="def_margin_spread">40dp</dimen>
 
 
-    <dimen name="text_heading">25sp</dimen>
+    <dimen name="text_heading">28sp</dimen>
+    <dimen name="text_title">24sp</dimen>
     <dimen name="text_caption">20sp</dimen>
     <dimen name="text_default">18sp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
