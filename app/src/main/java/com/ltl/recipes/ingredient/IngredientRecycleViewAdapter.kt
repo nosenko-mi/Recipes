@@ -44,7 +44,7 @@ class IngredientRecycleViewAdapter (
 
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        val binding = IngredientListItemBinding.inflate(LayoutInflater.from(viewGroup.context))
+        val binding = IngredientListItemBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
         return ViewHolder(binding)
     }
 
