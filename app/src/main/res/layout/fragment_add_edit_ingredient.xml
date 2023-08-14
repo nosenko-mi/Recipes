@@ -30,29 +30,52 @@
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:text="Add/Edit ingredient" />
+            android:text="@string/add_edit_ingredient" />
 
-        <EditText
-            android:id="@+id/ingredientTitleEdit"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ingredientTitleInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/def_margin_spread"
             app:layout_constraintTop_toBottomOf="@id/addIngredientText"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:hint="Ingredient name"
-            android:text="@={recipeViewModel.currentIngredient.title}"
-            android:inputType="text" />
+            android:hint="@string/ingredient_title"
+            android:inputType="text"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ingredientTitleEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:text="@={recipeViewModel.currentIngredient.title}"
+                android:selectAllOnFocus="true"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+<!--        <EditText-->
+<!--            android:id="@+id/ingredientTitleEdit"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="@dimen/def_margin_spread"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/addIngredientText"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            android:hint="@string/ingredient_title"-->
+<!--            android:text="@={recipeViewModel.currentIngredient.title}"-->
+<!--            android:inputType="text" />-->
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/ingredientTitleEdit"
+            app:layout_constraintTop_toBottomOf="@id/ingredientTitleInputLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <EditText
-                android:id="@+id/ingredientQuantityEdit"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/ingredientQuantityInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/def_margin_dense"
@@ -60,10 +83,36 @@
                 app:layout_constraintTop_toBottomOf="@id/ingredientTitleEdit"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:hint="Quantity"
-                android:text="@{String.valueOf(recipeViewModel.currentIngredient.qty)}"
-                android:afterTextChanged="@{(v)-> recipeViewModel.updateQty(v)}"
-                android:inputType="numberDecimal" />
+                android:hint="@string/quantity"
+
+                android:inputType="numberDecimal"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ingredientQuantityEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:selectAllOnFocus="true"
+                    android:text="@{String.valueOf(recipeViewModel.currentIngredient.qty)}"
+                    android:afterTextChanged="@{(v)-> recipeViewModel.updateQty(v)}"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+<!--            <EditText-->
+<!--                android:id="@+id/ingredientQuantityEdit"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="@dimen/def_margin_dense"-->
+<!--                android:layout_weight="1"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/ingredientTitleEdit"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                android:hint="Quantity"-->
+<!--                android:text="@{String.valueOf(recipeViewModel.currentIngredient.qty)}"-->
+<!--                android:afterTextChanged="@{(v)-> recipeViewModel.updateQty(v)}"-->
+<!--                android:inputType="numberDecimal" />-->
 
             <Spinner
                 android:id="@+id/quantityTypeSpinner"
@@ -73,7 +122,8 @@
                 app:layout_constraintTop_toBottomOf="@id/ingredientQuantityEdit"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginBottom="40dp" />
+                android:layout_marginBottom="40dp"
+                />
 
 <!--            <Spinner-->
 <!--                android:id="@+id/quantityTypeSpinner"-->

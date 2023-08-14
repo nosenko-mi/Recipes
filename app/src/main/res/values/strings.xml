@@ -70,4 +70,7 @@
     <string name="recipe_title">Recipe title</string>
     <string name="add_ingredient">Add ingredient</string>
     <string name="how_to_cook">How to cook?</string>
+    <string name="add_edit_ingredient">Add/Edit ingredient</string>
+    <string name="ingredient_title">Ingredient title</string>
+    <string name="quantity">Quantity</string>
 </resources>
