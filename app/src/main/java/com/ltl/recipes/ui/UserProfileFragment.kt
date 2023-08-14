@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -18,6 +17,7 @@ import com.ltl.recipes.R
 import com.ltl.recipes.data.user.UserViewModel
 import com.ltl.recipes.firebase.sign_in.FirebaseAuthUiClient
 import com.ltl.recipes.ui.compose.user_profile.UserProfileScreen
+import com.ltl.recipes.ui.compose.user_profile.ui.theme.RecipesTheme
 import kotlinx.coroutines.launch
 
 class UserProfileFragment : Fragment() {
@@ -37,17 +37,19 @@ class UserProfileFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                UserProfileScreen(
-                    userModel = viewModel.currentUser.collectAsState(),
-                    onNavigate = { dest -> findNavController().navigate(dest) },
-                    onSignOut = {
-                        lifecycleScope.launch {
-                            Log.d("FirebaseAuthUiClient", "Log out coroutine launched")
-                            authUiClient.signOut()
-                            findNavController().navigate(UserProfileFragmentDirections.actionUserProfileFragmentToLoginFragment())
+                RecipesTheme{
+                    UserProfileScreen(
+                        userModel = viewModel.currentUser.collectAsState(),
+                        onNavigate = { dest -> findNavController().navigate(dest) },
+                        onSignOut = {
+                            lifecycleScope.launch {
+                                Log.d("FirebaseAuthUiClient", "Log out coroutine launched")
+                                authUiClient.signOut()
+                                findNavController().navigate(UserProfileFragmentDirections.actionUserProfileFragmentToLoginFragment())
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }
