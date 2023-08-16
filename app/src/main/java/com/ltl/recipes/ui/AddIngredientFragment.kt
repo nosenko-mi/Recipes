@@ -72,7 +72,7 @@ class AddIngredientFragment : Fragment() {
             return Ingredient(title, qty, qtyType)
         } catch (e: NumberFormatException){
             Log.e(TAG, "INVALID ingredient quantity value: $e")
-            Toast.makeText(context, "Invalid ingredient quantity", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.invalid_ingredient_quantity), Toast.LENGTH_SHORT).show()
         } catch (e: IllegalArgumentException){
             Log.e(TAG, "INVALID QuantityType value: $e")
         }
