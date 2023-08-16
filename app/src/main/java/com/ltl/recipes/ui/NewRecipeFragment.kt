@@ -376,10 +376,7 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun addRecipeSequence() {
-//        viewModel.setIngredients(ingredientViewModel.ingredients.value)
-        // TODO: Activities can use lifecycleScope directly, but Fragments should instead use
-        // viewLifecycleOwner.lifecycleScope.
-        lifecycleScope.launch(Dispatchers.IO){
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
             val isSuccess = async { viewModel.insertRecipe(args.userEmail) }
             if (isSuccess.await()){
                 Log.d(TAG, "addRecipeSequence: success")
