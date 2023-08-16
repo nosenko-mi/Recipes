@@ -85,7 +85,6 @@ class RegistrationFragment : Fragment() {
     }
 
     private fun collectRegistrationData(): UserRegistrationRequest{
-        // TODO validation
         val email = binding.emailRegEditText.editText?.text.toString()
         val password = binding.passwordRegEditText.text.toString()
         val repeatedPassword = binding.repeatPasswordRegEditText.text.toString()
