@@ -24,8 +24,7 @@ class IngredientRecycleViewAdapter (
             ingredientQuantityText.text = ingredient.qty.toString()
             ingredientQuantityTypeText.text = ingredient.qtyType.toString()
 
-            // Against SOLID
-            // TODO: think about Visitor + TypeFactory
+            // think about Visitor + TypeFactory
             if (type == IngredientAccessType.EDIT){
                 root.setOnClickListener{
                     Log.d("Ingredient", "INGREDIENT: edit $ingredient")
