@@ -73,4 +73,5 @@
     <string name="add_edit_ingredient">Add/Edit ingredient</string>
     <string name="ingredient_title">Ingredient title</string>
     <string name="quantity">Quantity</string>
+    <string name="invalid_ingredient_data">Invalid ingredient data</string>
 </resources>
