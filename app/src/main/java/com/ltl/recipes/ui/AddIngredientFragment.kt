@@ -55,11 +55,9 @@ class AddIngredientFragment : Fragment() {
         val ingredient = collectData()
         Log.d(TAG, ingredient.toString())
         if (!ingredient.isValid()){
-//            show error
-            Toast.makeText(context, "Invalid ingredient data", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.invalid_ingredient_data), Toast.LENGTH_SHORT).show()
             Log.d(TAG, "INVALID ingredient")
         } else {
-//            TODO send ingredient back to AddNewRecipeFragment
             viewModel.addIngredient(ingredient)
             goToAddRecipe()
         }
@@ -71,7 +69,6 @@ class AddIngredientFragment : Fragment() {
             val qty: Float = binding.ingredientQuantityEdit.text.toString().toFloat()
             val qtyType: QuantityType = QuantityType.valueOf(
                 binding.quantityTypeSpinner.selectedItem.toString().uppercase())
-//            TODO: validate data
             return Ingredient(title, qty, qtyType)
         } catch (e: NumberFormatException){
             Log.e(TAG, "INVALID ingredient quantity value: $e")
