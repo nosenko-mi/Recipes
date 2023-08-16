@@ -23,7 +23,7 @@ data class Ingredient(
     }
 
     fun isValid(): Boolean {
-        if (title.isEmpty() || qty.isNaN() || qty < 0){
+        if (title.isEmpty() || qty.isNaN() || qty <= 0){
             return false
         }
         return true
