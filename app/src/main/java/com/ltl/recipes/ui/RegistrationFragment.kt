@@ -29,7 +29,6 @@ class RegistrationFragment : Fragment() {
     private var userRepository = UserRepository()
 
     private val registerListener = OnClickListener {
-        Toast.makeText(context, "register clicked", Toast.LENGTH_SHORT).show()
         registerUserSequence()
     }
 
@@ -78,7 +77,7 @@ class RegistrationFragment : Fragment() {
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "createUserWithEmail: failure", task.exception)
-                    Toast.makeText(context, "Authentication failed.",
+                    Toast.makeText(context, getString(R.string.authentication_failed),
                         Toast.LENGTH_SHORT).show()
                 }
             }
