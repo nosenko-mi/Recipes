@@ -74,21 +74,22 @@ class NewRecipeFragment : Fragment() {
     private val viewModel: NewRecipeViewModel by hiltNavGraphViewModels(R.id.add_edit_recipe_nav_graph)
 
     private val requestPermissionLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
+        ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
-            if (isGranted) {
-                chooseImageGallery()
-            } else {
-                Toast.makeText(context, getString(R.string.permission_denied), Toast.LENGTH_SHORT).show()
-            }
+        if (isGranted) {
+            chooseImageGallery()
+        } else {
+            Toast.makeText(context, getString(R.string.permission_denied), Toast.LENGTH_SHORT)
+                .show()
         }
+    }
 
     private var galleryLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
             val resultData = result.data
-            if (resultData == null || resultData.data == null){
+            if (resultData == null || resultData.data == null) {
                 Log.e(TAG, "Gallery launcher: result.data || data.data is null")
                 return@registerForActivityResult
             }
@@ -100,13 +101,16 @@ class NewRecipeFragment : Fragment() {
             Log.d(TAG, "Gallery launcher: createFileName()=$fileName")
             val bitmap: Bitmap
             try {
-                if(Build.VERSION.SDK_INT < 28) {
+                if (Build.VERSION.SDK_INT < 28) {
                     bitmap = MediaStore.Images.Media.getBitmap(
                         requireContext().contentResolver,
                         selectedImageUri
                     )
                 } else {
-                    val source = ImageDecoder.createSource(requireContext().contentResolver, selectedImageUri)
+                    val source = ImageDecoder.createSource(
+                        requireContext().contentResolver,
+                        selectedImageUri
+                    )
                     bitmap = ImageDecoder.decodeBitmap(source)
                 }
                 val fileData = PhotoConverter().bitmapToByteArray(bitmap)
@@ -119,13 +123,14 @@ class NewRecipeFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         Log.d(TAG, "NewRecipeFragment starts")
 
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_new_recipe,container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_new_recipe, container, false)
         binding.lifecycleOwner = this
         val view = binding.root
         binding.recipeViewModel = viewModel
@@ -147,7 +152,7 @@ class NewRecipeFragment : Fragment() {
         setListeners()
     }
 
-    private fun loadImg(ref: String){
+    private fun loadImg(ref: String) {
         val location = buildString {
             append(FirebaseConstants.StorageBaseUrlTest)
             append(ref)
@@ -162,16 +167,16 @@ class NewRecipeFragment : Fragment() {
             .into(binding.recipeImgImageView)
     }
 
-    private fun setListeners(){
-        recipeImg.setOnClickListener{
+    private fun setListeners() {
+        recipeImg.setOnClickListener {
             showBottomSheetDialog()
         }
 
-        binding.addIngredientButton.setOnClickListener{
+        binding.addIngredientButton.setOnClickListener {
             goToAddEditIngredient()
         }
 
-        binding.addRecipeButton.setOnClickListener{
+        binding.addRecipeButton.setOnClickListener {
             addRecipeSequence()
         }
 
@@ -180,14 +185,14 @@ class NewRecipeFragment : Fragment() {
         }
     }
 
-    private fun subscribeToObservables(){
+    private fun subscribeToObservables() {
         binding.ingredientRecycleView.setHasFixedSize(true)
 //        val l = object: LinearLayoutManager(context) { override fun canScrollVertically() = false }
         val layoutManager = LinearLayoutManager(context)
         binding.ingredientRecycleView.layoutManager = layoutManager
         binding.ingredientRecycleView.itemAnimator = DefaultItemAnimator()
 
-        viewLifecycleOwner.lifecycleScope.launch (Dispatchers.Main) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.ingredients.collectLatest {
                     Log.d(TAG, "viewModel.ingredients.collectLatest = $it")
@@ -195,7 +200,8 @@ class NewRecipeFragment : Fragment() {
                         it,
                         IngredientAccessType.EDIT,
                         ::deleteIngredient,
-                        ::editIngredient)
+                        ::editIngredient
+                    )
                     binding.ingredientRecycleView.adapter = ingredientRecycleViewAdapter
                 }
             }
@@ -210,7 +216,7 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun renderProgressBar(value: Boolean) {
-        if (value){
+        if (value) {
             binding.progressBar.visibility = View.VISIBLE
             binding.newRecipeScrollLayout.visibility = View.GONE
         } else {
@@ -226,22 +232,26 @@ class NewRecipeFragment : Fragment() {
         val camera = bottomSheetDialog.findViewById<LinearLayout>(R.id.cameraLayout)
         val gallery = bottomSheetDialog.findViewById<LinearLayout>(R.id.galleryLayout)
 
-        if (camera != null && gallery!= null) {
-            camera.setOnClickListener{
+        if (camera != null && gallery != null) {
+            camera.setOnClickListener {
                 takePhotoSequence()
                 bottomSheetDialog.dismiss()
             }
-            gallery.setOnClickListener{
+            gallery.setOnClickListener {
 //                gallery intent
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                    if (checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)== PERMISSION_DENIED){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (checkSelfPermission(
+                            requireContext(),
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                        ) == PERMISSION_DENIED
+                    ) {
                         val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                         requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    } else{
+                    } else {
                         chooseImageGallery()
                     }
-                }else{
+                } else {
                     chooseImageGallery()
                 }
 //                https://developer.android.com/training/permissions/requesting#kotlin
@@ -260,37 +270,43 @@ class NewRecipeFragment : Fragment() {
         galleryLauncher.launch(intent)
     }
 
-    private fun takePhotoSequence(){
+    private fun takePhotoSequence() {
         // Request camera permissions
         if (allPermissionsGranted()) {
             startCamera()
         } else {
             ActivityCompat.requestPermissions(
-                requireActivity(), REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
+                requireActivity(), REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
+            )
         }
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
-            requireContext(), it) == PackageManager.PERMISSION_GRANTED
+            requireContext(), it
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults:IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
 
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
                 startCamera()
             } else {
-                Toast.makeText(context,
+                Toast.makeText(
+                    context,
                     getString(R.string.permissions_not_granted_by_the_user),
-                    Toast.LENGTH_SHORT).show()
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
 
-    private fun startCamera(){
+    private fun startCamera() {
         dispatchTakePictureIntent()
     }
 
@@ -328,7 +344,7 @@ class NewRecipeFragment : Fragment() {
             Log.d(TAG, "Camera launcher: current img ref= ${viewModel.currentImgRef.value}")
             val bitmap: Bitmap
             try {
-                if(Build.VERSION.SDK_INT < 28) {
+                if (Build.VERSION.SDK_INT < 28) {
                     bitmap = MediaStore.Images.Media.getBitmap(
                         requireContext().contentResolver,
                         uri
@@ -344,8 +360,7 @@ class NewRecipeFragment : Fragment() {
                 Log.e(TAG, e.message.toString())
                 e.printStackTrace()
             }
-        }
-        else {
+        } else {
             Toast.makeText(context, "Error occurred while taking photo", Toast.LENGTH_SHORT).show()
         }
     }
@@ -376,29 +391,33 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun addRecipeSequence() {
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO){
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val isSuccess = async { viewModel.insertRecipe(args.userEmail) }
-            if (isSuccess.await()){
+            if (isSuccess.await()) {
                 Log.d(TAG, "addRecipeSequence: success")
-                withContext(Dispatchers.Main){
+                withContext(Dispatchers.Main) {
                     viewModel.clearIngredients()
                     ingredientViewModel.clear()
                     goToMainFragment()
                 }
             } else {
                 Log.d(TAG, "addRecipeSequence: error")
-                Snackbar.make(binding.addRecipeButton, getString(R.string.something_went_wrong), Snackbar.LENGTH_SHORT)
+                Snackbar.make(
+                    binding.addRecipeButton,
+                    getString(R.string.something_went_wrong),
+                    Snackbar.LENGTH_SHORT
+                )
                     .show()
             }
         }
     }
 
-    private fun deleteIngredient(ingredient: Ingredient){
+    private fun deleteIngredient(ingredient: Ingredient) {
         viewModel.removeIngredient(ingredient)
         ingredientViewModel.removeIngredient(ingredient)
     }
 
-    private fun editIngredient(ingredient: Ingredient){
+    private fun editIngredient(ingredient: Ingredient) {
 //        goToaEditIngredient(ingredient)
         viewModel.setCurrentIngredient(ingredient)
         goToAddEditIngredient()
@@ -414,13 +433,12 @@ class NewRecipeFragment : Fragment() {
         popBackStack()
     }
 
-    private fun popBackStack(){
+    private fun popBackStack() {
         findNavController().popBackStack()
     }
 
 
-
-    private fun goToAddEditIngredient(){
+    private fun goToAddEditIngredient() {
         view?.let {
             Navigation.findNavController(it)
                 .navigate(R.id.action_newRecipeFragment2_to_addIngredientFragment2)
@@ -437,7 +455,7 @@ class NewRecipeFragment : Fragment() {
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS =
-            mutableListOf (
+            mutableListOf(
                 Manifest.permission.CAMERA,
             ).apply {
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
