@@ -79,7 +79,7 @@ class NewRecipeFragment : Fragment() {
             if (isGranted) {
                 chooseImageGallery()
             } else {
-                Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.permission_denied), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -284,7 +284,7 @@ class NewRecipeFragment : Fragment() {
                 startCamera()
             } else {
                 Toast.makeText(context,
-                    "Permissions not granted by the user.",
+                    getString(R.string.permissions_not_granted_by_the_user),
                     Toast.LENGTH_SHORT).show()
             }
         }
@@ -387,7 +387,7 @@ class NewRecipeFragment : Fragment() {
                 }
             } else {
                 Log.d(TAG, "addRecipeSequence: error")
-                Snackbar.make(binding.addRecipeButton, "Oops... something went wrong", Snackbar.LENGTH_SHORT)
+                Snackbar.make(binding.addRecipeButton, getString(R.string.something_went_wrong), Snackbar.LENGTH_SHORT)
                     .show()
             }
         }
