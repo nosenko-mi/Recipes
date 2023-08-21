@@ -65,6 +65,10 @@ class RecipeViewModel(application: Application, currentUser: UserModel): ViewMod
         _searchText.value = text
     }
 
+    fun setSearchingState(value: Boolean){
+        _isSearching.value = value
+    }
+
     fun onEvent(event: RecipeListEvent){
         when(event) {
             RecipeListEvent.OnAddFavoriteClick -> TODO()

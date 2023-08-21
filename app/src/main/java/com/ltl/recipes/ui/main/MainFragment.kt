@@ -1,10 +1,14 @@
 package com.ltl.recipes.ui.main
 
+import android.content.Context
+import android.content.res.Configuration
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
@@ -14,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -42,9 +47,15 @@ class MainFragment : Fragment(), RecipeClickListener {
     }
 
     private lateinit var recipeAdapter: RecipeAdapter
+    private var gridLayoutManager: GridLayoutManager? = null
 
     companion object {
         private const val TAG: String = "MainFragment"
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        gridLayoutManager?.spanCount = resources.getInteger(R.integer.grid_column_count)
     }
 
     override fun onCreateView(
@@ -55,7 +66,11 @@ class MainFragment : Fragment(), RecipeClickListener {
         val view = binding.root
 
 //        TODO set layout based on width
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+
+//        val gridLayoutManager = GridLayoutManager(context, resources.getInteger(R.integer.grid_column_count))
+        gridLayoutManager = GridLayoutManager(requireContext(), resources.getInteger(R.integer.grid_column_count))
+//        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+        binding.recyclerView.layoutManager = gridLayoutManager
         binding.recyclerView.itemAnimator = DefaultItemAnimator()
 
         lifecycleScope.launch {
@@ -86,8 +101,36 @@ class MainFragment : Fragment(), RecipeClickListener {
         }
 
         binding.toolbar.toolBarSearchButton.setOnClickListener {
-            // show search field
-            Toast.makeText(context, "search", Toast.LENGTH_SHORT).show()
+            if (recipeViewModel.isSearching.value){ // hide searchbar, set basic icon
+                recipeViewModel.setSearchingState(false)
+
+
+                if (binding.toolbar.toolBarSearchEdit.requestFocus()) {
+                    val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+                    imm?.hideSoftInputFromWindow(binding.toolbar.toolBarSearchEdit.windowToken, 0)
+                }
+
+                binding.toolbar.toolBarSearchButton.setImageResource(R.drawable.ic_baseline_search_24)
+                binding.toolbar.toolBarTitleTextView.visibility = View.VISIBLE
+                binding.toolbar.toolBarSearchEdit.visibility = View.GONE
+                binding.toolbar.toolBarAccountButton.visibility = View.VISIBLE
+
+                binding.toolbar.toolBarSearchEdit.text.clear()
+
+            } else { // show searchbar, set close icon
+                recipeViewModel.setSearchingState(true)
+
+                binding.toolbar.toolBarSearchButton.setImageResource(R.drawable.baseline_close_24)
+                binding.toolbar.toolBarTitleTextView.visibility = View.GONE
+                binding.toolbar.toolBarSearchEdit.visibility = View.VISIBLE
+                binding.toolbar.toolBarAccountButton.visibility = View.GONE
+
+                if (binding.toolbar.toolBarSearchEdit.requestFocus()) {
+                    val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+                    imm?.showSoftInput(binding.toolbar.toolBarSearchEdit, 0)
+                }
+
+            }
         }
 
 //        binding.bottomAppBar.inflateMenu(R.menu.bottom_menu)
@@ -106,9 +149,13 @@ class MainFragment : Fragment(), RecipeClickListener {
 //            }
 //        }
 
-        binding.searchEditText.addTextChangedListener {
+
+        binding.toolbar.toolBarSearchEdit.addTextChangedListener {
             recipeViewModel.onSearchTextChange(it.toString())
         }
+//        binding.searchEditText.addTextChangedListener {
+//            recipeViewModel.onSearchTextChange(it.toString())
+//        }
 
         binding.fab.setOnClickListener{
             goToNewRecipeFragment()
