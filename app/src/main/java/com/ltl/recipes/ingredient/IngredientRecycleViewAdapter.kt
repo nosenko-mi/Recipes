@@ -18,7 +18,7 @@ class IngredientRecycleViewAdapter (
 
     inner class ViewHolder(private val binding: IngredientListItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(ingredient: Ingredient) = binding.apply {
+        fun bind(ingredient: Ingredient, position: Int) = binding.apply {
 
             ingredientNameText.text = ingredient.title
             ingredientQuantityText.text = ingredient.qty.toString()
@@ -34,9 +34,10 @@ class IngredientRecycleViewAdapter (
                 ingredientDeleteButton.setOnClickListener{
                     Log.d("Ingredient", "INGREDIENT: delete $ingredient")
                     onDeleteCallback(ingredient)
+                    notifyItemRemoved(position)
                 }
             } else {
-                ingredientDeleteButton.visibility = View.INVISIBLE
+                ingredientDeleteButton.visibility = View.GONE
             }
         }
     }
@@ -51,7 +52,7 @@ class IngredientRecycleViewAdapter (
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.bind(dataSet[position])
+        viewHolder.bind(dataSet[position], position)
     }
 
     // Return the size of your dataset (invoked by the layout manager)
