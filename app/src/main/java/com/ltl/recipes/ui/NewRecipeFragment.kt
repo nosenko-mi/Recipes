@@ -44,6 +44,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.ltl.recipes.R
+import com.ltl.recipes.constants.AppConstants
 import com.ltl.recipes.constants.FirebaseConstants
 import com.ltl.recipes.databinding.FragmentNewRecipeBinding
 import com.ltl.recipes.ingredient.Ingredient
@@ -153,6 +154,11 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun loadImg(ref: String) {
+
+        if (ref == AppConstants.defaultImgRef){
+            return
+        }
+
         val location = buildString {
             append(FirebaseConstants.StorageBaseUrlTest)
             append(ref)
@@ -163,7 +169,7 @@ class NewRecipeFragment : Fragment() {
 
         Glide.with(requireContext())
             .load(fileRef)
-            .placeholder(R.drawable.recipe_default)
+            .placeholder(R.drawable.add_photo)
             .into(binding.recipeImgImageView)
     }
 
@@ -186,12 +192,13 @@ class NewRecipeFragment : Fragment() {
     }
 
     private fun subscribeToObservables() {
-        binding.ingredientRecycleView.setHasFixedSize(true)
+        binding.ingredientRecycleView.setHasFixedSize(false)
 //        val l = object: LinearLayoutManager(context) { override fun canScrollVertically() = false }
         val layoutManager = LinearLayoutManager(context)
         binding.ingredientRecycleView.layoutManager = layoutManager
         binding.ingredientRecycleView.itemAnimator = DefaultItemAnimator()
 
+        // TODO when clicking on delete there is no visual feedback
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.ingredients.collectLatest {
@@ -362,7 +369,7 @@ class NewRecipeFragment : Fragment() {
                 e.printStackTrace()
             }
         } else {
-            Toast.makeText(context, "Error occurred while taking photo", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, getString(R.string.error_occurred_while_taking_photo), Toast.LENGTH_SHORT).show()
         }
     }
 
