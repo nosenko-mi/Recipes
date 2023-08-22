@@ -71,12 +71,6 @@ class LoginFragment : Fragment(), OnClickListener {
         lifecycleScope.launch {
             signInViewModel.state.collectLatest { state ->
                 if (state.isSignInSuccessful) {
-                    Toast.makeText(
-                        context,
-                        "Sign in successful",
-                        Toast.LENGTH_LONG
-                    ).show()
-
                     authUiClient.getSignedInUser()?.let {
                         updateUiWithUser(it)
                         signInViewModel.resetState()
