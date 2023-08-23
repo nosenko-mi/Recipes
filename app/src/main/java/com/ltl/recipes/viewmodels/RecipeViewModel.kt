@@ -7,9 +7,7 @@ import com.ltl.recipes.data.recipe.Recipe
 import com.ltl.recipes.data.recipe.RecipeRepository
 import com.ltl.recipes.data.user.UserModel
 import com.ltl.recipes.database.getInstance
-import com.ltl.recipes.ui_events.RecipeListEvent
-import com.ltl.recipes.ui_events.UiEvent
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,12 +15,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
 
+@OptIn(FlowPreview::class)
 class RecipeViewModel(application: Application, currentUser: UserModel): ViewModel() {
 
     companion object {
@@ -58,9 +56,6 @@ class RecipeViewModel(application: Application, currentUser: UserModel): ViewMod
         )
 
 
-    private val _uiEvent = Channel<UiEvent>()
-    val uiEvent = _uiEvent.receiveAsFlow()
-
     fun onSearchTextChange(text: String) {
         _searchText.value = text
     }
@@ -69,27 +64,12 @@ class RecipeViewModel(application: Application, currentUser: UserModel): ViewMod
         _isSearching.value = value
     }
 
-    fun onEvent(event: RecipeListEvent){
-        when(event) {
-            RecipeListEvent.OnAddFavoriteClick -> TODO()
-            RecipeListEvent.OnAddRecipeClick -> TODO()
-            is RecipeListEvent.OnDeleteRecipeClick -> TODO()
-            RecipeListEvent.OnFavoriteClick -> TODO()
-            RecipeListEvent.OnHomeClick -> TODO()
-            RecipeListEvent.OnProfileClick -> TODO()
-            is RecipeListEvent.OnRecipeClick -> TODO()
-            is RecipeListEvent.OnRecipeLongClick -> TODO()
-            RecipeListEvent.OnSearchClick -> TODO()
-            RecipeListEvent.OnUndoDeleteClick -> TODO()
-        }
-    }
-
-    private var _eventNetworkError = MutableLiveData<Boolean>(false)
+    private var _eventNetworkError = MutableLiveData(false)
 
     val eventNetworkError: LiveData<Boolean>
         get() = _eventNetworkError
 
-    private var _isNetworkErrorShown = MutableLiveData<Boolean>(false)
+    private var _isNetworkErrorShown = MutableLiveData(false)
 
     val isNetworkErrorShown: LiveData<Boolean>
         get() = _isNetworkErrorShown
