@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Cook Up</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="web_client_id" translatable="false">5825267437-km8ku74ub8j2hobubjdhrjqochoa7iab.apps.googleusercontent.com</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -80,4 +79,9 @@
     <string name="permissions_not_granted_by_the_user">Permissions not granted by the user.</string>
     <string name="permission_denied">Permission denied</string>
     <string name="cookup">CookUp</string>
+    <string name="error_occurred_while_taking_photo">Error occurred while taking photo</string>
+    <string name="log_out">Log out</string>
+    <string name="profile">Profile</string>
+    <string name="servings">Servings:</string>
+    <string name="lorem_description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus convallis leo, sit amet ultricies metus dapibus vitae. Etiam arcu urna, aliquam non orci non, finibus finibus elit. Phasellus velit nisi, gravida at luctus sit amet, dignissim at risus. Quisque imperdiet lectus fermentum, pellentesque ligula in, pulvinar sapien.</string>
 </resources>
