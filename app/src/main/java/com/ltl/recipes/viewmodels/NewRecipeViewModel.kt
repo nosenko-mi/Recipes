@@ -130,7 +130,7 @@ class NewRecipeViewModel @Inject constructor(
                     imgRef = _imgRef.value
                     title = _title.value
                     description = _description.value
-                    servingsNum = _servingNum.value
+                    servingsNum = servings.value.getNumber()
                     steps = _steps.value
                     isPublic = _isPublic.value
                     author = currentUser
