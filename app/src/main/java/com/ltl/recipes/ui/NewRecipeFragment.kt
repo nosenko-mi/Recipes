@@ -198,7 +198,6 @@ class NewRecipeFragment : Fragment() {
         binding.ingredientRecycleView.layoutManager = layoutManager
         binding.ingredientRecycleView.itemAnimator = DefaultItemAnimator()
 
-        // TODO when clicking on delete there is no visual feedback
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.ingredients.collectLatest {
