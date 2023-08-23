@@ -55,15 +55,6 @@ fun UserProfileScreen(
     onNavigate: (Int) -> Unit,
     onSignOut: () -> Unit
 ) {
-    val context = LocalContext.current
-//    IconButton(onClick = {
-//        Log.d(TAG, "Pop back stack")
-//        onNavigate(R.id.action_userProfileFragment_to_mainFragment)
-//    }) {
-//        Icon(
-//            imageVector = Icons.Default.ArrowBack,
-//            contentDescription = "Back button")
-//    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -126,20 +117,6 @@ fun UserProfileScreen(
 
                         )
                 }
-
-//                Text(
-//                    text = userModel.value.displayName.toString(),
-//                    fontSize = 30.sp,
-//                    fontWeight = FontWeight.Bold,
-//                    modifier = Modifier
-//                        .align(Alignment.TopEnd)
-//                )
-//                Spacer(modifier = Modifier.height(64.dp))
-//                Text(
-//                    text = userModel.value.email,
-//                    modifier = Modifier
-//                        .align(Alignment.BottomEnd)
-//                )
 
             }
             Spacer(modifier = Modifier.height(32.dp))
