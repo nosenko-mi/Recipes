@@ -95,8 +95,40 @@
                     android:paddingVertical="5dp"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus convallis leo, sit amet ultricies metus dapibus vitae. Etiam arcu urna, aliquam non orci non, finibus finibus elit. Phasellus velit nisi, gravida at luctus sit amet, dignissim at risus. Quisque imperdiet lectus fermentum, pellentesque ligula in, pulvinar sapien. "
+                    android:text="@string/lorem_description"
                     />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="15dp">
+
+
+                    <TextView
+                        android:id="@+id/servingsTitleTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:textSize="20sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:text="@string/servings"
+                        />
+
+                    <TextView
+                        android:id="@+id/servingsNumberTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:layout_marginStart="10dp"
+                        android:textSize="20sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:text="1"
+                        />
+
+                </LinearLayout>
+
+
 
                 <TextView
                     android:id="@+id/ingredientsTitle"
@@ -104,6 +136,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="start"
                     android:textSize="20sp"
+                    android:layout_marginTop="15dp"
                     app:layout_constraintStart_toStartOf="parent"
                     android:text="@string/ingredients"
                     />

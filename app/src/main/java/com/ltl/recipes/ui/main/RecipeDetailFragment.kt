@@ -56,7 +56,7 @@ class RecipeDetailFragment : Fragment() {
         binding.recipeTitle.text = recipe.title
         binding.descriptionText.text = recipe.description
         binding.stepsText.text = recipe.steps
-
+        binding.servingsNumberTextView.text = recipe.servingsNum.toString()
 
         loadImg(recipe.imgRef)
     }
