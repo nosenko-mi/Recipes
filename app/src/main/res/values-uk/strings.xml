@@ -1,22 +1,13 @@
 <resources>
     <string name="app_name">Cook Up</string>
-    <string name="web_client_id" translatable="false">5825267437-km8ku74ub8j2hobubjdhrjqochoa7iab.apps.googleusercontent.com</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="lorem_long">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus convallis leo, sit amet ultricies metus dapibus vitae. Etiam arcu urna, aliquam non orci non, finibus finibus elit. Phasellus velit nisi, gravida at luctus sit amet, dignissim at risus. Quisque imperdiet lectus fermentum, pellentesque ligula in, pulvinar sapien. Etiam porta odio eget neque vehicula luctus. Donec eros massa, blandit vitae tincidunt sed, tincidunt quis nisi. Fusce venenatis enim lectus, ut egestas purus facilisis ut. Proin eget ligula ac erat ultrices tempor cursus a dolor. Praesent volutpat est dui, et consequat lectus pharetra pellentesque. Nullam non fermentum felis. Vivamus faucibus velit sit amet finibus pretium. Donec neque odio, feugiat quis lectus in, euismod sodales neque. In hac habitasse platea dictumst. Curabitur malesuada orci eget suscipit tincidunt. Vivamus bibendum blandit metus, vitae feugiat justo venenatis ut. Fusce non mauris commodo, dictum libero non, feugiat arcu. Curabitur facilisis, nulla auctor imperdiet maximus, massa ex pretium libero, vitae mattis enim erat nec ex. Suspendisse sagittis mollis pellentesque. Aliquam vitae nisi eu mi sagittis ultrices eu a quam. Nam fringilla a neque eu elementum. Suspendisse eros leo, ornare in diam sit amet, imperdiet tempor lacus. Integer tincidunt est varius est ultricies feugiat. Ut erat dolor, rutrum eget ex ut, laoreet ornare quam. Nam faucibus pulvinar diam, eu efficitur tellus tristique at. Proin non lacinia elit. Nunc ut felis dictum, tincidunt erat in, iaculis est. Sed congue dui vitae risus porttitor mattis. Aliquam nec elementum orci. Sed mattis vel quam ac vulputate. Pellentesque laoreet dapibus erat ac venenatis. Mauris dui mi, tempor ut odio eget, volutpat faucibus nibh. Vestibulum ullamcorper placerat justo in imperdiet. Aliquam nec tortor elementum, bibendum justo eu, lacinia ipsum. Fusce id odio sed dui hendrerit cursus. Duis ut tempus mi, ac consectetur erat. Suspendisse potenti. Nullam dolor erat, dapibus a tincidunt et, pharetra at odio. Aliquam ac mollis sem. Nulla enim felis, placerat ac pellentesque bibendum, tempus sodales ante. Etiam at tempor nulla. Cras tincidunt leo eu justo fermentum vulputate. Nulla volutpat tempor lorem quis vehicula. Aenean eu pretium est. Etiam blandit dolor eu nibh cursus efficitur. Sed porttitor, purus eu eleifend sagittis, neque leo rhoncus dolor, sed molestie ligula enim eu ligula. Proin nulla tellus, feugiat a leo eget, pellentesque tempus nunc. Etiam et vulputate augue, a pretium nisi. Sed elementum varius nunc, ut imperdiet velit dapibus a. Curabitur maximus metus vel hendrerit faucibus. Fusce quis dui a enim accumsan cursus sit amet at augue. Pellentesque posuere nec velit sit amet faucibus. Duis sodales fringilla turpis vitae sagittis. Morbi ac orci posuere, iaculis ipsum ut, condimentum sapien. Sed in ipsum nunc. In pharetra mollis enim a consectetur. Suspendisse sit amet tortor porta ipsum egestas ornare.</string>
     <string name="lorem_short">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus convallis leo, sit amet ultricies metus dapibus vitae. Etiam arcu urna, aliquam non orci non, finibus finibus elit. Phasellus velit nisi, gravida at luctus sit amet, dignissim at risus. Quisque imperdiet lectus fermentum, pellentesque ligula in, pulvinar sapien.</string>
-    <string name="lorem_ingredients" translatable="false">
-        Lorem\n
-        ipsum\n
-        dolor\n
-        sit\n
-        amet
-    </string>
 
-
-    <string name="qty_type_gram">gram</string>
-    <string name="qty_type_mill">mill</string>
-    <string name="qty_type_oz">oz</string>
+    <string name="qty_type_gram">гр</string>
+    <string name="qty_type_mill">мл</string>
+    <string name="qty_type_oz">унц</string>
 
     <string-array name="serving_size">
         <item>1</item>
@@ -36,50 +27,51 @@
         <item>mill</item>
         <item>oz</item>
     </string-array>
+
     <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Login</string>
-    <string name="action_sign_in_google">Sign in with Google</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome!"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
-    <string name="register"><u>Register</u></string>
-    <string name="delete_recipe_text">Delete recipe</string>
-    <string name="edit_recipe_text">Edit recipe</string>
-    <string name="done_string">Done</string>
+    <string name="prompt_email">Електронна пошта</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="action_sign_in">Увійти</string>
+    <string name="action_sign_in_google">Увійти з Google</string>
+    <string name="action_sign_in_short">Увійти</string>
+    <string name="welcome">Вітаємо</string>
+    <string name="invalid_username">Некоректне ім\'я користувача</string>
+    <string name="invalid_password">Пароль повинен бути довший за 5 символів</string>
+    <string name="login_failed">Не вдалося увійти</string>
+    <string name="register"><u>Зареєструватися</u></string>
+    <string name="delete_recipe_text">Видалити</string>
+    <string name="edit_recipe_text">Редагувати</string>
+    <string name="done_string">Додати</string>
     <string name="title_activity_user_profile">UserProfileActivity</string>
-    <string name="welcome_txt">Welcome</string>
-    <string name="or_txt">Or</string>
-    <string name="don_t_have_an_account">Don’t have an account? </string>
-    <string name="register_text">Register</string>
-    <string name="steps">Steps</string>
-    <string name="ingredients">Ingredients</string>
-    <string name="description">Description</string>
-    <string name="title">Title</string>
-    <string name="ingredient">Ingredient</string>
-    <string name="serving_size">Serving size</string>
-    <string name="recipe_description">Recipe description</string>
-    <string name="enter_recipe_title">Enter recipe title</string>
-    <string name="enter_description">Enter description</string>
-    <string name="recipe_title">Recipe title</string>
-    <string name="add_ingredient">Add ingredient</string>
-    <string name="how_to_cook">How to cook?</string>
-    <string name="add_edit_ingredient">Add/Edit ingredient</string>
-    <string name="ingredient_title">Ingredient title</string>
-    <string name="quantity">Quantity</string>
-    <string name="invalid_ingredient_data">Invalid ingredient data</string>
-    <string name="invalid_ingredient_quantity">Invalid ingredient quantity</string>
-    <string name="authentication_failed">Authentication failed.</string>
-    <string name="something_went_wrong">Oops... something went wrong</string>
-    <string name="permissions_not_granted_by_the_user">Permissions not granted by the user.</string>
-    <string name="permission_denied">Permission denied</string>
+    <string name="welcome_txt">Вітаємо</string>
+    <string name="or_txt">Або</string>
+    <string name="don_t_have_an_account">Не маєте акаунту </string>
+    <string name="register_text">Зареєструватися</string>
+    <string name="steps">Кроки</string>
+    <string name="ingredients">Інгредієнти</string>
+    <string name="description">Опис</string>
+    <string name="title">Назва</string>
+    <string name="ingredient">Інгредієнт</string>
+    <string name="serving_size">Кількість порцій</string>
+    <string name="recipe_description">Опис рецепту</string>
+    <string name="enter_recipe_title">Введіть назву</string>
+    <string name="enter_description">Введіть опис</string>
+    <string name="recipe_title">Назва</string>
+    <string name="add_ingredient">Додати інгредієнт</string>
+    <string name="how_to_cook">Як готувати?</string>
+    <string name="add_edit_ingredient">Додати/Редагувати інгедієнт</string>
+    <string name="ingredient_title">Назва інгредієнту</string>
+    <string name="quantity">Кількість</string>
+    <string name="invalid_ingredient_data">Некоректні дані</string>
+    <string name="invalid_ingredient_quantity">Некоректна кількість</string>
+    <string name="authentication_failed">Помилка авторизації</string>
+    <string name="something_went_wrong">Ой халепа, щось пішло не так…</string>
+    <string name="permissions_not_granted_by_the_user">Дозволи не надані</string>
+    <string name="permission_denied">Дозвіл заборонено</string>
     <string name="cookup">CookUp</string>
-    <string name="error_occurred_while_taking_photo">Error occurred while taking photo</string>
-    <string name="log_out">Log out</string>
-    <string name="profile">Profile</string>
-    <string name="servings">Servings:</string>
+    <string name="error_occurred_while_taking_photo">Помилка камери</string>
+    <string name="log_out">Вийти</string>
+    <string name="profile">Акаунт</string>
+    <string name="servings">Порції:</string>
     <string name="lorem_description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus convallis leo, sit amet ultricies metus dapibus vitae. Etiam arcu urna, aliquam non orci non, finibus finibus elit. Phasellus velit nisi, gravida at luctus sit amet, dignissim at risus. Quisque imperdiet lectus fermentum, pellentesque ligula in, pulvinar sapien.</string>
 </resources>
