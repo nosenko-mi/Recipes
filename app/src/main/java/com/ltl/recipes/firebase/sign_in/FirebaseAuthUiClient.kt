@@ -3,6 +3,7 @@ package com.ltl.recipes.firebase.sign_in
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
+import android.util.Log
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.GoogleAuthProvider
@@ -89,6 +90,16 @@ class FirebaseAuthUiClient(
             oneTapClient.signOut().await()
             auth.signOut()
         } catch (e: Exception) {
+            e.printStackTrace()
+            if (e is CancellationException) throw e
+        }
+    }
+
+    suspend fun deleteUser(){
+        try {
+            auth.currentUser?.delete()?.await()
+        } catch (e: Exception) {
+            Log.e("FirebaseAuthUIClient", e.message.toString())
             e.printStackTrace()
             if (e is CancellationException) throw e
         }
