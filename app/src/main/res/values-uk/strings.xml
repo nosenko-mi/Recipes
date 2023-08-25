@@ -34,7 +34,7 @@
     <string name="action_sign_in">Увійти</string>
     <string name="action_sign_in_google">Увійти з Google</string>
     <string name="action_sign_in_short">Увійти</string>
-    <string name="welcome">Вітаємо</string>
+    <string name="welcome">Вітаємо!</string>
     <string name="invalid_username">Некоректне ім\'я користувача</string>
     <string name="invalid_password">Пароль повинен бути довший за 5 символів</string>
     <string name="login_failed">Не вдалося увійти</string>
@@ -45,7 +45,7 @@
     <string name="title_activity_user_profile">UserProfileActivity</string>
     <string name="welcome_txt">Вітаємо</string>
     <string name="or_txt">Або</string>
-    <string name="don_t_have_an_account">Не маєте акаунту </string>
+    <string name="don_t_have_an_account">Не маєте акаунту? </string>
     <string name="register_text">Зареєструватися</string>
     <string name="steps">Кроки</string>
     <string name="ingredients">Інгредієнти</string>
@@ -74,4 +74,10 @@
     <string name="profile">Акаунт</string>
     <string name="servings">Порції:</string>
     <string name="lorem_description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus convallis leo, sit amet ultricies metus dapibus vitae. Etiam arcu urna, aliquam non orci non, finibus finibus elit. Phasellus velit nisi, gravida at luctus sit amet, dignissim at risus. Quisque imperdiet lectus fermentum, pellentesque ligula in, pulvinar sapien.</string>
+    <string name="delete_account">Видалити акаунт</string>
+    <string name="are_you_sure_you_want_to_delete_account">Ви впевнені, що хочете видалити акаунт?</string>
+    <string name="this_action_cannot_be_undone">Це рішення не може бути скасованим</string>
+    <string name="delete">Видалити</string>
+    <string name="cancel">Закрити</string>
+
 </resources>

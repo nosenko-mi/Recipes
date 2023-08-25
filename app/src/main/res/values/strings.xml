@@ -82,4 +82,9 @@
     <string name="profile">Profile</string>
     <string name="servings">Servings:</string>
     <string name="lorem_description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce dapibus convallis leo, sit amet ultricies metus dapibus vitae. Etiam arcu urna, aliquam non orci non, finibus finibus elit. Phasellus velit nisi, gravida at luctus sit amet, dignissim at risus. Quisque imperdiet lectus fermentum, pellentesque ligula in, pulvinar sapien.</string>
+    <string name="delete_account">Delete account</string>
+    <string name="are_you_sure_you_want_to_delete_account">Are you sure you want to delete account?</string>
+    <string name="this_action_cannot_be_undone">This action cannot be undone</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
 </resources>
