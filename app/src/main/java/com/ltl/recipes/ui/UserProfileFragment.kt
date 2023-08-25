@@ -47,6 +47,13 @@ class UserProfileFragment : Fragment() {
                                 authUiClient.signOut()
                                 findNavController().navigate(UserProfileFragmentDirections.actionUserProfileFragmentToLoginFragment())
                             }
+                        },
+                        onDeleteAccount = {
+                            lifecycleScope.launch {
+                                Log.d("FirebaseAuthUiClient", "Delete coroutine launched")
+                                authUiClient.deleteUser()
+                                findNavController().navigate(UserProfileFragmentDirections.actionUserProfileFragmentToLoginFragment())
+                            }
                         }
                     )
                 }
