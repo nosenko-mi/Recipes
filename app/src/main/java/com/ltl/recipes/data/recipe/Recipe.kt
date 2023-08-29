@@ -1,5 +1,6 @@
 package com.ltl.recipes.data.recipe
 
+import androidx.annotation.Keep
 import com.google.firebase.firestore.ServerTimestamp
 import com.google.gson.Gson
 import com.ltl.recipes.constants.AppConstants
@@ -12,7 +13,7 @@ import kotlinx.serialization.Serializable
 import org.json.JSONObject
 import java.util.*
 
-@Serializable
+@Keep
 data class Recipe (
     val id: String = UUID.randomUUID().toString(),
     var coverImg: Int = 0,
