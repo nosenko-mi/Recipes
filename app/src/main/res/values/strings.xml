@@ -87,4 +87,7 @@
     <string name="this_action_cannot_be_undone">This action cannot be undone</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
+    <string name="recipes_expoted_to">"Recipes exported to: "</string>
+    <string name="search">Search</string>
+    <string name="export">Export</string>
 </resources>

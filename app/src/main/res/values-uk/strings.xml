@@ -79,5 +79,6 @@
     <string name="this_action_cannot_be_undone">Це рішення не може бути скасованим</string>
     <string name="delete">Видалити</string>
     <string name="cancel">Закрити</string>
+    <string name="recipes_expoted_to">"Рецепти збережено в: "</string>
 
 </resources>
