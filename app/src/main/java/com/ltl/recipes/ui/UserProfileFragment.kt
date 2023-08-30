@@ -37,7 +37,7 @@ class UserProfileFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                RecipesTheme{
+                RecipesTheme {
                     UserProfileScreen(
                         userModel = viewModel.currentUser.collectAsState(),
                         onNavigate = { dest -> findNavController().navigate(dest) },

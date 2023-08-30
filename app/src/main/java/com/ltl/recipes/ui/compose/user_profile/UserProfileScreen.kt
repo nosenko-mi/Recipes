@@ -1,7 +1,6 @@
 package com.ltl.recipes.ui.compose.user_profile
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,8 +28,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,8 +48,6 @@ import coil.request.ImageRequest
 import com.ltl.recipes.BuildConfig
 import com.ltl.recipes.R
 import com.ltl.recipes.data.user.UserModel
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 
 private const val TAG = "UserProfileComposable"
 
@@ -58,11 +57,11 @@ fun UserProfileScreen(
     userModel: State<UserModel>,
     onNavigate: (Int) -> Unit,
     onSignOut: () -> Unit,
-    onDeleteAccount: () -> Unit
+    onDeleteAccount: () -> Unit,
 ) {
-    var showDeleteDialog by remember { mutableStateOf(false)}
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = true){
+    LaunchedEffect(key1 = true) {
         Log.d("UserProfileScreen", "$userModel")
     }
     Scaffold(
@@ -128,7 +127,7 @@ fun UserProfileScreen(
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1
 
-                        )
+                    )
                 }
 
             }
@@ -151,10 +150,10 @@ fun UserProfileScreen(
                 onClick = {
                     showDeleteDialog = showDeleteDialog.not()
 //                onDeleteAccount()
-            }) {
+                }) {
                 Text(text = stringResource(R.string.delete_account))
             }
-        
+
             Text(
                 text = BuildConfig.VERSION_NAME,
                 fontSize = 10.sp,
