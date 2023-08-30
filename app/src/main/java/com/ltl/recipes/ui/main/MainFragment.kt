@@ -318,14 +318,6 @@ class MainFragment : Fragment(), RecipeClickListener {
         }
     }
 
-    private fun goToFavFragment() {
-        Toast.makeText(context, "Favorite", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun goToHomeFragment() {
-        Toast.makeText(context, "Home", Toast.LENGTH_SHORT).show()
-    }
-
     private fun goToUserProfileFragment() {
         Navigation.findNavController(binding.root)
             .navigate(R.id.action_mainFragment_to_userProfileFragment)
